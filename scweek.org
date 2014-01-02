@@ -1,0 +1,8 @@
+# Planning for SC week-long workshop
+
+* Technical
+** Patterns + ProxySpace
+*** Syntax to address nodeproxy controls
+    - 'key.argname'?
+    - I think maybe even better to share control names across proxies
+** Numbers in ProxySpace: DC or control?
