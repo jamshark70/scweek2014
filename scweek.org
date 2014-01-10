@@ -5,4 +5,96 @@
 *** Syntax to address nodeproxy controls
     - 'key.argname'?
     - I think maybe even better to share control names across proxies
+      Dictionary: argname -> Set of NodeProxies with that argname
 ** Numbers in ProxySpace: DC or control?
+*** DONE Changing number doesn't update proxy's source
+*** INPROG Switching back to numberproxy uses old value in set of args
+* Overview (MD export)
+  :PROPERTIES:
+  :EXPORT_TITLE: Synthesis and Performance with SuperCollider
+  :EXPORT_AUTHOR: H. James Harkins
+  :EXPORT_FILE_NAME: scweek_overview.md
+  :EXPORT_OPTIONS: toc:nil ^:nil ':nil
+  :END:
+
+** About the course
+This intensive five-day workshop teaches you the fundamentals of sound
+synthesis in the SuperCollider programming language, with an emphasis
+on modular design, real-time patching and control devices for live
+performance.
+
+** About the instructor
+H. James Harkins (Ph.D., Duke University) has 11 years experience
+composing and performing with SuperCollider, and actively contributes
+code and documentation to the SuperCollider project. He is the
+developer of dewdrop_lib, an extension library including components
+for mixing, MIDI control and high-level organization for larger
+projects. He is currently an Associate Professor in the Modern Music
+Department of Xinghai Conservatory of Music in Guangzhou, PRC,
+teaching electronic music production and film music.
+
+** What is SuperCollider?
+SuperCollider is a programming language for audio synthesis and
+algorithmic composition, designed by James McCartney. The current
+incarnation, SuperCollider Server, is the third major version and was
+released as an open-source project in 2002. It is currently maintained
+by an international group of musicians and programmers. It is an
+object-oriented language based loosely on SmallTalk, providing Unit
+Generator objects for synthesis, powerful data structures, and Pattern
+objects for sequences of musical information.
+
+** What will be taught?
+The workshop will culminate with a performance of a group
+composition. Each student will be responsible for one or two textural
+layers, to be controlled using mobile devices. The primary focus of
+each session is practical information to complete the musical work.
+
+Early sessions will build synthesizers from simple pieces of code,
+where each code snippet represents typical synthesizer components
+(oscillators, envelope generators, control signals). We will approach
+basic synthesis techniques by experimentation. We will learn to
+control these synthesizers using sequencing (patterns) and external
+devices. The discussion of external devices will cover simple
+graphical interfaces, and good programming habits to manage incoming
+control information. Concluding sessions will touch on best practices
+to build larger projects.
+
+Sessions will be taught in both English and Chinese.
+
+** Are there any prerequisites?
+This workshop assumes no prior knowledge of SuperCollider. Familiarity
+with electronic music technology will be helpful, but not required.
+
+** What do I need to bring?
+*** Laptop
+Participants will need to bring their own laptop (Mac OSX, Linux or
+Windows 7/8), and a headset for listening.
+
+*** SuperCollider installation
+Please install SuperCollider before attending the workshop:
+http://supercollider.sourceforge.net/downloads/.
+
+   - Mac: Please use SC 3.6.6. OSX 10.6 or higher is recommended.
+   - Windows: Please use SC 3.6.6.
+   - Linux: Pre-compiled packages for SC 3.6.3 exist for Debian/Ubuntu
+     and Red Hat. Hoping for this to be updated before the workshop.
+
+*** External control (smartphone/tablet, MIDI)
+A mobile device with an OSC control app is recommended for the
+performance sessions.
+
+   - Android: /TouchOSC/ https://play.google.com/store/apps/details?id=net.hexler.touchosc&hl=en
+   - iOS
+     - *$4.99* - /TouchOSC/ https://itunes.apple.com/us/app/touchosc/id288120394?mt=8
+     - Free - /mrmr/ https://itunes.apple.com/us/app/mrmr-osc-controller/id294296343
+
+If you don't have a smartphone or tablet, a simple MIDI controller
+such as a NanoKontrol would suffice.
+
+** Day-by-Day Schedule:
+
+10:00 - 12:00 Morning Session
+12:00 - 13:00 Lunch
+13:00 - 16:00 Afternoon Session (with 15 minute break)
+16:30 - 18:00 Private Lesson
+
