@@ -1,0 +1,35 @@
+#+bind: org-latex-title-command "\\maketitle"
+#+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
+
+#+LANGUAGE:  en
+#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+#+startup: beamer
+#+LaTeX_CLASS: article
+# #+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: default
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
+
+#+LATEX_HEADER: \usepackage{beamerarticle}
+#+LATEX_HEADER: \setcounter{tocdepth}{1}
+
+#+LATEX_HEADER: \usepackage{fontspec}
+#+LATEX_HEADER: \setmainfont[Ligatures={Common,TeX}]{CharisSIL}
+#+LATEX_HEADER: \setmonofont{Inconsolata}
+
+#+LATEX_HEADER: \usepackage[indentfirst=false]{xeCJK}
+#+LATEX_HEADER: \setCJKmainfont{WenQuanYi Zen Hei}
+#+LATEX_HEADER: \setCJKsansfont{WenQuanYi Zen Hei}
+#+LATEX_HEADER: \setCJKmonofont{WenQuanYi Zen Hei}
+
+#+LATEX_HEADER: \usepackage{listings}
+
+#+BEGIN_LaTeX
+\mode<article>{\setbeamertemplate{frametitle}{%
+       \subsection{\insertframetitle\\%
+       \scriptsize\insertframesubtitle}}}
+#+END_LaTeX
