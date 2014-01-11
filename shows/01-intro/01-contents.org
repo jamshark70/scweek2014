@@ -1,0 +1,183 @@
+#+startup: beamer
+
+#+TITLE: SuperCollider Week, Day 1 \\ Introductory SC and Synthesis
+#+DATE: \today
+#+AUTHOR: H. James Harkins
+#+EMAIL: 
+
+#+INCLUDE: "../slidehead.org"
+# #+INCLUDE: "../printhead.org"
+
+* Workshop introduction
+** Who am I?
+*** Composer, programmer, nerd
+    - Ph.D., music composition, Duke University (2001)
+    - Now: Associate Professor, Xinghai Conservatory, Guangzhou
+    - Subjects: Electronic music production, Film music
+*** Special interests:
+    - Danceclub music
+    - Real-time performance with computers
+
+** What is SuperCollider?
+*** /Programming language/ for audio and composition
+    - Created by James McCartney
+    - Conceptual basis: SmallTalk
+      - /Object-oriented/ like Java, but still fun (not like Java)
+    - Syntax: More like C
+*** Left							      :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+#+name: smalltalk
+#+caption: 25% coin toss in SmallTalk
+#+begin_src {} -i
+(1 to: 100) atRandom <= 25
+   ifTrue:
+      [Transcript show: "heads"]
+  ifFalse:
+      [Transcript show: "tails"]
+#+end_src
+*** Right 							      :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+#+name: sccoin
+#+caption: 25% coin toss in SuperCollider
+#+begin_src {} -i
+if(0.25.coin) {
+   "heads".postln
+} {
+   "tails".postln
+};
+#+end_src
+
+** Workshop goals
+*** Teach synthesis techniques by experimentation
+    - SC lets us take apart synthesizer components, and put them back together
+    - SC's /Just-In-Time library/ makes it easy to re-patch components interactively
+*** Teach techniques for live control and performance
+    - Control by graphic interfaces and external devices
+    - End goal: A group composition, to perform together
+*** *Have fun programming!*
+    - Emphasis on /play/ over /correctness/
+
+** Audio programming before SuperCollider, 1
+   Not a complete survey!
+*** *Music \emph{n}* languages
+    - Orchestra file to define synthesis
+    - Score file (what to play, when)
+    - Modern incarnation: /csound/
+*** Lisp: *Common Lisp Music*, *Nyquist*
+    - Music: Hierarchies of structure
+    - Lisp: Data structures are hierarchical! Good for composition
+
+** Audio programming before SuperCollider, 2
+*** Dataflow: *Max/MSP*, *Pure Data*
+    Represent everything as signal flow
+    - Good: Intuitive to wire up interfaces quickly
+    - Bad:
+      - Relatively weak data structures (hard to represent musical information in an articulate way)
+      - Monophonic processes, easy; polyphonic, hard
+      - Complexity barrier
+
+** Version history
+*** McCartney's work before SuperCollider
+    - /Synth-O-Matic/ (1990)
+    - /Pyrite/ (scripting language for Max)
+*** SuperCollider
+    - SC1: Synth-O-Matic + Pyrite
+    - SC2: Influence from SmallTalk
+      - SC language is nearly complete
+      - Notable audio processing inefficiencies
+    - SC3 ("SC Server")
+      - Audio processing is more efficient, by handling audio in a /server/ process
+
+* SC architecture, usage
+** SC is three applications
+*** Really? /Three/ applications?
+    Yes. They work together:
+    - =scide=: SC Integrated Development Environment
+      - Code editor, display, documentation
+    - =sclang=: SC language
+      - IDE sends code to sclang
+      - sclang runs the code, sends printed output back to IDE
+    - =scsynth=: SC synthesis server
+      - sclang sends Open Sound Control messages to scsynth
+      - scsynth sends audio to the hardware
+      - May also reply to sclang
+
+** SC appearance
+   Linux, here.
+   #+begin_center
+   #+attr_latex: :width 1.0\textwidth
+   [[./img/sc-with-guis.pdf]]
+   #+end_center
+
+** Why separate the functions?
+*** If one component crashes, the others keep working.
+    Especially important: The code window stays intact!
+
+** Server/client design
+*** *Server/client* design
+    - Server does heavier work (e.g., databases)
+    - Client makes requests of the server
+*** How does this work for audio?
+    - *Brain:* The client (SC language) sends messages to the server \\
+      /Open Sound Control/ (OSC) protocol
+      - "Here's a /synthesis definition/."
+      - "Use that definition to make noise."
+    - *Brawn:* The server calculates the audio and sends to the hardware.
+
+** Why server/client?
+*** Efficiency
+    - Synthesis definitions are /reusable/.
+*** Networked applications
+    - Many clients can use the same server
+*** Not limited to SC language
+    - Any language that supports OSC can use SC audio!
+    - Python, Clojure, Scala, Haskell, Scheme...
+    - In free software, /user choice/ is important. Prefer /open/
+      designs, rather than closed.
+
+** Usage: IDE
+*** The IDE is your main interface.
+    IDE elements:
+    - *Code panel:* Tabbed view of code documents.
+    - *Docklets*
+      - /Post window/: Printed results from SC language.
+      - /Documents/ panel: List of all open tabs.
+      - /Help browser/: Look up just about anything.
+    - *Tool panel*: Find/replace, command line, etc.
+    - *Status bar*
+      - Language and server status
+      - Server control (click on the server status)
+
+** Code panel
+*** Run code: =Ctrl-Return=
+    - Runs a code block, selected code or the current line
+    - /Code block/: =(= at the beginning, =)= at the end
+      Convenient to run several lines at once.
+#+name: codeblock
+#+Caption: A block of code, in parentheses.
+#+Begin_src {} -i
+(
+(1..10).do { |i|
+   i.postln;
+};
+)
+#+End_src
+*** Auto-indentation
+    The editor will automatically indent the code according to the grouping levels.
+    Consistent indentation makes the code easier to read.
+
+** Code panel: Auto-completion
+*** Auto-completion
+    The editor can help you type certain names and remember parameter lists.
+    1. Type =Sin=. SC knows which /classes/ begin with those letters. Choose =SinOsc=.
+    2. Type a dot. SC knows which /messages/ =SinOsc= understands. Choose =ar=.
+    3. Type =(=. SC knows the inputs of =SinOsc.ar= and shows them to you.
+*** Keystrokes for auto completion:
+    - Ctrl-space :: Complete a name.
+    - Ctrl-shift-space :: Complete a parameter list.
+
+
