@@ -9,6 +9,67 @@
 ** Numbers in ProxySpace: DC or control?
 *** DONE Changing number doesn't update proxy's source
 *** INPROG Switching back to numberproxy uses old value in set of args
+* High-level outline
+** *Notes* (not a topic)
+   - Sequencing... where?
+   - Give some exercises (time when I don't have to talk so much!)
+** History
+   - Music n
+   - Common LISP music
+   - SuperCollider
+** SC architecture, environment
+   - 3 apps
+   - Navigating the IDE
+     - Docklets
+     - Server control
+     - Code window
+       - Auto-indent
+       - Auto-completion
+       - Code blocks in ()
+** Beginning synthesis
+   - Writing UGens into functions
+     - Look under the hood
+   - UGen: in --> black box --> out
+     - Input and output rates
+     - Input and output ranges
+     - Predicting results of operations
+       - Amplitude modulation, e.g.
+   - ProxySpace
+     - What's a proxy?
+     - /Expose/ inputs -- if exposed, you can manipulate them
+     - Amp envelope
+       - Set source to trigger
+       - Trigger inputs
+     - Freq envelope, sharing trigger
+     - Can model any synthesis technique
+       Components: Oscillators, filters, modulators, envelopes
+** Additive synthesis?
+** Subtractive synthesis
+   - Simplest
+     - Oscillator rich in harmonics
+	 - Typical waveforms
+     - Filter(s)
+	 - Typical filter types
+	 - Resonance
+   - Refine
+     - Detuned oscillators
+     - Modulation of filter parameters
+	 - Envelope for attack; separate triggers for legato
+     - LFO modulators
+   - Note on efficiency?
+** Modal synthesis
+   - High resonance, short input sound: ringing
+   - Filter's /impulse response/
+   - Klank, DynKlank
+     Also note /parallel/ vs /serial/ processing
+   - Parameters:
+     - Ringing frequencies (harmonic or inharmonic relationships)
+     - Ring times (inverse correlation with bandwidth)
+     - Amplitudes of each filter
+     - Input spectrum and envelope
+   - Related
+     - Formant synthesis (Formlet)
+     - Banded waveguides (feedback delays)
 * Overview (MD export)
   :PROPERTIES:
   :EXPORT_TITLE: Synthesis and Performance with SuperCollider
