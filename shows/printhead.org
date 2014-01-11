@@ -21,10 +21,17 @@
 #+LATEX_HEADER: \setmainfont[Ligatures={Common,TeX}]{CharisSIL}
 #+LATEX_HEADER: \setmonofont{Inconsolata}
 
+#+LATEX_HEADER: \usepackage{enumitem}
+# unused: ,labelwidth=0.49cm,labelsep=0cm,align=left,leftmargin=1cm,rightmargin=1cm,before=\small\raggedright,after=\normalsize
+#+LATEX_HEADER: \setlist{noitemsep}
+
 #+LATEX_HEADER: \usepackage[indentfirst=false]{xeCJK}
 #+LATEX_HEADER: \setCJKmainfont{WenQuanYi Zen Hei}
 #+LATEX_HEADER: \setCJKsansfont{WenQuanYi Zen Hei}
 #+LATEX_HEADER: \setCJKmonofont{WenQuanYi Zen Hei}
+
+#+LATEX_HEADER: \usepackage{caption}
+#+LATEX_HEADER: \captionsetup[lstlisting]{font={it,footnotesize},labelfont={it,footnotesize},singlelinecheck=false}
 
 #+LATEX_HEADER: \usepackage{listings}
 
