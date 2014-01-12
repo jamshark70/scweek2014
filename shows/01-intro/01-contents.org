@@ -211,6 +211,50 @@ a.release;
     If it's too high, you could hurt your ears.
 *** What do you think the numbers mean?
 
+** Easier tweaking: ProxySpace
+*** \ci{ProxySpace} makes it safer to play around.
+    - Too easy to forget \cd{a.release}.
+    - \ci{ProxySpace} automatically replaces the synth, instead of adding.
+    - It does a lot more. We'll use it for most of the workshop.
+#+name: ps1
+#+caption: Basic use of ProxySpace.
+#+begin_src {} -i
+p = ProxySpace.new;
+p.push;
+
+// run these one by one
+~out = { SinOsc.ar(440, 0, 0.1).dup };
+~out.play;
+
+~out = { SinOsc.ar(220, 0, 0.1).dup };
+~out = { VarSaw.ar(110, 0, 0.1, 0.1).dup };
+
+~out.stop;
+#+end_src
+
+** Important idea: /Modular/ design
+*** A \te{modular} approach breaks a problem into smaller pieces.
+    - For synthesis, it means you can play with the different pieces independently.
+#+name: ps2
+#+caption: Modularity in ProxySpace.
+#+begin_src {} -i
+~freq = 110;
+~width = 0.5;
+
+~out = { VarSaw.ar(~freq, 0, ~width, 0.1).dup };
+~out.play;
+
+~width = 0.1;
+~freq = { LFNoise1.kr(12).exprange(110, 220) };
+
+~out.stop;
+#+end_src
+
+** Taking it apart
+*** Now we know enough to step back and see what this is made of.
+    - This part is a little dry and technical.
+    - But, to talk about SC, you need to know some important terms.
+
 ** Taking it apart: Functions
 *** {1\textwidth}{3in}					      :B_overlayarea:
     :PROPERTIES:

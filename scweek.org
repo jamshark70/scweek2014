@@ -11,6 +11,7 @@
 *** INPROG Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
 *** TODO Filter to remove non-frame text
+*** TODO Listings numbering problem with onlyenv
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?
