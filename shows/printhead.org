@@ -21,9 +21,9 @@
 #+LATEX_HEADER: \setmainfont[Ligatures={Common,TeX}]{CharisSIL}
 #+LATEX_HEADER: \setmonofont{Inconsolata}
 
-#+LATEX_HEADER: \usepackage{enumitem}
-# unused: ,labelwidth=0.49cm,labelsep=0cm,align=left,leftmargin=1cm,rightmargin=1cm,before=\small\raggedright,after=\normalsize
-#+LATEX_HEADER: \setlist{noitemsep}
+# #+LATEX_HEADER: \usepackage{enumitem}
+# # unused: ,labelwidth=0.49cm,labelsep=0cm,align=left,leftmargin=1cm,rightmargin=1cm,before=\small\raggedright,after=\normalsize
+# #+LATEX_HEADER: \setlist{noitemsep}
 
 #+LATEX_HEADER: \usepackage[indentfirst=false]{xeCJK}
 #+LATEX_HEADER: \setCJKmainfont{WenQuanYi Zen Hei}
@@ -41,6 +41,7 @@
 #+LATEX_HEADER: \newcommand{\cd}[1]{\texttt{#1}}
 #+LATEX_HEADER: \newcommand{\ci}[1]{\mbox{\texttt{#1}}}
 #+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
+#+LATEX_HEADER: \newcommand{\ks}[1]{\framebox[1.05\width]{\texttt{#1}}}
 
 #+BEGIN_LaTeX
 \mode<article>{\setbeamertemplate{frametitle}{%
