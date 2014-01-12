@@ -8,7 +8,7 @@
 #+INCLUDE: "../slidehead.org"
 # #+INCLUDE: "../printhead.org"
 
-* Workshop introduction						   :noexport:
+* Workshop introduction
 ** Who am I?
 *** Composer, programmer, nerd
     - Ph.D., music composition, Duke University (2001)
@@ -92,7 +92,7 @@ if(0.25.coin) {
     - SC3 ("SC Server")
       - Audio processing is more efficient, by handling audio in a /server/ process
 
-* SC architecture, usage					   :noexport:
+* SC architecture, usage
 ** SC is three applications
 *** Really? /Three/ applications?
     Yes. They work together:
@@ -333,7 +333,7 @@ f = {
      - Full names, like declared variables.
      - You don't have to declare them.
      - "Quasi-global" scope.
-**** We will use environment variables for a special purpose.
+**** ProxySpace uses environment variables for synth nodes.
 
 ** Taking it apart: Classes
 *** {1\textwidth}{3in}					      :B_overlayarea:
@@ -397,4 +397,60 @@ f = {
        - phase :: In radians (0--$2\pi$).
        - mul :: Amplitude.
        - add :: An offset (generally not used for audio).
+
+** Syntax
+*** \te{Syntax}: Rules defining "legal" expressions.
+E.g., \cd{x + y} is legal, while \cd{x y + 3} is not. You can't have \cd{x} and \cd{y} next to each other with only a space in between.
+*** SC language syntax is all about /calling methods/.
+Everything happens in SC through method calls. *Everything.*
+
+** Parts of a method call
+*** Method calls consist of three parts:
+    - Receiver :: The object that will perform the method.
+    - Selector :: The method's name.
+    - Arguments :: Additional input (optional).
+\\
+In \cd{SinOsc.ar(440)}:
+    - Receiver = the class \cd{SinOsc}
+    - Selector = \cd{ar}
+    - Argument = \cd{440}
+
+** Method call syntax
+*** Three ways to call methods in SC.
+    - "Dot" style :: \cd{receiver.selector(arguments...)}
+    - Function style :: \cd{selector(receiver, arguments...)}
+    - Infix style :: \cd{receiver selector: argument} \\
+      Infix style allows only one argument. \\
+      Binary operators (\cd{+}, \cd{-}, \cd{*}, \cd{/}, \cd{**}) are methods that use infix style.
+      In \cd{1 + 2}: Receiver = 1, Selector = '+', Argument = 2
+#+Name: callstyles
+#+Caption: Three styles of method calls. They all answer with the same result, because the receiver, selector and argument are the same.
+#+begin_src {} -i
+[2.pow(3), pow(2, 3), 2 pow: 3]
+// answers: [ 8, 8, 8 ]
+#+end_src
+
+** Beginning usage: Summary 1
+*** Write audio processing into \te{functions}.
+    - These functions should create UGens: \cd{SinOsc.ar} or \cd{.kr}.
+    - \cd{aFunction.play} /adds/ new synthesis into the server.
+*** \ci{ProxySpace} for plug-and-play.
+    - Automatically turns functions into synthesis.
+    - Reassigning an environment variable /replaces/ synthesis.
+*** \te{Modular} style of writing.
+    - Use /small/ synthesis functions.
+    - Connect them by using the environment variable in another UGen's inputs.
+
+** Beginning usage: Summary 2
+*** \te{Unit Generators} ("UGens")
+    - Input signals \to UGen \to Output signal
+    - Connections: UGen A's output \to UGen B's input
+*** Important SC language concepts
+    - Class :: An object definition: /Data/ and /actions/
+    - Method :: An action that an object that knows how to perform.
+    - Variable :: A placeholder for an object (a reference to it).
+    - Argument :: The input to a function or method. UGens are created by the \ci{ar} and \ci{kr} methods; here is where you write the input signals.
+
+** Next: Synthesis techniques
+   Now we know enough to start exploring standard synthesis techniques.
 
