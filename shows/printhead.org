@@ -35,6 +35,13 @@
 
 #+LATEX_HEADER: \usepackage{listings}
 
+# #+LATEX_HEADER: \usepackage{color}
+# #+LATEX_HEADER: \definecolor{codecolor}{RGB}{150,0,100}
+# #+LATEX_HEADER: \newcommand{\cd}[1]{\textcolor{codecolor}{\texttt{#1}}}
+#+LATEX_HEADER: \newcommand{\cd}[1]{\texttt{#1}}
+#+LATEX_HEADER: \newcommand{\ci}[1]{\mbox{\texttt{#1}}}
+#+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
+
 #+BEGIN_LaTeX
 \mode<article>{\setbeamertemplate{frametitle}{%
        \subsection{\insertframetitle\\%
