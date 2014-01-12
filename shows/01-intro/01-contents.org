@@ -8,7 +8,7 @@
 #+INCLUDE: "../slidehead.org"
 # #+INCLUDE: "../printhead.org"
 
-* Workshop introduction
+* Workshop introduction						   :noexport:
 ** Who am I?
 *** Composer, programmer, nerd
     - Ph.D., music composition, Duke University (2001)
@@ -92,7 +92,7 @@ if(0.25.coin) {
     - SC3 ("SC Server")
       - Audio processing is more efficient, by handling audio in a /server/ process
 
-* SC architecture, usage
+* SC architecture, usage					   :noexport:
 ** SC is three applications
 *** Really? /Three/ applications?
     Yes. They work together:
@@ -181,7 +181,7 @@ if(0.25.coin) {
     - Ctrl-space :: Complete a name.
     - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps
+* SC language: Beginning steps					   :noexport:
 ** Let's make some noise!
    1. Boot the audio server: \ks{Ctrl-B} \\
       See also /Language/ menu and server status. \\
@@ -453,4 +453,77 @@ In \cd{SinOsc.ar(440)}:
 
 ** Next: Synthesis techniques
    Now we know enough to start exploring standard synthesis techniques.
+
+* Subtractive synthesis
+** Subtractive synthesis
+*** One of the most basic techniques
+    - Easy to implement
+    - Easy and intuitive to control
+*** "Analog style"
+    - The technique goes back to Moog and before
+
+** Main idea of subtractive synthesis
+*** /Take away/ (subtract) from a basic waveform
+    Components
+    - Oscillator :: Produces a waveform with lots of harmonics
+    - Filter :: Takes away parts of the spectrum
+
+** Simple translation into SC
+#+Name: sub1
+#+Caption: Oscillator and filter, the basis of subtractive synthesis.
+#+Begin_src {} -i
+p = ProxySpace.new;
+p.push;
+
+~ffreq = 2000;
+~oscil = { Saw.ar(220, 0.1) };
+~filter = { LPF.ar(~oscil.ar, ~ffreq).dup };
+~filter.play;
+
+// Use this to play with the filter frequency
+EZSlider(nil, Rect(100, 200, 400, 50),
+   "ffreq", \freq, { |view| ~ffreq = view.value }, 2000);
+#+End_src
+*** New UGens
+    - Saw :: A \te{band-limited} sawtooth oscillator
+    - LPF :: A Low-Pass Filter
+
+** Sawtooth oscillator
+*** A geometric sawtooth is made of straight lines.
+    This is a problem for digital audio.
+    - The sharp corners produce theoretically infinite frequencies.
+    - Digital audio cannot represent infinite frequencies!
+    - Frequencies above the limit fold back into the audio
+      range. Sounds ugly. This is called \te{aliasing}.
+    - Band-limited oscillators keep all the frequencies in the safe
+      range.
+#+Name: bandlim1
+#+Caption: Compare geometric vs. band-limited waves, visually. LFSaw parameters are to match the Saw plot more closely. Maximize the window after running.
+#+Begin_src {} -i
+{ [LFSaw.ar(440, 1, -0.7), Saw.ar] }.plot;
+#+End_src
+
+
+** Listen to the difference
+*** *Note:* Turn down the server volume first!		       :B_alertblock:
+    :PROPERTIES:
+    :BEAMER_env: alertblock
+    :END:
+    The high frequency is pretty irritating, but necessary to make the
+    aliasing really obvious.
+#+Name: bandlim2
+#+Caption: Compare geometric vs. band-limited waves, aurally.
+#+Begin_src {} -i
+p.clear;
+~oscil = { LFSaw.ar(2400, 0, 0.05).dup };
+~oscil.play;
+
+// Go back and forth several times
+~oscil = { Saw.ar(2400, 0.1).dup };
+~oscil = { LFSaw.ar(2400, 0, 0.05).dup };
+
+p.clear;
+#+End_src
+*** *Safety tip:* Use band-limited waves for audio oscillators.
+    The geometric waveforms are OK for control signals.
 
