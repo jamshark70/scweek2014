@@ -8,7 +8,7 @@
 #+INCLUDE: "../slidehead.org"
 # #+INCLUDE: "../printhead.org"
 
-* Workshop introduction
+* Workshop introduction						   :noexport:
 ** Who am I?
 *** Composer, programmer, nerd
     - Ph.D., music composition, Duke University (2001)
@@ -92,7 +92,7 @@ if(0.25.coin) {
     - SC3 ("SC Server")
       - Audio processing is more efficient, by handling audio in a /server/ process
 
-* SC architecture, usage
+* SC architecture, usage					   :noexport:
 ** SC is three applications
 *** Really? /Three/ applications?
     Yes. They work together:
@@ -154,9 +154,9 @@ if(0.25.coin) {
       - Server control (click on the server status)
 
 ** Code panel
-*** Run code: =Ctrl-Return=
+*** Run code: \ks{Ctrl-Return}
     - Runs a code block, selected code or the current line
-    - /Code block/: =(= at the beginning, =)= at the end
+    - /Code block/: \cd{(} at the beginning, \cd{)} at the end \\
       Convenient to run several lines at once.
 #+name: codeblock
 #+Caption: A block of code, in parentheses.
@@ -174,15 +174,16 @@ if(0.25.coin) {
 ** Code panel: Auto-completion
 *** Auto-completion
     The editor can help you type certain names and remember parameter lists.
-    1. Type =Sin=. SC knows which /classes/ begin with those letters. Choose =SinOsc=.
-    2. Type a dot. SC knows which /messages/ =SinOsc= understands. Choose =ar=.
-    3. Type =(=. SC knows the inputs of =SinOsc.ar= and shows them to you.
+    1. Type \cd{Sin}. SC knows which /classes/ begin with those letters. Choose \cd{SinOsc}.
+    2. Type a dot. SC knows which /messages/ \cd{SinOsc} understands. Choose \cd{ar}.
+    3. Type \cd{(}. SC knows the inputs of \cd{SinOsc.ar} and shows them to you.
 *** Keystrokes for auto completion:
     - Ctrl-space :: Complete a name.
-    - Ctrl-shift-space :: Complete a parameter list inside =()=.
+    - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
+* SC language: Beginning steps
 ** Let's make some noise!
-   1. Boot the audio server: =Ctrl-B= \\
+   1. Boot the audio server: \ks{Ctrl-B} \\
       See also /Language/ menu and server status. \\
       *Linux:* Start JACK before doing this.
    2. Type and run some code. \\
@@ -196,15 +197,20 @@ a = { SinOsc.ar(440, 0, 0.1).dup }.play;
 a.release;
 #+End_src
 
-** Taking it apart: Variables
-*** {1\textwidth}{3in}					      :B_overlayarea:
+** Tweak it
+*** Try changing the numbers.
+    On your own---a minute or so to experiment.
+    - Run \cd{a.release} before re-running the synth.
+    - What happens if you forget?
+      - If you forget: press \ks{Ctrl-.} to stop everything.
+      - \ks{Ctrl-.} is SC's panic button.
+*** Be careful with the third number!			       :B_alertblock:
     :PROPERTIES:
-    :BEAMER_env: overlayarea
+    :BEAMER_env: alertblock
     :END:
-    #+begin_center
-    [[./img/take-apart-01-variable.pdf]]
-    #+end_center
-**** Variables
+    If it's too high, you could hurt your ears.
+*** What do you think the numbers mean?
+
 ** Taking it apart: Functions
 *** {1\textwidth}{3in}					      :B_overlayarea:
     :PROPERTIES:
@@ -213,8 +219,74 @@ a.release;
     #+begin_center
     [[./img/take-apart-02-function.pdf]]
     #+end_center
-**** Functions
-     Text to change height
+**** A \te{function} is a block of code in curly braces.
+     - Functions can take information in through \te{arguments}.
+     - They always return one result.
+     - \te{Call} a function using \ci{value}.
+#+name: func1
+#+caption: A function to calculate a hypotenuse.
+#+begin_src {} -i
+f = { arg x, y; sqrt(x.squared + y.squared) };
+
+f.value(3, 4);  // prints "5"
+#+end_src
+# **** More about functions later.
+
+** Taking it apart: Variables
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-01-variable.pdf]]
+    #+end_center
+**** O1								  :B_onlyenv:
+     :PROPERTIES:
+     :BEAMER_env: onlyenv
+     :BEAMER_act: 1
+     :END:
+***** A \te{variable} holds an object.
+      - You must put an object in a variable if you want to address it later.
+      - We need to \ci{release} the synth. So, save the \ci{Synth} object in a variable.
+**** O2								  :B_onlyenv:
+     :PROPERTIES:
+     :BEAMER_env: onlyenv
+     :BEAMER_act: 2
+     :END:
+***** \te{Declared} variables
+      - Any function can \te{declare} variable names.
+      - Declared variables exist only inside that function! \\
+	This is called \te{local} scope.
+#+name: declarevars
+#+caption: A function that declares a variable.
+#+begin_src {} -i
+f = {
+   var random;
+   random = 10.rand;
+   random + random
+};
+#+end_src
+**** O3 							  :B_onlyenv:
+     :PROPERTIES:
+     :BEAMER_env: onlyenv
+     :BEAMER_act: 3
+     :END:
+***** \te{Interpreter} variables
+      - Single letters \cd{a}--\cd{z}. 
+      - \te{Global} scope. Interpreter variables may be used anywhere
+        (unless a function declares a single-letter variable).
+**** O4								  :B_onlyenv:
+     :PROPERTIES:
+     :BEAMER_env: onlyenv
+     :BEAMER_act: 4
+     :END:
+***** \te{Environment} variables
+      - Start with \cd{\textasciitilde}, e.g. \cd{\textasciitilde environmentVar}.
+      - Full names, like declared variables.
+      - You don't have to declare them.
+      - "Quasi-global" scope.
+***** We will use environment variables for a special purpose.
+
 ** Taking it apart: Classes
 *** {1\textwidth}{3in}					      :B_overlayarea:
     :PROPERTIES:
@@ -223,7 +295,29 @@ a.release;
     #+begin_center
     [[./img/take-apart-03-class.pdf]]
     #+end_center
-**** Classes
+**** O1								  :B_onlyenv:
+     :PROPERTIES:
+     :BEAMER_env: onlyenv
+     :BEAMER_act: 1
+     :END:
+***** A \te{class} is an \te{object type}.
+      Classes define two things:
+      - Data :: Objects remember specific information. \\
+       	E.g., a \cd{Point} knows its /x/ and /y/ coordinates.
+      - Actions :: Objects know how to do specific things. \\
+       	E.g., You can add two \ci{Point}s together: \cd{point1 + point2}. \\
+       	The \cd{Point} \te{class} declares how a Point should do \cd{+}.
+**** O2								  :B_onlyenv:
+     :PROPERTIES:
+     :BEAMER_env: onlyenv
+     :BEAMER_act: 2
+     :END:
+***** \ci{SinOsc} is a \te{Unit Generator} class.
+      - Unit generators ("UGens") are audio-processing operations in the server.
+      - UGen classes in SC language:
+	- /Name/ the audio processors.
+	- /Connect/ UGens together.
+
 ** Taking it apart: Methods
 *** {1\textwidth}{3in}					      :B_overlayarea:
     :PROPERTIES:
@@ -232,7 +326,13 @@ a.release;
     #+begin_center
     [[./img/take-apart-04-methods.pdf]]
     #+end_center
-**** Classes
+**** A \te{method} defines an action that an object can perform.
+     It's like a function, but it has a name and belongs to a class.
+     - \ci{ar} :: Makes an \te{audio rate} instance of \ci{SinOsc}.
+     - \ci{dup} :: Copies the mono signal from \ci{SinOsc} into both left and right channels.
+     - \ci{play} :: Makes a \te{synth node} from the function. \\
+       \ci{play} is one of the most important methods. Lots of things in SC know how to \ci{play}!
+
 ** Taking it apart: Arguments
 *** {1\textwidth}{3in}					      :B_overlayarea:
     :PROPERTIES:
@@ -241,4 +341,12 @@ a.release;
     #+begin_center
     [[./img/take-apart-05-args.pdf]]
     #+end_center
-**** Classes
+**** \te{Arguments} pass information into a method or function.
+     - In general, UGens take numbers or signals as inputs.
+     - They generate signals as output.
+     - \ci{SinOsc}'s arguments are:
+       - freq :: In Hz.
+       - phase :: In radians (0--$2\pi$).
+       - mul :: Amplitude.
+       - add :: An offset (generally not used for audio).
+
