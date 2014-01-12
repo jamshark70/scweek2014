@@ -9,6 +9,8 @@
 ** Numbers in ProxySpace: DC or control?
 *** DONE Changing number doesn't update proxy's source
 *** INPROG Switching back to numberproxy uses old value in set of args
+** Org/LaTeX
+*** TODO Filter to remove non-frame text
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?
