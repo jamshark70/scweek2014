@@ -116,6 +116,7 @@ if(0.25.coin) {
 ** Why separate the functions?
 *** If one component crashes, the others keep working.
     Especially important: The code window stays intact!
+*** They work together like one unit.
 
 ** Server/client design
 *** *Server/client* design
@@ -178,6 +179,66 @@ if(0.25.coin) {
     3. Type =(=. SC knows the inputs of =SinOsc.ar= and shows them to you.
 *** Keystrokes for auto completion:
     - Ctrl-space :: Complete a name.
-    - Ctrl-shift-space :: Complete a parameter list.
+    - Ctrl-shift-space :: Complete a parameter list inside =()=.
 
+** Let's make some noise!
+   1. Boot the audio server: =Ctrl-B= \\
+      See also /Language/ menu and server status. \\
+      *Linux:* Start JACK before doing this.
+   2. Type and run some code. \\
+      Just run the first line at first.
+#+name: sound1
+#+Caption: A very simple synth.
+#+Begin_src {} -i
+a = { SinOsc.ar(440, 0, 0.1).dup }.play;
 
+// To make it stop:
+a.release;
+#+End_src
+
+** Taking it apart: Variables
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-01-variable.pdf]]
+    #+end_center
+**** Variables
+** Taking it apart: Functions
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-02-function.pdf]]
+    #+end_center
+**** Functions
+     Text to change height
+** Taking it apart: Classes
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-03-class.pdf]]
+    #+end_center
+**** Classes
+** Taking it apart: Methods
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-04-methods.pdf]]
+    #+end_center
+**** Classes
+** Taking it apart: Arguments
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-05-args.pdf]]
+    #+end_center
+**** Classes
