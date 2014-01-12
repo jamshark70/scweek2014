@@ -284,23 +284,21 @@ f.value(3, 4);  // prints "5"
     #+begin_center
     [[./img/take-apart-01-variable.pdf]]
     #+end_center
-**** O1								  :B_onlyenv:
-     :PROPERTIES:
-     :BEAMER_env: onlyenv
-     :BEAMER_act: 1
-     :END:
-***** A \te{variable} holds an object.
-      - You must put an object in a variable if you want to address it later.
-      - We need to \ci{release} the synth. So, save the \ci{Synth} object in a variable.
-**** O2								  :B_onlyenv:
-     :PROPERTIES:
-     :BEAMER_env: onlyenv
-     :BEAMER_act: 2
-     :END:
-***** \te{Declared} variables
-      - Any function can \te{declare} variable names.
-      - Declared variables exist only inside that function! \\
-	This is called \te{local} scope.
+**** A \te{variable} holds an object.
+     - You must put an object in a variable if you want to address it later.
+     - We need to \ci{release} the synth. So, save the \ci{Synth} object in a variable.
+** Taking it apart: Variables
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-01-variable.pdf]]
+    #+end_center
+**** \te{Declared} variables
+     - Any function can \te{declare} variable names.
+     - Declared variables exist only inside that function! \\
+       This is called \te{local} scope.
 #+name: declarevars
 #+caption: A function that declares a variable.
 #+begin_src {} -i
@@ -310,26 +308,32 @@ f = {
    random + random
 };
 #+end_src
-**** O3 							  :B_onlyenv:
-     :PROPERTIES:
-     :BEAMER_env: onlyenv
-     :BEAMER_act: 3
-     :END:
-***** \te{Interpreter} variables
-      - Single letters \cd{a}--\cd{z}. 
-      - \te{Global} scope. Interpreter variables may be used anywhere
-        (unless a function declares a single-letter variable).
-**** O4								  :B_onlyenv:
-     :PROPERTIES:
-     :BEAMER_env: onlyenv
-     :BEAMER_act: 4
-     :END:
-***** \te{Environment} variables
-      - Start with \cd{\textasciitilde}, e.g. \cd{\textasciitilde environmentVar}.
-      - Full names, like declared variables.
-      - You don't have to declare them.
-      - "Quasi-global" scope.
-***** We will use environment variables for a special purpose.
+** Taking it apart: Variables
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-01-variable.pdf]]
+    #+end_center
+**** \te{Interpreter} variables
+     - Single letters \cd{a}--\cd{z}. 
+     - \te{Global} scope. Interpreter variables may be used anywhere
+       (unless a function declares a single-letter variable).
+** Taking it apart: Variables
+*** {1\textwidth}{3in}					      :B_overlayarea:
+    :PROPERTIES:
+    :BEAMER_env: overlayarea
+    :END:
+    #+begin_center
+    [[./img/take-apart-01-variable.pdf]]
+    #+end_center
+**** \te{Environment} variables
+     - Start with \cd{\textasciitilde}, e.g. \cd{\textasciitilde environmentVar}.
+     - Full names, like declared variables.
+     - You don't have to declare them.
+     - "Quasi-global" scope.
+**** We will use environment variables for a special purpose.
 
 ** Taking it apart: Classes
 *** {1\textwidth}{3in}					      :B_overlayarea:
