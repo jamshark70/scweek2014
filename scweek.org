@@ -12,6 +12,20 @@
 ** Org/LaTeX
 *** TODO Filter to remove non-frame text
 *** TODO Listings numbering problem with onlyenv
+*** INPROG Extract code examples
+*** TODO Index entries
+#+begin_src emacs-lisp -i
+(defun hjh-print-src-blocks ()
+  "Iterate src blocks from org-element and print them to *Messages*."
+  (interactive)
+  (let ((tree (org-element-parse-buffer)))
+    (org-element-map tree 'src-block
+      (lambda (element)
+	(message "\n\n\nELEMENT:")
+	(print (plist-get (car (cdr element)) :caption)))))
+  ""
+)
+#+end_src
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?
