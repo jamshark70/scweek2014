@@ -1,7 +1,7 @@
 #+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
 
 #+LANGUAGE:  en
-#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 #+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
@@ -14,6 +14,8 @@
 #+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
 #+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
 
+#+LATEX_HEADER: \setcounter{tocdepth}{1}
+
 #+LATEX_HEADER: \usepackage{fontspec}
 # #+LATEX_HEADER: \setmainfont[Ligatures={Common,TeX}]{Calibri}
 #+LATEX_HEADER: \setmonofont{Inconsolata}
@@ -24,7 +26,8 @@
 #+LATEX_HEADER: \setCJKmonofont{WenQuanYi Zen Hei}
 
 #+LATEX_HEADER: \usepackage{caption}
-#+LATEX_HEADER: \captionsetup[lstlisting]{font={it,scriptsize},labelfont={it,scriptsize},singlelinecheck=false}
+# #+LATEX_HEADER: \captionsetup[lstlisting]{font={it,scriptsize},labelfont={it,scriptsize},singlelinecheck=false}
+#+LATEX_HEADER: \captionsetup{font={it,scriptsize},labelfont={it,scriptsize},singlelinecheck=false}
 
 #+LATEX_HEADER: \usepackage{listings}
 
@@ -42,6 +45,14 @@
 \begin{frame}<beamer>
 \frametitle{Outline}
 \tableofcontents[currentsection]
+\end{frame}
+}
+\AtBeginSubsection[] % Do nothing for \subsection*
+{
+\begin{frame}<beamer>
+\frametitle{\insertsection}
+\begin{center}\insertsubsection\end{center}
+% \tableofcontents[currentsection,currentsubsection]
 \end{frame}
 }
 #+END_LaTeX
