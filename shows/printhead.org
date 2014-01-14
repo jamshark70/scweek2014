@@ -49,6 +49,10 @@
 #+LATEX_HEADER: \newglossary[met]{mth}{mth}{mto}{Methods}
 #+LATEX_HEADER: \makeglossaries
 
+#+LATEX_HEADER: \newcommand{\egls}[1]{\emph{\gls{#1}}}
+#+LATEX_HEADER: \newcommand{\eGls}[1]{\emph{\Gls{#1}}}
+#+LATEX_HEADER: \newcommand{\eglspl}[1]{\emph{\glspl{#1}}}
+#+LATEX_HEADER: \newcommand{\eGlspl}[1]{\emph{\Glspl{#1}}}
 #+LATEX_HEADER: \newcommand{\clss}[1]{\ci{\gls{#1}}}
 #+LATEX_HEADER: \newcommand{\mth}[1]{\ci{\gls{#1}}}
 #+LATEX_HEADER: \newcommand{\ugen}[1]{\ci{\gls{#1}}}

@@ -117,13 +117,13 @@ if(0.25.coin) {
 *** SC is three applications
 **** Really? /Three/ applications?
      Yes. They work together:
-     - =scide=: SC Integrated Development Environment
+     - \egls{scide}: SC Integrated Development Environment
        - Code editor, display, documentation
-     - =sclang=: SC language
+     - \egls{sclang}: SC language
        - IDE sends code to sclang
        - sclang runs the code, sends printed output back to IDE
-     - =scsynth=: SC synthesis server
-       - sclang sends Open Sound Control messages to scsynth
+     - \egls{scsynth}: SC synthesis server
+       - sclang sends \gls{OSC} (Open Sound Control) messages to scsynth
        - scsynth sends audio to the hardware
        - May also reply to sclang
 
@@ -144,15 +144,18 @@ if(0.25.coin) {
      - Server does heavier work (e.g., databases)
      - Client makes requests of the server
 **** How does this work for audio?
-     - *Brain:* The client (SC language) sends messages to the server \\
-       /Open Sound Control/ (OSC) protocol
+     - *Brain:* The client (SC language) sends messages to the server. \\
+       /Open Sound Control/ (\gls{OSC}) protocol
        - "Here's a /synthesis definition/."
        - "Use that definition to make noise."
      - *Brawn:* The server calculates the audio and sends to the hardware.
 
 *** Why server/client?
 **** Efficiency
-     - Synthesis definitions are /reusable/.
+     - Synthesis definitions are /reusable/. \\
+       Optimizing a \clss{SynthDef} is relatively slow. Doing this
+       once for thousands of notes is more efficient than once for
+       every note.
 **** Networked applications
      - Many clients can use the same server
 **** Not limited to SC language
@@ -210,6 +213,7 @@ if(0.25.coin) {
       *Linux:* Start JACK before doing this.
    2. Type and run some code. \\
       Just run the first line at first.
+      @@latex:\glsadd{play}\glsadd{release}\glsadd{dup}\glsadd{SinOsc}@@
 #+name: sound1
 #+Caption: A very simple synth.
 #+Begin_src {} -i
@@ -222,6 +226,7 @@ a.release;
 *** Tweak it
 **** Try changing the numbers.
      On your own---a minute or so to experiment.
+     @@latex:\glsadd{release}@@
      - Run \cd{a.release} before re-running the synth.
      - What happens if you forget?
        - If you forget: press \ks{Ctrl-.} to stop everything.
@@ -238,6 +243,7 @@ a.release;
     - Too easy to forget \cd{a.release}.
     - \clss{ProxySpace} automatically replaces the synth, instead of adding.
     - It does a lot more. We'll use it for most of the workshop.
+      @@latex:\glsadd{ProxySpace}\glsadd{VarSaw}\glsadd{dup}\glsadd{SinOsc}\glsadd{play}\glsadd{stop}@@
 #+name: ps1
 #+caption: Basic use of ProxySpace.
 #+begin_src {} -i
@@ -286,8 +292,8 @@ p.push;
      #+begin_center
      [[./img/take-apart-02-function.pdf]]
      #+end_center
-***** A \te{\gls{function}} is a block of code in curly braces.
-     - Functions can take information in through \te{\gls{arguments}}.
+***** A \egls{function} is a block of code in curly braces.
+     - Functions can take information in through \egls{arguments}.
      - They always return one result.
      - \te{Call} a function using \mth{value}.
 #+name: func1
@@ -307,7 +313,7 @@ f.value(3, 4);  // prints "5"
      #+begin_center
      [[./img/take-apart-01-variable.pdf]]
      #+end_center
-***** A \te{\gls{variable}} holds an object.
+***** A \egls{variable} holds an object.
       - You must put an object in a variable if you want to address it later.
       - We need to \mth{release} the synth. So, save the \clss{Synth} object in a variable.
 *** Taking it apart: Variables
@@ -319,9 +325,9 @@ f.value(3, 4);  // prints "5"
      [[./img/take-apart-01-variable.pdf]]
      #+end_center
 ***** \te{Declared} variables
-     - Any function can \te{declare} variable names.
+     - Any function can \egls{declare} variable names.
      - Declared variables exist only inside that function! \\
-       This is called \te{local} scope.
+       This is called \egls{local} scope.
 #+name: declarevars
 #+caption: A function that declares a variable.
 #+begin_src {} -i
@@ -339,9 +345,9 @@ f = {
      #+begin_center
      [[./img/take-apart-01-variable.pdf]]
      #+end_center
-***** \te{Interpreter} variables
+***** \eGls{interpreter} variables
       - Single letters \cd{a}--\cd{z}. 
-      - \te{Global} scope. Interpreter variables may be used anywhere
+      - \eGls{global} scope. Interpreter variables may be used anywhere
        	(unless a function declares a single-letter variable).
 *** Taking it apart: Variables
 **** {1\textwidth}{3in}					      :B_overlayarea:
@@ -351,7 +357,7 @@ f = {
      #+begin_center
      [[./img/take-apart-01-variable.pdf]]
      #+end_center
-***** \te{Environment} variables
+***** \eGls{environment} variables
       - Start with \cd{\textasciitilde}, e.g. \cd{\textasciitilde environmentVar}.
       - Full names, like declared variables.
       - You don't have to declare them.
@@ -371,7 +377,7 @@ f = {
       :BEAMER_env: onlyenv
       :BEAMER_act: 1
       :END:
-****** A \te{\gls{class}} is an \te{object type}.
+****** A \egls{class} is an \te{object type}.
        Classes define two things:
        - Data :: Objects remember specific information. \\
        	 E.g., a \cd{Point} knows its /x/ and /y/ coordinates.
@@ -383,7 +389,7 @@ f = {
       :BEAMER_env: onlyenv
       :BEAMER_act: 2
       :END:
-****** \ugen{SinOsc} is a \te{\gls{UGen}} (Unit Generator) class.
+****** \ugen{SinOsc} is a \egls{UGen} (Unit Generator) class.
        - Unit generators are audio-processing operations in the server.
        - UGen classes in SC language:
 	 - /Name/ the audio processors.
@@ -397,7 +403,7 @@ f = {
      #+begin_center
      [[./img/take-apart-04-methods.pdf]]
      #+end_center
-***** A \te{\gls{method}} defines an action that an object can perform.
+***** A \egls{method} defines an action that an object can perform.
       It's like a function, but it has a name and belongs to a class.
       - \mth{ar} :: Makes an \te{audio rate} instance of \ugen{SinOsc}.
       - \mth{dup} :: Copies the mono signal from \ugen{SinOsc} into both left and right channels.
@@ -412,7 +418,7 @@ f = {
      #+begin_center
      [[./img/take-apart-05-args.pdf]]
      #+end_center
-***** \te{\Gls{arguments}} pass information into a method or function.
+***** \eGls{arguments} pass information into a method or function.
       - In general, UGens take numbers or signals as inputs.
       - They generate signals as output.
       - \ugen{SinOsc}'s arguments are:
@@ -425,13 +431,14 @@ f = {
 **** \te{Syntax}: Rules defining "legal" expressions.
 E.g., \cd{x + y} is legal, while \cd{x y + 3} is not. You can't have \cd{x} and \cd{y} next to each other with only a space in between.
 **** SC language syntax is all about /calling methods/.
-Everything happens in SC through method calls. *Everything.*
+Everything happens in SC through method calls. *Everything.*\\
+(Except variable \egls{assignment}: \cd{x = 1}.)
 
 *** Parts of a method call
 **** A \gls{method call} consists of three parts:
-    - Receiver :: The object that will perform the method.
-    - Selector :: The method's name.
-    - Arguments :: Additional input (optional).
+    - \Gls{receiver} :: The object that will perform the method.
+    - \Gls{selector} :: The method's name.
+    - \Gls{arguments} :: Additional input (optional).
 \\
 In \cd{SinOsc.ar(440)}:
     - Receiver = the class \cd{SinOsc}
@@ -454,8 +461,8 @@ In \cd{SinOsc.ar(440)}:
 #+end_src
 
 *** Beginning usage: Summary 1
-**** Write audio processing into \te{functions}.
-     - These functions should create UGens: \cd{SinOsc.ar} or \cd{.kr}.
+**** Write audio processing into \eglspl{function}.
+     - These functions should create \eglspl{UGen}: \cd{SinOsc.ar} or \cd{.kr}.
      - \cd{aFunction.play} /adds/ new synthesis into the server.
 **** \clss{ProxySpace} for plug-and-play.
      - Automatically turns functions into synthesis.
@@ -465,14 +472,14 @@ In \cd{SinOsc.ar(440)}:
      - Connect them by using the environment variable in another UGen's inputs.
 
 *** Beginning usage: Summary 2
-**** \te{Unit Generators} ("UGens")
+**** \eglspl{UGen} (Unit Generators)
      - Input signals \to UGen \to Output signal
      - Connections: UGen A's output \to UGen B's input
 **** Important SC language concepts
-     - Class :: An object definition: /Data/ and /actions/
-     - Method :: An action that an object that knows how to perform.
-     - Variable :: A placeholder for an object (a reference to it).
-     - Argument :: The input to a function or method. UGens are created by the \ci{ar} and \ci{kr} methods; here is where you write the input signals.
+     - \gls{class} :: An object definition: /Data/ and /actions/
+     - \gls{method} :: An action that an object that knows how to perform.
+     - \gls{variable} :: A placeholder for an object (a reference to it).
+     - \gls{arguments} :: Inputs to a function or method. UGens are created by the \ci{ar} and \ci{kr} methods; here is where you write the input signals.
 
 *** Next: Synthesis techniques
     Now we know enough to start exploring standard synthesis techniques.
@@ -489,9 +496,9 @@ In \cd{SinOsc.ar(440)}:
 *** Main idea of subtractive synthesis
 **** /Take away/ (subtract) from a basic waveform
      Components
-     - Oscillator :: Produces a waveform with lots of harmonics
-     - Filter :: Takes away parts of the spectrum
-
+     - \Gls{oscillator} :: Produces a waveform with lots of harmonics
+     - \Gls{filter} :: Takes away parts of the spectrum
+# @@latex:\glsadd{Saw}\glsadd{LPF}@@
 *** Simple translation into SC
 #+Name: sub1
 #+Caption: Oscillator and filter, the basis of subtractive synthesis.
@@ -509,16 +516,16 @@ p.push;
 p.clear;
 #+End_src
 **** New UGens
-     - Saw :: A \te{band-limited} sawtooth oscillator
-     - LPF :: A Low-Pass Filter
+     - \ugen{Saw} :: A \egls{band-limited} sawtooth oscillator
+     - \ugen{LPF} :: A Low-Pass Filter
 
 *** Syntax alert! Arguments
-**** Function arguments using vertical pipe characters
+**** Function \gls{arguments} using vertical pipe characters
      \cd{|ffreq = 2000|} means the same as \cd{arg ffreq = 2000;}.
      - ffreq :: The argument name.
      - 2000 :: The argument's default value.
 **** Arguments are magical in synthesis functions.
-     - They automatically become \te{control inputs}.
+     - They automatically become \gls{control inputs}.
      - You can set the value from outside, and it changes the sound inside.
      - One synthesis function can make many frequencies, amplitudes, filtering behaviors etc.
 
@@ -541,6 +548,7 @@ p.clear;
 
 *** Mapping interfaces to meaningful ranges
 **** A user interface should map the physical range onto the meaningful range.
+#+latex: \glsadd{addSpec}
      - In SC, sliders etc. always have the range 0.0--1.0.
      - A range \te{specification} tells SC the desired range.
      - @@latex:\cd{\textasciitilde filter.addSpec(\textbackslash ffreq,
@@ -568,14 +576,15 @@ p.clear;
 
 ** Analog-style oscillators
 *** Sawtooth oscillator
-**** A geometric sawtooth is made of straight lines.
+**** A geometric \gls{sawtooth} is made of straight lines.
     This is a problem for digital audio.
     - The sharp corners produce theoretically infinite frequencies.
     - Digital audio cannot represent infinite frequencies!
     - Frequencies above the limit fold back into the audio
-      range. Sounds ugly. This is called \te{aliasing}.
+      range. Sounds ugly. This is called \egls{aliasing}.
     - Band-limited oscillators keep all the frequencies in the safe
       range.
+#+latex: \glsadd{LFSaw}\glsadd{Saw}
 #+Name: bandlim1
 #+Caption: Compare geometric vs. band-limited waves, visually. LFSaw parameters are to match the Saw plot more closely. Maximize the window after running.
 #+Begin_src {} -i
@@ -589,6 +598,7 @@ p.clear;
     :END:
     The high frequency is pretty irritating, but necessary to make the
     aliasing really obvious.
+#+latex: \glsadd{LFSaw}\glsadd{Saw}
 #+Name: bandlim2
 #+Caption: Compare geometric vs. band-limited waves, aurally.
 #+Begin_src {} -i
@@ -606,6 +616,7 @@ p.clear;
      The geometric waveforms are OK for control signals.
 
 *** Other typical waveforms
+#+latex: \glsadd{pulse wave}\glsadd{triangle wave}
    #+begin_center
    #+attr_latex: :height 2in
    [[./img/three-waves2.png]]
@@ -615,10 +626,11 @@ in a sawtooth or pulse wave. So there is no band-limited triangle UGen
 in SC.
 
 *** Pulse width
-**** Pulse wave: Up and down times can differ
-    - If equal, the pulse width is 0.5 (50%). \\
-      This is a \te{square wave}.
+**** \Gls{pulse wave}: Up and down times can differ
+    - If equal, the \egls{pulse width} is 0.5 (50%). \\
+      This is a \egls{square wave}.
     - If unequal, the sound is brighter and thinner.
+#+latex: \glsadd{Pulse}\glsadd{VarSaw}
 #+Name: bandlim2
 #+Caption: Hear the effect of changing the pulse width.
 #+Begin_src {} -i
@@ -639,7 +651,8 @@ p.clear;
 
 ** Filters
 *** Filters
-**** We identify filters based on their \te{frequency response}.
+#+latex: \glsadd{Saw}\glsadd{LPF}\glsadd{HPF}
+**** We identify filters based on their \egls{frequency response}.
 Filters affect some frequencies more than others.
 #+Name: filt1
 #+Caption: Watch and listen to the effect of different filter types.
@@ -679,10 +692,11 @@ s.freqscope;
 
 *** BPF: Bandwidth
 **** \ugen{BPF} needs to know how wide a band.
-    - Set by \te{Q}: the filter's \te{quality}.
+    - Set by \egls{Q}: the filter's \egls{quality}.
     - Higher Q, narrower band.
     - SC uses \ci{rq} = $\frac{1}{Q}$ because multiplication is faster than division.
 Close the old GUI window, and try different \ci{rq} values.
+#+latex: \glsadd{BPF}
 #+Name: filtbw
 #+Caption: Move rq and ffreq, and hear the effect.
 #+Begin_src {} -i
@@ -700,6 +714,7 @@ Close the old GUI window, and try different \ci{rq} values.
     - At high cutoff frequencies, sounds like whistling.
     - \te{Q} behaves as in \ugen{BPF}: \\
       Low \ci{rq} $\longleftrightarrow$ High \te{Q} $\longleftrightarrow$ More resonance
+#+latex: \glsadd{RLPF}
 #+Name: rlpf
 #+Caption: Move rq and ffreq, and hear the lowpass-filter effect.
 #+Begin_src {} -i

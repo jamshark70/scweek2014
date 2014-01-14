@@ -1,14 +1,40 @@
 * Glossary							   :noexport:
 #+name: gloss01
-| Term        | Description                                                                                                                                                        |
-|-------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| function    | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object |
-| variable    | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                    |
-| class       | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                         |
-| method      | An action which an object can perform. Very similar to a function, but it belongs to a class and has a name                                                        |
-| arguments   | Inputs to a function or method, provided at the time of calling it                                                                                                 |
-| method call | A request to an object to perform one of its predefined actions. It consists of three parts: receiver, selector and arguments                                      |
-| UGen        | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                             |
+| Term               | Description                                                                                                                                                                 |
+|--------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| function           | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object          |
+| variable           | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                             |
+| class              | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                                  |
+| method             | An action which an object can perform. Very similar to a function, but it belongs to a class and has a name                                                                 |
+| arguments          | Inputs to a function or method, provided at the time of calling it                                                                                                          |
+| method call        | A request to an object to perform one of its predefined actions. It consists of three parts: receiver, selector and arguments                                               |
+| UGen               | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                      |
+| OSC                | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                         |
+| scide              | SuperCollider Integrated Development Environment. The main code-interaction interface                                                                                       |
+| sclang             | SuperCollider language. Evaluates code and displays results                                                                                                                 |
+| scsynth            | SuperCollider synthesis server. Receives OSC messages and produces audio                                                                                                    |
+| declare            | Of a variable, to define its name and initial value using a ``var'' statement                                                                                               |
+| local              | Referring to a variable that exists only within a class, method or function definition. The variable is completely unavailable outside that scope                           |
+| global             | Referring to a variable that is available everywhere in the system. Interpreter variables a--z are global                                                                   |
+| interpreter        | Referring to the single-letter variables a--z                                                                                                                               |
+| environment        | Named storage for objects, which can be retrieved using the convenient variable-like syntax \textasciitilde name                                                            |
+| assignment         | To replace a variable's current value with a new object. Written ``name = value''                                                                                           |
+| receiver           | In a method call, the object that determines which method definition is used                                                                                                |
+| selector           | In a method call, the method's name                                                                                                                                         |
+| oscillator         | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                                  |
+| filter             | A signal processor that changes a sound's spectrum                                                                                                                          |
+| band-limited       | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                                  |
+| control inputs     | Arguments of a synthesis function. The server exposes them as settable controls                                                                                             |
+| aliasing           | In digital sampling, frequencies above the Nyquist frequency ``fold over'' and are heard as lower frequencies. This is ``aliasing''                                         |
+| Nyquist            | In digital sampling, the highest possible frequency is $\frac{sr}{2}$, where $sr$ is the sampling rate                                                                      |
+| sawtooth           | A waveform that makes a ramp in one direction and a sudden jump in the other, looking somewhat like teeth of a saw                                                          |
+| pulse wave         | A waveform that jumps suddenly up and down and stays flat in between                                                                                                        |
+| pulse width        | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                                    |
+| square wave        | A pulse wave with a width of 50\%                                                                                                                                           |
+| triangle wave      | A waveform made of straight, diagonal lines up and down                                                                                                                     |
+| frequency response | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                              |
+| Q                  | Short for a filter's ``quality''                                                                                                                                            |
+| quality            | The ``precision'' of a filter. High Q produces sharp slopes in the frequency response, narrower bandwidth and higher resonance. Mathematically, $\frac{f_c}{\Delta f}$      |
 
 * Classes 							   :noexport:
 #+name: class01
@@ -18,17 +44,21 @@
 | NodeProxy   | A hot-swappable placeholder for a Synth on the server                                                        |
 | Synth       | Represents a synthesis node on the server                                                                    |
 | ControlSpec | Defines a numeric range, with low and high values, a curve, step size (for quantization) and a default value |
+| SynthDef    | A Synthesis Definition. A fixed collection of unit generators, defining specific signal paths among them     |
 
 * Methods							   :noexport:
 #+name: mth01
 | Term    | Description                                                                                                                                                       |
 |---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | play    | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
+| stop    | Stop a process that was previously started by ``play''                                                                                                            |
 | value   | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
 | release | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
 | dup     | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(2)'' becomes ``[1, 1, 1]'' and so on                                                                   |
 | ar      | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
 | kr      | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
+| push    | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
+| addSpec | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
 
 * UGens								   :noexport:
 #+name: ugens01
