@@ -47,7 +47,7 @@
 #+LATEX_HEADER: \usepackage{glossaries}
 #+LATEX_HEADER: \newglossary[ugi]{ugen}{ugn}{ugo}{Unit Generators}
 #+LATEX_HEADER: \newglossary[cls]{class}{cla}{clo}{Classes}
-#+LATEX_HEADER: \newglossary[met]{ugen}{mth}{mto}{Methods}
+#+LATEX_HEADER: \newglossary[met]{mth}{mth}{mto}{Methods}
 #+LATEX_HEADER: \makeglossaries
 
 #+BEGIN_LaTeX
