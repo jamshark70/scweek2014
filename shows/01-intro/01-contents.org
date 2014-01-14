@@ -8,17 +8,15 @@
 # #+INCLUDE: "../slidehead.org"
 #+INCLUDE: "../printhead.org"
 
-#+LATEX_HEADER: \newglossaryentry{SinOsc}{type=ugen,name={SinOsc},description={Sinewave oscillator. Inputs: (freq, phase)}}
-#+LATEX_HEADER: \newglossaryentry{VarSaw}{type=ugen,name={VarSaw},description={Sawtooth oscillator with variable duty cycle. Not band-limited. Inputs: (freq, iphase, width)}}
-#+LATEX_HEADER: \newglossaryentry{LFNoise1}{type=ugen,name={LFNoise1},description={Random number generator, linear interpolation. Inputs: (freq)}}
-#+LATEX_HEADER: \newglossaryentry{Saw}{type=ugen,name={Saw},description={Band-limited sawtooth oscillator. Inputs: (freq)}}
-#+LATEX_HEADER: \newglossaryentry{LPF}{type=ugen,name={LPF},description={Butterworth lowpass filter. Inputs: (in, freq)}}
-#+LATEX_HEADER: \newglossaryentry{LFSaw}{type=ugen,name={LFSaw},description={Non-band-limited sawtooth oscillator. Inputs: (freq, iphase)}}
-#+LATEX_HEADER: \newglossaryentry{Pulse}{type=ugen,name={Pulse},description={Band-limited pulse wave oscillator. Inputs: (freq, width)}}
-#+LATEX_HEADER: \newglossaryentry{HPF}{type=ugen,name={HPF},description={Butterworth highpass filter. Inputs: (in, freq)}}
-#+LATEX_HEADER: \newglossaryentry{BPF}{type=ugen,name={BPF},description={Bandpass filter. Inputs: (in, freq, rq)}}
-#+LATEX_HEADER: \newglossaryentry{RLPF}{type=ugen,name={RLPF},description={Resonant lowpass filter. Inputs: (in, freq, rq)}}
-#+LATEX_HEADER: \newglossaryentry{RHPF}{type=ugen,name={RHPF},description={Resonant highpass filter. Inputs: (in, freq, rq)}}
+# #+include: "01-glossary.org"
+
+* Glossary entries				   :B_ignoreheading:noexport:
+  :PROPERTIES:
+  :BEAMER_env: ignoreheading
+  :END:
+Where are my damn results?
+#+call: ugengloss01
+#+results: ugengloss01
 
 * Workshop introduction						   :noexport:
 *** Who am I?
@@ -722,7 +720,7 @@ Close the old GUI window, and try different \ci{rq} values.
      - \ci{RLPF}, \ci{RHPF}, and \ci{BPF} all have a \ci{rq} input.
 ** Standard synthesizer components
 
-* Glossary
+* Glossary							   :noexport:
 ** UGens
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}

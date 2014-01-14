@@ -1,0 +1,54 @@
+* Glossary							   :noexport:
+#+name: gloss01
+| Term | Description | Plural | Sort |
+|------+-------------+--------+------|
+|      |             |        |      |
+
+* UGens								   :noexport:
+#+name: ugens01
+| Type | Term     | Description                                                    | Arguments           |
+|------+----------+----------------------------------------------------------------+---------------------|
+| Osc  | SinOsc   | Sinewave oscillator                                            | freq, phase         |
+| Osc  | VarSaw   | Sawtooth oscillator with variable duty cycle. Not band-limited | freq, iphase, width |
+| Osc  | LFNoise1 | Random number generator, linear interpolation                  | freq                |
+| Osc  | Saw      | Band-limited sawtooth oscillator                               | freq                |
+| Filt | LPF      | Butterworth lowpass filter                                     | in, freq            |
+| Osc  | LFSaw    | Non-band-limited sawtooth oscillator                           | freq, iphase        |
+| Osc  | Pulse    | Band-limited pulse wave oscillator                             | freq, width         |
+| Filt | HPF      | Butterworth highpass filter                                    | in, freq            |
+| Filt | BPF      | Bandpass filter                                                | in, freq, rq        |
+| Filt | RLPF     | Resonant lowpass filter                                        | in, freq, rq        |
+| Filt | RHPF     | Resonant highpass filter                                       | in, freq, rq        |
+
+#+name: ugengloss01
+#+begin_src emacs-lisp :var tbl=ugens01 :exports results
+(let ((str ""))
+  (pop tbl)
+  (pop tbl)
+  (while tbl
+    (let ((item (car tbl)))
+      (pop item)
+      (setq str (concat str (format "\\newglossaryentry{%s}{type=ugen,name={%s},description={%s. Inputs: (%s)}}\n"
+  		   (car item)
+  		   (pop item)
+  		   (pop item)
+  		   (car item))))
+      (setq tbl (cdr tbl))))
+  (print str) "")
+#+end_src
+
+#+RESULTS: ugengloss01
+#+begin_example
+#+LATEX_HEADER: \newglossaryentry{SinOsc}{type=ugen,name={SinOsc},description={Sinewave oscillator. Inputs: (freq, phase)}}
+#+LATEX_HEADER: \newglossaryentry{VarSaw}{type=ugen,name={VarSaw},description={Sawtooth oscillator with variable duty cycle. Not band-limited. Inputs: (freq, iphase, width)}}
+#+LATEX_HEADER: \newglossaryentry{LFNoise1}{type=ugen,name={LFNoise1},description={Random number generator, linear interpolation. Inputs: (freq)}}
+#+LATEX_HEADER: \newglossaryentry{Saw}{type=ugen,name={Saw},description={Band-limited sawtooth oscillator. Inputs: (freq)}}
+#+LATEX_HEADER: \newglossaryentry{LPF}{type=ugen,name={LPF},description={Butterworth lowpass filter. Inputs: (in, freq)}}
+#+LATEX_HEADER: \newglossaryentry{LFSaw}{type=ugen,name={LFSaw},description={Non-band-limited sawtooth oscillator. Inputs: (freq, iphase)}}
+#+LATEX_HEADER: \newglossaryentry{Pulse}{type=ugen,name={Pulse},description={Band-limited pulse wave oscillator. Inputs: (freq, width)}}
+#+LATEX_HEADER: \newglossaryentry{HPF}{type=ugen,name={HPF},description={Butterworth highpass filter. Inputs: (in, freq)}}
+#+LATEX_HEADER: \newglossaryentry{BPF}{type=ugen,name={BPF},description={Bandpass filter. Inputs: (in, freq, rq)}}
+#+LATEX_HEADER: \newglossaryentry{RLPF}{type=ugen,name={RLPF},description={Resonant lowpass filter. Inputs: (in, freq, rq)}}
+#+LATEX_HEADER: \newglossaryentry{RHPF}{type=ugen,name={RHPF},description={Resonant highpass filter. Inputs: (in, freq, rq)}}
+#+end_example
+
