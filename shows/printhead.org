@@ -42,13 +42,16 @@
 #+LATEX_HEADER: \newcommand{\ci}[1]{\mbox{\texttt{#1}}}
 #+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
 #+LATEX_HEADER: \newcommand{\ks}[1]{\framebox[1.05\width]{\texttt{#1}}}
-#+LATEX_HEADER: \newcommand{\ugen}[1]{\ci{\gls{#1}}}
 
 #+LATEX_HEADER: \usepackage{glossaries}
 #+LATEX_HEADER: \newglossary[ugi]{ugen}{ugn}{ugo}{Unit Generators}
 #+LATEX_HEADER: \newglossary[cls]{class}{cla}{clo}{Classes}
 #+LATEX_HEADER: \newglossary[met]{mth}{mth}{mto}{Methods}
 #+LATEX_HEADER: \makeglossaries
+
+#+LATEX_HEADER: \newcommand{\clss}[1]{\ci{\gls{#1}}}
+#+LATEX_HEADER: \newcommand{\mth}[1]{\ci{\gls{#1}}}
+#+LATEX_HEADER: \newcommand{\ugen}[1]{\ci{\gls{#1}}}
 
 #+BEGIN_LaTeX
 \mode<article>{\setbeamertemplate{frametitle}{%

@@ -22,6 +22,10 @@
 #+call: makegloss01(tbl=class01,glosstype="class") :results value latex
 #+results: classgloss01
 
+#+name: mthgloss01
+#+call: makegloss01(tbl=mth01,glosstype="mth") :results value latex
+#+results: mthgloss01
+
 #+call: ugengloss01
 #+results: ugengloss01
 
@@ -230,9 +234,9 @@ a.release;
 **** What do you think the numbers mean?
 
 *** Easier tweaking: ProxySpace
-**** \ci{ProxySpace} makes it safer to play around.
+**** \clss{ProxySpace} makes it safer to play around.
     - Too easy to forget \cd{a.release}.
-    - \ci{ProxySpace} automatically replaces the synth, instead of adding.
+    - \clss{ProxySpace} automatically replaces the synth, instead of adding.
     - It does a lot more. We'll use it for most of the workshop.
 #+name: ps1
 #+caption: Basic use of ProxySpace.
@@ -282,10 +286,10 @@ p.push;
      #+begin_center
      [[./img/take-apart-02-function.pdf]]
      #+end_center
-***** A \te{function} is a block of code in curly braces.
-     - Functions can take information in through \te{arguments}.
+***** A \te{\gls{function}} is a block of code in curly braces.
+     - Functions can take information in through \te{\gls{arguments}}.
      - They always return one result.
-     - \te{Call} a function using \ci{value}.
+     - \te{Call} a function using \mth{value}.
 #+name: func1
 #+caption: A function to calculate a hypotenuse.
 #+begin_src {} -i
@@ -303,9 +307,9 @@ f.value(3, 4);  // prints "5"
      #+begin_center
      [[./img/take-apart-01-variable.pdf]]
      #+end_center
-***** A \te{variable} holds an object.
+***** A \te{\gls{variable}} holds an object.
       - You must put an object in a variable if you want to address it later.
-      - We need to \ci{release} the synth. So, save the \ci{Synth} object in a variable.
+      - We need to \mth{release} the synth. So, save the \clss{Synth} object in a variable.
 *** Taking it apart: Variables
 **** {1\textwidth}{3in}					      :B_overlayarea:
      :PROPERTIES:
@@ -367,7 +371,7 @@ f = {
       :BEAMER_env: onlyenv
       :BEAMER_act: 1
       :END:
-****** A \te{class} is an \te{object type}.
+****** A \te{\gls{class}} is an \te{object type}.
        Classes define two things:
        - Data :: Objects remember specific information. \\
        	 E.g., a \cd{Point} knows its /x/ and /y/ coordinates.
@@ -379,8 +383,8 @@ f = {
       :BEAMER_env: onlyenv
       :BEAMER_act: 2
       :END:
-****** \ugen{SinOsc} is a \te{Unit Generator} class.
-       - Unit generators ("UGens") are audio-processing operations in the server.
+****** \ugen{SinOsc} is a \te{\gls{UGen}} (Unit Generator) class.
+       - Unit generators are audio-processing operations in the server.
        - UGen classes in SC language:
 	 - /Name/ the audio processors.
 	 - /Connect/ UGens together.
@@ -393,12 +397,12 @@ f = {
      #+begin_center
      [[./img/take-apart-04-methods.pdf]]
      #+end_center
-***** A \te{method} defines an action that an object can perform.
+***** A \te{\gls{method}} defines an action that an object can perform.
       It's like a function, but it has a name and belongs to a class.
-      - \ci{ar} :: Makes an \te{audio rate} instance of \ugen{SinOsc}.
-      - \ci{dup} :: Copies the mono signal from \ugen{SinOsc} into both left and right channels.
-      - \ci{play} :: Makes a \te{synth node} from the function. \\
-       	\ci{play} is one of the most important methods. Lots of things in SC know how to \ci{play}!
+      - \mth{ar} :: Makes an \te{audio rate} instance of \ugen{SinOsc}.
+      - \mth{dup} :: Copies the mono signal from \ugen{SinOsc} into both left and right channels.
+      - \mth{play} :: Makes a \te{synth node} from the function. \\
+       	\mth{play} is one of the most important methods. Lots of things in SC know how to \ci{play}!
 
 *** Taking it apart: Arguments
 **** {1\textwidth}{3in}					      :B_overlayarea:
@@ -408,7 +412,7 @@ f = {
      #+begin_center
      [[./img/take-apart-05-args.pdf]]
      #+end_center
-***** \te{Arguments} pass information into a method or function.
+***** \te{\Gls{arguments}} pass information into a method or function.
       - In general, UGens take numbers or signals as inputs.
       - They generate signals as output.
       - \ugen{SinOsc}'s arguments are:
@@ -424,7 +428,7 @@ E.g., \cd{x + y} is legal, while \cd{x y + 3} is not. You can't have \cd{x} and 
 Everything happens in SC through method calls. *Everything.*
 
 *** Parts of a method call
-**** Method calls consist of three parts:
+**** A \gls{method call} consists of three parts:
     - Receiver :: The object that will perform the method.
     - Selector :: The method's name.
     - Arguments :: Additional input (optional).
@@ -453,7 +457,7 @@ In \cd{SinOsc.ar(440)}:
 **** Write audio processing into \te{functions}.
      - These functions should create UGens: \cd{SinOsc.ar} or \cd{.kr}.
      - \cd{aFunction.play} /adds/ new synthesis into the server.
-**** \ci{ProxySpace} for plug-and-play.
+**** \clss{ProxySpace} for plug-and-play.
      - Automatically turns functions into synthesis.
      - Reassigning an environment variable /replaces/ synthesis.
 **** \te{Modular} style of writing.
@@ -550,7 +554,7 @@ p.clear;
        /multiplying/, not adding).
 
 *** Writing ranges in SC
-    - Long form: \class{ControlSpec}(low, high, curve, step, default)
+    - Long form: \clss{ControlSpec}(low, high, curve, step, default)
     - Short form: \cd{[low, high, curve, step, default]}
 **** Curves
      - \ci{\textbackslash lin} :: Linear.
@@ -728,9 +732,15 @@ Close the old GUI window, and try different \ci{rq} values.
 ** Standard synthesizer components
 
 * Glossary
-** UGens
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
+** Concepts
+#+LaTeX: \printglossary[type=main]
+** Classes
+#+LaTeX: \printglossary[type=class]
+** Methods
+#+LaTeX: \printglossary[type=mth]
+** UGens
 # #+LaTeX: \glsaddall
 #+LaTeX: \printglossary[type=ugen]
 # #+LaTeX: \printglossaries
