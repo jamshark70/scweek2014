@@ -14,6 +14,8 @@
 *** TODO Listings numbering problem with onlyenv
 *** INPROG Extract code examples
 *** TODO Index entries
+*** TODO Glossary
+*** DONE Why do subsections become frames in beamerarticle?
 #+begin_src emacs-lisp -i
 (defun hjh-print-src-blocks ()
   "Iterate src blocks from org-element and print them to *Messages*."
@@ -87,6 +89,10 @@
    - Related
      - Formant synthesis (Formlet)
      - Banded waveguides (feedback delays)
+* Glossary decisions [0/3]
+  - [ ] range
+  - [ ] Nyquist
+  - [ ] 
 * Overview (MD export)
   :PROPERTIES:
   :EXPORT_TITLE: Synthesis and Performance with SuperCollider
