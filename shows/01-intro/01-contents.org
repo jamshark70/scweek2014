@@ -15,6 +15,13 @@
   :BEAMER_env: ignoreheading
   :END:
 
+#+call: makegloss01
+#+results: makegloss01
+
+#+name: classgloss01
+#+call: makegloss01(tbl=class01,glosstype="class") :results value latex
+#+results: classgloss01
+
 #+call: ugengloss01
 #+results: ugengloss01
 

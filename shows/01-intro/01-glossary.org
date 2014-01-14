@@ -2,11 +2,11 @@
 #+name: gloss01
 | Term     | Description |
 |----------+-------------|
-| Function |             |
-| Variable |             |
-| Class    |             |
-| Method   |             |
-| Argument |             |
+| Function | a           |
+| Variable | b           |
+| Class    | c           |
+| Method   | d           |
+| Argument | e           |
 
 * Classes 							   :noexport:
 #+name: class01
@@ -16,7 +16,7 @@
 | NodeProxy  | A hot-swappable placeholder for a Synth on the server                    |
 | Synth      | Represents a synthesis node on the server                                |
 
-* Methods
+* Methods							   :noexport:
 #+name: mth01
 | Term | Description |
 |------+-------------|
@@ -37,6 +37,24 @@
 | Filt | BPF      | Bandpass filter                                                | in, freq, rq        |
 | Filt | RLPF     | Resonant lowpass filter                                        | in, freq, rq        |
 | Filt | RHPF     | Resonant highpass filter                                       | in, freq, rq        |
+
+#+name: makegloss01
+#+begin_src emacs-lisp :var tbl=gloss01 glosstype='nil :exports results :results value latex
+(let ((str "")
+      (gltype (if glosstype (format "type=%s," glosstype) "")))
+  (pop tbl)
+  (pop tbl)
+  (while tbl
+    (let ((item (pop tbl)))
+      (setq str
+	    (concat str
+		    (format "\\newglossaryentry{%s}{%sname={%s},description={%s.}}\n"
+			    (car item)
+			    gltype
+			    (pop item)
+			    (car item))))))
+  str)
+#+end_src
 
 #+name: ugengloss01
 #+begin_src emacs-lisp :var tbl=ugens01 :exports results :results value latex
