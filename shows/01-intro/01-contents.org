@@ -8,17 +8,17 @@
 # #+INCLUDE: "../slidehead.org"
 #+INCLUDE: "../printhead.org"
 
-# #+include: "01-glossary.org"
+#+include: "01-glossary.org"
 
-* Glossary entries				   :B_ignoreheading:noexport:
+* Resume export						    :B_ignoreheading:
   :PROPERTIES:
   :BEAMER_env: ignoreheading
   :END:
-Where are my damn results?
+
 #+call: ugengloss01
 #+results: ugengloss01
 
-* Workshop introduction						   :noexport:
+* Workshop introduction
 *** Who am I?
 **** Composer, programmer, nerd
      - Ph.D., music composition, Duke University (2001)
@@ -102,7 +102,7 @@ if(0.25.coin) {
      - SC3 ("SC Server")
        - Audio processing is more efficient, by handling audio in a /server/ process
 
-* SC architecture, usage					   :noexport:
+* SC architecture, usage
 *** SC is three applications
 **** Really? /Three/ applications?
      Yes. They work together:
@@ -191,7 +191,7 @@ if(0.25.coin) {
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps					   :noexport:
+* SC language: Beginning steps
 ** Making noise
 *** Let's make some noise!
    1. Boot the audio server: \ks{Ctrl-B} \\
@@ -372,7 +372,7 @@ f = {
       :BEAMER_env: onlyenv
       :BEAMER_act: 2
       :END:
-****** \ci{SinOsc} is a \te{Unit Generator} class.
+****** \ugen{SinOsc} is a \te{Unit Generator} class.
        - Unit generators ("UGens") are audio-processing operations in the server.
        - UGen classes in SC language:
 	 - /Name/ the audio processors.
@@ -388,8 +388,8 @@ f = {
      #+end_center
 ***** A \te{method} defines an action that an object can perform.
       It's like a function, but it has a name and belongs to a class.
-      - \ci{ar} :: Makes an \te{audio rate} instance of \ci{SinOsc}.
-      - \ci{dup} :: Copies the mono signal from \ci{SinOsc} into both left and right channels.
+      - \ci{ar} :: Makes an \te{audio rate} instance of \ugen{SinOsc}.
+      - \ci{dup} :: Copies the mono signal from \ugen{SinOsc} into both left and right channels.
       - \ci{play} :: Makes a \te{synth node} from the function. \\
        	\ci{play} is one of the most important methods. Lots of things in SC know how to \ci{play}!
 
@@ -404,7 +404,7 @@ f = {
 ***** \te{Arguments} pass information into a method or function.
       - In general, UGens take numbers or signals as inputs.
       - They generate signals as output.
-      - \ci{SinOsc}'s arguments are:
+      - \ugen{SinOsc}'s arguments are:
        	- freq :: In Hz.
        	- phase :: In radians (0--$2\pi$).
        	- mul :: Amplitude.
@@ -520,7 +520,7 @@ p.clear;
 *** Manipulating ranges
 **** A UGen's \te{output range} is one of its most important characteristics.
      - Controlling synthesis is about manipulating these ranges.
-     - \ci{SinOsc}'s range is \te{bipolar}: $-1.0$--$1.0$.
+     - \ugen{SinOsc}'s range is \te{bipolar}: $-1.0$--$1.0$.
      - Multiply by 0.5; now the range is $-0.5$--$0.5$.
      - Add 1; now the range is $0.5$--$1.5$.
 **** Key questions:
@@ -543,7 +543,7 @@ p.clear;
        /multiplying/, not adding).
 
 *** Writing ranges in SC
-    - Long form: \cd{ControlSpec(low, high, curve, step, default)}
+    - Long form: \class{ControlSpec}(low, high, curve, step, default)
     - Short form: \cd{[low, high, curve, step, default]}
 **** Curves
      - \ci{\textbackslash lin} :: Linear.
@@ -652,12 +652,12 @@ s.freqscope;
 
 *** Basic filter types
 **** The most basic types of filters are:
-     - Lowpass \ci{LPF} :: Allow low frequencies to pass through. Cut high frequencies.
-     - Highpass \ci{HPF} :: Allow high frequencies to pass through. Cut low frequencies.
-     - Bandpass \ci{BPF} :: Allow a range in the middle to pass through. Cut high and low.
+     - Lowpass \ugen{LPF} :: Allow low frequencies to pass through. Cut high frequencies.
+     - Highpass \ugen{HPF} :: Allow high frequencies to pass through. Cut low frequencies.
+     - Bandpass \ugen{BPF} :: Allow a range in the middle to pass through. Cut high and low.
 
 *** Butterworth filters
-**** \ci{LPF} and \ci{HPF} are \te{Butterworth filters}.
+**** \ugen{LPF} and \ugen{HPF} are \te{Butterworth filters}.
     The frequency response curve is smooth, no bumps.
 #+Begin_center
 #+name: linearcurves
@@ -667,7 +667,7 @@ s.freqscope;
 #+End_center
 
 *** BPF: Bandwidth
-**** \ci{BPF} needs to know how wide a band.
+**** \ugen{BPF} needs to know how wide a band.
     - Set by \te{Q}: the filter's \te{quality}.
     - Higher Q, narrower band.
     - SC uses \ci{rq} = $\frac{1}{Q}$ because multiplication is faster than division.
@@ -684,10 +684,10 @@ Close the old GUI window, and try different \ci{rq} values.
 **** Low \ci{rq} $\longleftrightarrow$ High \te{Q} $\longleftrightarrow$ More pitched
 
 *** Q and resonance
-**** \ci{RLPF} and \ci{RHPF} add \te{resonance}.
+**** \ugen{RLPF} and \ugen{RHPF} add \te{resonance}.
     - Resonance is a "bump" around the cutoff frequency.
     - At high cutoff frequencies, sounds like whistling.
-    - \te{Q} behaves as in \ci{BPF}: \\
+    - \te{Q} behaves as in \ugen{BPF}: \\
       Low \ci{rq} $\longleftrightarrow$ High \te{Q} $\longleftrightarrow$ More resonance
 #+Name: rlpf
 #+Caption: Move rq and ffreq, and hear the lowpass-filter effect.
@@ -696,34 +696,34 @@ Close the old GUI window, and try different \ci{rq} values.
    RLPF.ar(~oscil.ar, ffreq, rq).dup
 };
 #+End_src
-**** Also try \ci{RHPF} (on your own).
+**** Also try \ugen{RHPF} (on your own).
 
 *** Subtractive synthesis: Oscillator summary
 **** Oscillators so far
-     - \ci{Saw} :: Band-limited sawtooth
-     - \ci{VarSaw} :: /Non/-band-limited sawtooth, with width control
-     - \ci{Pulse} :: Band-limited pulse wave, with width control
+     - \ugen{Saw} :: Band-limited sawtooth
+     - \ugen{VarSaw} :: /Non/-band-limited sawtooth, with width control
+     - \ugen{Pulse} :: Band-limited pulse wave, with width control
 **** Use band-limited waveforms for audio, whenever possible.
-     \ci{VarSaw} is not band-limited. It should be OK if \ci{width} is
+     \ugen{VarSaw} is not band-limited. It should be OK if \ci{width} is
      close to 0.5 (a triangle wave). \ci{width} = 0 is the same as
-     \ci{LFSaw}, and will cause aliasing.
+     \ugen{LFSaw}, and will cause aliasing.
 
 *** Subtractive synthesis: Filter summary
 **** Filters so far
-     - \ci{LPF} :: Lowpass filter (no resonance)
-     - \ci{HPF} :: Highpass filter (no resonance)
-     - \ci{RLPF} :: Lowpass filter /with/ resonance
-     - \ci{RHPF} :: Highpass filter /with/ resonance
-     - \ci{BPF} :: Bandpass filter.
+     - \ugen{LPF} :: Lowpass filter (no resonance)
+     - \ugen{HPF} :: Highpass filter (no resonance)
+     - \ugen{RLPF} :: Lowpass filter /with/ resonance
+     - \ugen{RHPF} :: Highpass filter /with/ resonance
+     - \ugen{BPF} :: Bandpass filter.
 **** Filter quality (Q) and \ci{rq} parameter.
      - Q is a standard measure. SC uses $rq = \frac{1}{Q}$ to save CPU.
-     - \ci{RLPF}, \ci{RHPF}, and \ci{BPF} all have a \ci{rq} input.
+     - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
 ** Standard synthesizer components
 
-* Glossary							   :noexport:
+* Glossary
 ** UGens
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
-#+LaTeX: \glsaddall
+# #+LaTeX: \glsaddall
 #+LaTeX: \printglossary[type=ugen]
 # #+LaTeX: \printglossaries
