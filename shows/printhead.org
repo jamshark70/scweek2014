@@ -2,7 +2,7 @@
 #+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
 
 #+LANGUAGE:  en
-#+OPTIONS:   H:2 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 #+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
@@ -15,7 +15,7 @@
 #+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
 
 #+LATEX_HEADER: \usepackage{beamerarticle}
-#+LATEX_HEADER: \setcounter{tocdepth}{1}
+#+LATEX_HEADER: \setcounter{tocdepth}{2}
 
 #+LATEX_HEADER: \usepackage{fontspec}
 #+LATEX_HEADER: \setmainfont[Ligatures={Common,TeX}]{CharisSIL}
@@ -43,8 +43,12 @@
 #+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
 #+LATEX_HEADER: \newcommand{\ks}[1]{\framebox[1.05\width]{\texttt{#1}}}
 
+#+LATEX_HEADER: \usepackage[acronym]{glossaries}
+#+LATEX_HEADER: \newglossary[ugi]{ugen}{ugn}{ugo}{Unit Generators}
+#+LATEX_HEADER: \makeglossaries
+
 #+BEGIN_LaTeX
 \mode<article>{\setbeamertemplate{frametitle}{%
-       \subsection{\insertframetitle\\%
+       \subsubsection{\insertframetitle\\%
        \scriptsize\insertframesubtitle}}}
 #+END_LaTeX
