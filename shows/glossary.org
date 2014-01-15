@@ -67,7 +67,7 @@
 |------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | addSpec    | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
 | ar         | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
-| dup        | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(2)'' becomes ``[1, 1, 1]'' and so on                                                                   |
+| dup        | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(3)'' becomes ``[1, 1, 1]'' and so on                                                                   |
 | kr         | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
 | midiratio  | Convert a number of semitones into a frequency factor                                                                                                             |
 | play       | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
