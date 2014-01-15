@@ -5,8 +5,8 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL: 
 
-# #+INCLUDE: "../slidehead.org"
-#+INCLUDE: "../printhead.org"
+#+INCLUDE: "../slidehead.org"
+# #+INCLUDE: "../printhead.org"
 
 #+include: "../glossary.org"
 
@@ -29,7 +29,7 @@
 #+call: ugengloss
 #+results: ugengloss
 
-* Workshop introduction
+* Workshop introduction						   :noexport:
 *** Who am I?
 **** Composer, programmer, nerd
      - Ph.D., music composition, Duke University (2001)
@@ -113,7 +113,7 @@ if(0.25.coin) {
      - SC3 ("SC Server")
        - Audio processing is more efficient, by handling audio in a /server/ process
 
-* SC architecture, usage
+* SC architecture, usage					   :noexport:
 *** SC is three applications
 **** Really? /Three/ applications?
      Yes. They work together:
@@ -205,7 +205,7 @@ if(0.25.coin) {
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps
+* SC language: Beginning steps					   :noexport:
 ** Making noise
 *** Let's make some noise!
    1. Boot the audio server: \ks{Ctrl-B} \\
@@ -649,6 +649,63 @@ p = ProxySpace.new.push;
 p.clear;
 #+End_src
 
+*** Detuned oscillators
+**** The ear doesn't like sound that is too perfect.
+     We like small imperfections: Human players are never exactly in tune.
+**** Do the same in a synth.
+#+name: detune
+#+caption: Detuning the oscillator.
+#+begin_src {} -i
+p = ProxySpace.new; p.push;
+
+~oscil = { |freq = 220, detun = 1.003|
+	Mix(Saw.ar(freq * [1, detun, detun.reciprocal], 0.1))
+};
+~filter = { |ffreq = 2000| LPF.ar(~oscil.ar, ffreq).dup };
+~filter.play;
+
+~oscil.addSpec(\detun, [1, 0.5.midiratio, \exp]);
+~filter.addSpec(\ffreq, \freq);
+p.gui;
+
+p.clear;
+#+end_src
+
+*** New language elements
+#+Latex: \glsadd{BinaryOpUGen}\glsadd{UnaryOpUGen}
+    - \ugen{Mix} :: Mix a group of signals together (addition).
+    - \mth{midiratio} :: Convert a number of semitones into a frequency factor.
+    - \mth{reciprocal} :: Equivalent to \cd{1 / number}, but slightly faster.
+*** Math on UGens
+**** UGens respond to math operators!
+     - \cd{aUGen * bUGen} \to \cd{BinaryOpUGen('*', aUGen, bUGen)}
+     - \cd{detun.reciprocal} \to \cd{UnaryOpUGen('reciprocal', detun)}
+     - Transparent to the user. In SC, there is no \cd{*\textasciitilde}: just use regular math operators.
+
+*** Arrays of signals
+**** \clss{Array}: A \gls{collection} (grouping of objects), in the order given.
+     - Written and displayed in square brackets \cd{[ ]}.
+     - An \gls{ordered} collection: Items stay in the same order.
+
+**** In this simple case, we want one channel to feed into the filter.
+     So, \ugen{Mix} the three signals into one: \\
+     \cd{Mix(Saw.ar([1, 2, 3]))} \to \cd{a Sum3}
+
+*** Multichannel expansion
+    \cd{Saw.ar(220 * [1, detun, detun.reciprocal], 0.1)}
+    - Most UGens are monophonic: one channel in, one out.
+    - Here, we provide a control input multiplied by an array. \\
+      \cd{freq * [1, detun, detun.reciprocal]} \\ \to \cd{[freq * 1, freq * detun, freq * detun.reciprocal]}
+**** How does a monophonic UGen cope with three frequencies?
+     It performs \egls{multichannel expansion}, and makes three \ci{Saw}s.
+#+name: detune
+#+caption: Detuning the oscillator.
+#+begin_src {} -i
+Saw.ar([1, 2, 3])
+
+// prints: [ a Saw, a Saw, a Saw ]
+#+end_src
+
 ** Filters
 *** Filters
 #+latex: \glsadd{Saw}\glsadd{LPF}\glsadd{HPF}
@@ -744,9 +801,22 @@ Close the old GUI window, and try different \ci{rq} values.
 **** Filter quality (Q) and \ci{rq} parameter.
      - Q is a standard measure. SC uses $rq = \frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
-** Standard synthesizer components
+** Refinements
+*** Refinements
+**** Making it sound richer
+     - Detuned oscillators
+     - ??
+**** Controlling the sound musically
+     - Envelopes: Playing notes
+     - Parameter control
+       - Internal: Low Frequency Oscillators (LFOs)
+       - External: GUI and device input
 
-* Glossary
+
+* Effects common in subtractive synthesis
+** Chorus
+** Distortion
+* Glossary							   :noexport:
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
