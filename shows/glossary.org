@@ -1,5 +1,5 @@
 * Glossary							   :noexport:
-#+name: gloss01
+#+name: gloss
 | Term               | Description                                                                                                                                                                 |
 |--------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | function           | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object          |
@@ -37,7 +37,7 @@
 | quality            | The ``precision'' of a filter. High Q produces sharp slopes in the frequency response, narrower bandwidth and higher resonance. Mathematically, $\frac{f_c}{\Delta f}$      |
 
 * Classes 							   :noexport:
-#+name: class01
+#+name: class
 | Term        | Description                                                                                                  |
 |-------------+--------------------------------------------------------------------------------------------------------------|
 | ProxySpace  | An environment that automatically makes a NodeProxy from any item in it                                      |
@@ -47,7 +47,7 @@
 | SynthDef    | A Synthesis Definition. A fixed collection of unit generators, defining specific signal paths among them     |
 
 * Methods							   :noexport:
-#+name: mth01
+#+name: mth
 | Term    | Description                                                                                                                                                       |
 |---------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | play    | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
@@ -61,7 +61,7 @@
 | addSpec | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
 
 * UGens								   :noexport:
-#+name: ugens01
+#+name: ugens
 | Type | Term     | Description                                                    | Arguments           |
 |------+----------+----------------------------------------------------------------+---------------------|
 | Osc  | SinOsc   | Sinewave oscillator                                            | freq, phase         |
@@ -78,8 +78,8 @@
 
 * src blocks 							   :noexport:
 
-#+name: makegloss01
-#+begin_src emacs-lisp :var tbl=gloss01 glosstype='nil :exports results :results value latex
+#+name: makegloss
+#+begin_src emacs-lisp :var tbl=gloss glosstype='nil :exports results :results value latex
 (let ((str "")
       (gltype (if glosstype (format "type=%s," glosstype) "")))
   (pop tbl)
@@ -96,8 +96,8 @@
   str)
 #+end_src
 
-#+name: ugengloss01
-#+begin_src emacs-lisp :var tbl=ugens01 :exports results :results value latex
+#+name: ugengloss
+#+begin_src emacs-lisp :var tbl=ugens :exports results :results value latex
 (let ((str ""))
   (pop tbl)
   (pop tbl)

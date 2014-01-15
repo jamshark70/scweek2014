@@ -8,26 +8,26 @@
 # #+INCLUDE: "../slidehead.org"
 #+INCLUDE: "../printhead.org"
 
-#+include: "01-glossary.org"
+#+include: "../glossary.org"
 
 * Resume export						    :B_ignoreheading:
   :PROPERTIES:
   :BEAMER_env: ignoreheading
   :END:
 
-#+call: makegloss01
-#+results: makegloss01
+#+call: makegloss
+#+results: makegloss
 
-#+name: classgloss01
-#+call: makegloss01(tbl=class01,glosstype="class") :results value latex
-#+results: classgloss01
+#+name: classgloss
+#+call: makegloss(tbl=class,glosstype="class") :results value latex
+#+results: classgloss
 
-#+name: mthgloss01
-#+call: makegloss01(tbl=mth01,glosstype="mth") :results value latex
-#+results: mthgloss01
+#+name: mthgloss
+#+call: makegloss(tbl=mth,glosstype="mth") :results value latex
+#+results: mthgloss
 
-#+call: ugengloss01
-#+results: ugengloss01
+#+call: ugengloss
+#+results: ugengloss
 
 * Workshop introduction
 *** Who am I?
@@ -747,15 +747,14 @@ Close the old GUI window, and try different \ci{rq} values.
 ** Standard synthesizer components
 
 * Glossary
+# #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
 ** Concepts
 #+LaTeX: \printglossary[type=main]
-** Classes
+** UGens
+#+LaTeX: \printglossary[type=ugen]
+** Other classes
 #+LaTeX: \printglossary[type=class]
 ** Methods
 #+LaTeX: \printglossary[type=mth]
-** UGens
-# #+LaTeX: \glsaddall
-#+LaTeX: \printglossary[type=ugen]
-# #+LaTeX: \printglossaries
