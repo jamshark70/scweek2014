@@ -32,7 +32,7 @@
 #+LATEX_HEADER: \usepackage{listings}
 
 #+LATEX_HEADER: \usepackage{color}
-#+LATEX_HEADER: \definecolor{codecolor}{RGB}{150,0,100}
+#+LATEX_HEADER: \definecolor{codecolor}{RGB}{0,125,25}
 #+LATEX_HEADER: \definecolor{keycolor}{RGB}{25,94,0}
 #+LATEX_HEADER: \newcommand{\cd}[1]{\textcolor{codecolor}{\texttt{#1}}}
 #+LATEX_HEADER: \newcommand{\ci}[1]{\mbox{\textcolor{codecolor}{\texttt{#1}}}}
