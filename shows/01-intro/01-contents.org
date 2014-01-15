@@ -858,8 +858,42 @@ Close the old GUI window, and try different \ci{rq} values.
 **** Filter quality (Q) and \ci{rq} parameter.
      - Q is a standard measure. SC uses $rq = \frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
-** Refinements
-*** Refinements
+** Note control
+*** Playing separate notes
+**** What defines a "note"?
+     Mainly, it has a beginning and end!
+**** How do we give a note a beginning and end?
+     Standard way: \eGlspl{envelope}.
+     - This is a standard feature of all synthesizers, including VST/AUs.
+*** Breakpoint envelopes
+**** Usually, envelopes are defined in terms of \eglspl{breakpoint}.
+     This funny-shaped envelope has four segments, defined by five breakpoints.
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+#+Name: env1
+#+Caption: Plotting a breakpoint envelope.
+#+Begin_src {} -i
+Env(
+   levels: [0, 1, 0.2, 0.6, 0],
+   times: [0.1, 0.3, 0.8, 0.25],
+   curve: [\lin, -4, 5, -2]
+).plot;
+#+end_src
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :END:
+# #+name: env1png
+# #+caption: 
+#+attr_latex: :width 0.4\paperwidth
+[[./img/breakpoint-env.png]]
+**** Graphic comes from						   :noexport:
+w = Window("env", Rect(800, 200, 400, 300)).front;
+x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
+
+*** Refinements							   :noexport:
 **** Making it sound richer
      - Detuned oscillators
      - ??

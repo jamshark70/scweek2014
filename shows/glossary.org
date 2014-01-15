@@ -2,15 +2,19 @@
 #+name: gloss
 | Term                   | Description                                                                                                                                                            |
 |------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ADSR                   | An Attack-Decay-Sustain-Release envelope                                                                                                                               |
 | aliasing               | In digital sampling, frequencies above the Nyquist frequency ``fold over'' and are heard as lower frequencies. This is ``aliasing''                                    |
 | arguments              | Inputs to a function or method, provided at the time of calling it                                                                                                     |
 | array                  | One type of collection, consisting of an ordered list of items, enclosed in square brackets \cd{[ ]}                                                                   |
 | assignment             | To replace a variable's current value with a new object. Written ``name = value''                                                                                      |
 | band-limited           | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                             |
+| breakpoint             | The endpoint of a line segment in an envelope                                                                                                                          |
 | class                  | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                             |
 | collection             | An object that contains several other objects, and supports individual access (``at'') and/or iteration (``do'', ``collect'')                                          |
 | control inputs         | Arguments of a synthesis function. The server exposes them as settable controls                                                                                        |
 | declare                | Of a variable, to define its name and initial value using a ``var'' statement                                                                                          |
+| doneAction             | A UGen parameter that determines node releases when the UGen is finished. Most typically 0 (do nothing) or 2 (free only this synth)                                    |
+| envelope               | A control signal that shapes amplitude or another parameter. Important for note control. A standard shape is ADSR                                                      |
 | environment            | Named storage for objects, which can be retrieved using the convenient variable-like syntax \textasciitilde name                                                       |
 | filter                 | A signal processor that changes a sound's spectrum                                                                                                                     |
 | frequency response     | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                         |
@@ -49,6 +53,7 @@
 | Array              | An ordered list of items with a fixed maximum number of items. When adding, be sure to reassign: \cd{array = array.add(item)} |
 | ControlSpec        | Defines a numeric range, with low and high values, a curve, step size (for quantization) and a default value                  |
 | Dictionary         | An unordered set of associations \cd{key -> value}. \cd{dictionary[key]} returns the value for that key                       |
+| Env                | Defines an envelope specification, based on segments (target values, times and curves)                                        |
 | IdentityDictionary | Like Dictionary, but restricts the types of keys for faster lookup. Usually the keys are Symbols                              |
 | IdentitySet        | Like Set, but restricts the types of items for faster membership testing                                                      |
 | List               | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                    |
@@ -79,22 +84,23 @@
 
 * UGens								   :noexport:
 #+name: ugens
-| Type | Term         | Description                                                                                                                      | Arguments           |
-|------+--------------+----------------------------------------------------------------------------------------------------------------------------------+---------------------|
-| Filt | LPF          | Butterworth lowpass filter                                                                                                       | in, freq            |
-| Filt | HPF          | Butterworth highpass filter                                                                                                      | in, freq            |
-| Filt | BPF          | Bandpass filter                                                                                                                  | in, freq, rq        |
-| Filt | RLPF         | Resonant lowpass filter                                                                                                          | in, freq, rq        |
-| Filt | RHPF         | Resonant highpass filter                                                                                                         | in, freq, rq        |
-| Math | Mix          | Mix a group of signals together (addition). Preserves stereo/multichannel arrangement. Includes optimizations not found in =sum= | none                |
-| Math | BinaryOpUGen | Performs a binary math operation where at least one of the two inputs is another UGen                                            | Not used directly   |
-| Math | UnaryOpUGen  | Performs a unary math operation (neg, abs, log etc.) on another UGen                                                             | Not used directly   |
-| Osc  | SinOsc       | Sinewave oscillator                                                                                                              | freq, phase         |
-| Osc  | VarSaw       | Sawtooth oscillator with variable duty cycle. Not band-limited                                                                   | freq, iphase, width |
-| Osc  | LFNoise1     | Random number generator, linear interpolation                                                                                    | freq                |
-| Osc  | Saw          | Band-limited sawtooth oscillator                                                                                                 | freq                |
-| Osc  | LFSaw        | Non-band-limited sawtooth oscillator                                                                                             | freq, iphase        |
-| Osc  | Pulse        | Band-limited pulse wave oscillator                                                                                               | freq, width         |
+| Type | Term         | Description                                                                                                                      | Arguments                                                    |
+|------+--------------+----------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------|
+| Ctl  | EnvGen       | Envelope Generator. Produces the envelope signal from an Env specification                                                       | envelope, gate, levelScale, levelBias, timeScale, doneAction |
+| Filt | LPF          | Butterworth lowpass filter                                                                                                       | in, freq                                                     |
+| Filt | HPF          | Butterworth highpass filter                                                                                                      | in, freq                                                     |
+| Filt | BPF          | Bandpass filter                                                                                                                  | in, freq, rq                                                 |
+| Filt | RLPF         | Resonant lowpass filter                                                                                                          | in, freq, rq                                                 |
+| Filt | RHPF         | Resonant highpass filter                                                                                                         | in, freq, rq                                                 |
+| Math | Mix          | Mix a group of signals together (addition). Preserves stereo/multichannel arrangement. Includes optimizations not found in =sum= | none                                                         |
+| Math | BinaryOpUGen | Performs a binary math operation where at least one of the two inputs is another UGen                                            | Not used directly                                            |
+| Math | UnaryOpUGen  | Performs a unary math operation (neg, abs, log etc.) on another UGen                                                             | Not used directly                                            |
+| Osc  | SinOsc       | Sinewave oscillator                                                                                                              | freq, phase                                                  |
+| Osc  | VarSaw       | Sawtooth oscillator with variable duty cycle. Not band-limited                                                                   | freq, iphase, width                                          |
+| Osc  | LFNoise1     | Random number generator, linear interpolation                                                                                    | freq                                                         |
+| Osc  | Saw          | Band-limited sawtooth oscillator                                                                                                 | freq                                                         |
+| Osc  | LFSaw        | Non-band-limited sawtooth oscillator                                                                                             | freq, iphase                                                 |
+| Osc  | Pulse        | Band-limited pulse wave oscillator                                                                                               | freq, width                                                  |
 
 * src blocks 							   :noexport:
 
