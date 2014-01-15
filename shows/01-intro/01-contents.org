@@ -562,7 +562,7 @@ p.clear;
        /multiplying/, not adding).
 
 *** Writing ranges in SC
-    - Long form: \clss{ControlSpec}(low, high, curve, step, default)
+    - Long form: \clss{ControlSpec}\cd{(low, high, curve, step, default)}
     - Short form: \cd{[low, high, curve, step, default]}
 **** Curves
      - \ci{\textbackslash lin} :: Linear.
@@ -659,7 +659,7 @@ p.clear;
 p = ProxySpace.new; p.push;
 
 ~oscil = { |freq = 220, detun = 1.003|
-	Mix(Saw.ar(freq * [1, detun, detun.reciprocal], 0.1))
+   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], 0.1))
 };
 ~filter = { |ffreq = 2000| LPF.ar(~oscil.ar, ffreq).dup };
 ~filter.play;
@@ -674,8 +674,10 @@ p.clear;
 *** New language elements
 #+Latex: \glsadd{BinaryOpUGen}\glsadd{UnaryOpUGen}
     - \ugen{Mix} :: Mix a group of signals together (addition).
+    - \clss{Array} :: An ordered collection of items.
     - \mth{midiratio} :: Convert a number of semitones into a frequency factor.
     - \mth{reciprocal} :: Equivalent to \cd{1 / number}, but slightly faster.
+
 *** Math on UGens
 **** UGens respond to math operators!
      - \cd{aUGen * bUGen} \to \cd{BinaryOpUGen('*', aUGen, bUGen)}
@@ -686,10 +688,13 @@ p.clear;
 **** \clss{Array}: A \gls{collection} (grouping of objects), in the order given.
      - Written and displayed in square brackets \cd{[ ]}.
      - An \gls{ordered} collection: Items stay in the same order.
+     - More about arrays later.
 
-**** In this simple case, we want one channel to feed into the filter.
-     So, \ugen{Mix} the three signals into one: \\
-     \cd{Mix(Saw.ar([1, 2, 3]))} \to \cd{a Sum3}
+**** An array of UGens represents multiple audio channels.
+     - Already seen: \cd{SinOsc.ar.dup} \to \cd{[ a SinOsc, a SinOsc ]}. \\
+       The two-item array represents a stereo signal.
+     - \ugen{Mix} adds several signals (in an array) together, /mixing/ them:\\
+       Three \ci{Saw}s \to one mixed channel.
 
 *** Multichannel expansion
     \cd{Saw.ar(220 * [1, detun, detun.reciprocal], 0.1)}
@@ -698,13 +703,75 @@ p.clear;
       \cd{freq * [1, detun, detun.reciprocal]} \\ \to \cd{[freq * 1, freq * detun, freq * detun.reciprocal]}
 **** How does a monophonic UGen cope with three frequencies?
      It performs \egls{multichannel expansion}, and makes three \ci{Saw}s.
-#+name: detune
-#+caption: Detuning the oscillator.
+#+name: mc-exp1
+#+caption: Multichannel expansion.
 #+begin_src {} -i
 Saw.ar([1, 2, 3])
 
 // prints: [ a Saw, a Saw, a Saw ]
 #+end_src
+
+*** Unpacking multichannel expansion
+**** All three of these expressions are identical
+#+begin_example
+// Compact form
+Mix(Saw.ar(220 * [1, detun, detun.reciprocal], 0.1))
+
+// Expanding *
+Mix(Saw.ar([
+   220 * 1,
+   220 * detun,
+   220 * detun.reciprocal
+], 0.1))
+
+// Fully expanded
+Saw.ar(220 * 1, 0.1),
+   + Saw.ar(220 * detun, 0.1),
+   + Saw.ar(220 * detun.reciprocal, 0.1)
+#+end_example
+
+*** Multichannel expansion is super cool
+**** Parallel processing of multiple channels is very common.
+     Multichannel expansion makes it easy (in the basic cases): Just
+     write the processing as if for one channel, and SC automatically
+     duplicates it for all channels.
+
+     Max/MSP is effectively limited to only the third, most redundant,
+     form. You have to copy the whole signal-processing chain for each
+     channel /by hand/.
+
+     Since multichannel processing is more convenient in SC, you'll do
+     more of it and get more interesting sounds.
+
+*** Detuning by octaves or other intervals
+**** Standard analog-style plug-ins (e.g. Massiv) feature multiple oscillators.
+     - Independent control over frequency, relative to MIDI key.
+     - A bass might have a low square wave with higher saws above.
+#+name: multiosc
+#+caption: Multiple oscillator types together.
+#+begin_src {} -i
+~oscil = { |freq = 110|
+   var freq1 = freq * [0.5, 0.498, 0.503],
+   freq2 = freq * [1, 0.997, 1.004];
+   Mix(Pulse.ar(freq1)) + Mix(Saw.ar(freq2))
+};
+~filter = { |ffreq = 3000| LPF.ar(~oscil.ar, ffreq, 0.1).dup };
+~filter.play;
+
+~filter.addSpec(\ffreq, \freq);
+p.gui;
+	
+p.clear;
+#+end_src
+
+*** Subtractive synthesis: Oscillator summary
+**** Oscillators so far
+     - \ugen{Saw} :: Band-limited sawtooth
+     - \ugen{VarSaw} :: /Non/-band-limited sawtooth, with width control
+     - \ugen{Pulse} :: Band-limited pulse wave, with width control
+**** Use band-limited waveforms for audio, whenever possible.
+**** Mix together several detuned oscillators for a richer sound.
+     - Multichannel expansion can help.
 
 ** Filters
 *** Filters
@@ -780,16 +847,6 @@ Close the old GUI window, and try different \ci{rq} values.
 };
 #+End_src
 **** Also try \ugen{RHPF} (on your own).
-
-*** Subtractive synthesis: Oscillator summary
-**** Oscillators so far
-     - \ugen{Saw} :: Band-limited sawtooth
-     - \ugen{VarSaw} :: /Non/-band-limited sawtooth, with width control
-     - \ugen{Pulse} :: Band-limited pulse wave, with width control
-**** Use band-limited waveforms for audio, whenever possible.
-     \ugen{VarSaw} is not band-limited. It should be OK if \ci{width} is
-     close to 0.5 (a triangle wave). \ci{width} = 0 is the same as
-     \ugen{LFSaw}, and will cause aliasing.
 
 *** Subtractive synthesis: Filter summary
 **** Filters so far
