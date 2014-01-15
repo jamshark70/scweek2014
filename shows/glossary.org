@@ -2,92 +2,86 @@
 #+name: gloss
 | Term                   | Description                                                                                                                                                            |
 |------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| function               | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object     |
-| variable               | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                        |
-| class                  | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                             |
-| method                 | An action which an object can perform. Very similar to a function, but it belongs to a class and has a name                                                            |
+| aliasing               | In digital sampling, frequencies above the Nyquist frequency ``fold over'' and are heard as lower frequencies. This is ``aliasing''                                    |
 | arguments              | Inputs to a function or method, provided at the time of calling it                                                                                                     |
+| array                  | One type of collection, consisting of an ordered list of items, enclosed in square brackets \cd{[ ]}                                                                   |
+| assignment             | To replace a variable's current value with a new object. Written ``name = value''                                                                                      |
+| band-limited           | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                             |
+| class                  | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                             |
+| collection             | An object that contains several other objects, and supports individual access (``at'') and/or iteration (``do'', ``collect'')                                          |
+| control inputs         | Arguments of a synthesis function. The server exposes them as settable controls                                                                                        |
+| declare                | Of a variable, to define its name and initial value using a ``var'' statement                                                                                          |
+| environment            | Named storage for objects, which can be retrieved using the convenient variable-like syntax \textasciitilde name                                                       |
+| filter                 | A signal processor that changes a sound's spectrum                                                                                                                     |
+| frequency response     | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                         |
+| function               | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object     |
+| global                 | Referring to a variable that is available everywhere in the system. Interpreter variables a--z are global                                                              |
+| interpreter            | Referring to the single-letter variables a--z                                                                                                                          |
+| iteration              | Performing the same operation several times, over items in a collection or a series of numbers                                                                         |
+| local                  | Referring to a variable that exists only within a class, method or function definition. The variable is completely unavailable outside that scope                      |
+| method                 | An action which an object can perform. Very similar to a function, but it belongs to a class and has a name                                                            |
 | method call            | A request to an object to perform one of its predefined actions. It consists of three parts: receiver, selector and arguments                                          |
-| UGen                   | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                 |
+| multichannel expansion | Math operators and UGens ``expand'' an array of inputs into an array of results: [1, 2] * 2 = [2, 4]. Convenient for stereo processing                                 |
+| Nyquist                | In digital sampling, the highest possible frequency is $\frac{sr}{2}$, where $sr$ is the sampling rate                                                                 |
+| ordered                | Of a collection, indicates that the collection remembers the order of items, e.g., Array, List                                                                         |
 | OSC                    | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                    |
+| oscillator             | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                             |
+| pulse wave             | A waveform that jumps suddenly up and down and stays flat in between                                                                                                   |
+| pulse width            | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                               |
+| Q                      | Short for a filter's ``quality''                                                                                                                                       |
+| quality                | The ``precision'' of a filter. High Q produces sharp slopes in the frequency response, narrower bandwidth and higher resonance. Mathematically, $\frac{f_c}{\Delta f}$ |
+| receiver               | In a method call, the object that determines which method definition is used                                                                                           |
+| sawtooth               | A waveform that makes a ramp in one direction and a sudden jump in the other, looking somewhat like teeth of a saw                                                     |
 | scide                  | SuperCollider Integrated Development Environment. The main code-interaction interface                                                                                  |
 | sclang                 | SuperCollider language. Evaluates code and displays results                                                                                                            |
 | scsynth                | SuperCollider synthesis server. Receives OSC messages and produces audio                                                                                               |
-| declare                | Of a variable, to define its name and initial value using a ``var'' statement                                                                                          |
-| local                  | Referring to a variable that exists only within a class, method or function definition. The variable is completely unavailable outside that scope                      |
-| global                 | Referring to a variable that is available everywhere in the system. Interpreter variables a--z are global                                                              |
-| interpreter            | Referring to the single-letter variables a--z                                                                                                                          |
-| environment            | Named storage for objects, which can be retrieved using the convenient variable-like syntax \textasciitilde name                                                       |
-| assignment             | To replace a variable's current value with a new object. Written ``name = value''                                                                                      |
-| receiver               | In a method call, the object that determines which method definition is used                                                                                           |
 | selector               | In a method call, the method's name                                                                                                                                    |
-| oscillator             | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                             |
-| filter                 | A signal processor that changes a sound's spectrum                                                                                                                     |
-| band-limited           | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                             |
-| control inputs         | Arguments of a synthesis function. The server exposes them as settable controls                                                                                        |
-| aliasing               | In digital sampling, frequencies above the Nyquist frequency ``fold over'' and are heard as lower frequencies. This is ``aliasing''                                    |
-| Nyquist                | In digital sampling, the highest possible frequency is $\frac{sr}{2}$, where $sr$ is the sampling rate                                                                 |
-| sawtooth               | A waveform that makes a ramp in one direction and a sudden jump in the other, looking somewhat like teeth of a saw                                                     |
-| pulse wave             | A waveform that jumps suddenly up and down and stays flat in between                                                                                                   |
-| pulse width            | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                               |
 | square wave            | A pulse wave with a width of 50\%                                                                                                                                      |
 | triangle wave          | A waveform made of straight, diagonal lines up and down                                                                                                                |
-| frequency response     | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                         |
-| Q                      | Short for a filter's ``quality''                                                                                                                                       |
-| quality                | The ``precision'' of a filter. High Q produces sharp slopes in the frequency response, narrower bandwidth and higher resonance. Mathematically, $\frac{f_c}{\Delta f}$ |
-| multichannel expansion | Math operators and UGens ``expand'' an array of inputs into an array of results: [1, 2] * 2 = [2, 4]. Convenient for stereo processing                                 |
-| array                  | One type of collection, consisting of an ordered list of items, enclosed in square brackets \cd{[ ]}                                                                   |
-| collection             | An object that contains several other objects, and supports individual access (``at'') and/or iteration (``do'', ``collect'')                                          |
-| iteration              | Performing the same operation several times, over items in a collection or a series of numbers                                                                         |
-| ordered                | Of a collection, indicates that the collection remembers the order of items, e.g., Array, List                                                                         |
+| UGen                   | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                 |
 | unordered              | Of a collection, indicates that the collection may rearrange the items' order for faster lookup, e.g., Set, Dictionary                                                 |
+| variable               | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                        |
 
 * Classes 							   :noexport:
 #+name: class
 | Term               | Description                                                                                                                   |
 |--------------------+-------------------------------------------------------------------------------------------------------------------------------|
-| ProxySpace         | An environment that automatically makes a NodeProxy from any item in it                                                       |
-| NodeProxy          | A hot-swappable placeholder for a Synth on the server                                                                         |
-| Synth              | Represents a synthesis node on the server                                                                                     |
-| ControlSpec        | Defines a numeric range, with low and high values, a curve, step size (for quantization) and a default value                  |
-| SynthDef           | A Synthesis Definition. A fixed collection of unit generators, defining specific signal paths among them                      |
 | Array              | An ordered list of items with a fixed maximum number of items. When adding, be sure to reassign: \cd{array = array.add(item)} |
-| List               | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                    |
-| Set                | An unordered collection of items, optimized for iteration and testing membership: \cd{set.do}, \cd{set.includes(item)}        |
-| IdentitySet        | Like Set, but restricts the types of items for faster membership testing                                                      |
+| ControlSpec        | Defines a numeric range, with low and high values, a curve, step size (for quantization) and a default value                  |
 | Dictionary         | An unordered set of associations \cd{key -> value}. \cd{dictionary[key]} returns the value for that key                       |
 | IdentityDictionary | Like Dictionary, but restricts the types of keys for faster lookup. Usually the keys are Symbols                              |
-| Symbol             | Like a String, but ``atomic'': You can't manipulate the contents of a Symbol, only use it as an identifier                    |
+| IdentitySet        | Like Set, but restricts the types of items for faster membership testing                                                      |
+| List               | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                    |
+| NodeProxy          | A hot-swappable placeholder for a Synth on the server                                                                         |
+| ProxySpace         | An environment that automatically makes a NodeProxy from any item in it                                                       |
+| Set                | An unordered collection of items, optimized for iteration and testing membership: \cd{set.do}, \cd{set.includes(item)}        |
 | String             | A list of characters that behaves like text                                                                                   |
+| Symbol             | Like a String, but ``atomic'': You can't manipulate the contents of a Symbol, only use it as an identifier                    |
+| Synth              | Represents a synthesis node on the server                                                                                     |
+| SynthDef           | A Synthesis Definition. A fixed collection of unit generators, defining specific signal paths among them                      |
 
 
 * Methods							   :noexport:
 #+name: mth
 | Term       | Description                                                                                                                                                       |
 |------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| addSpec    | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
+| ar         | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
+| dup        | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(2)'' becomes ``[1, 1, 1]'' and so on                                                                   |
+| kr         | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
+| midiratio  | Convert a number of semitones into a frequency factor                                                                                                             |
 | play       | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
+| push       | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
+| reciprocal | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
+| release    | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
 | stop       | Stop a process that was previously started by ``play''                                                                                                            |
 | value      | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
-| release    | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
-| dup        | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(2)'' becomes ``[1, 1, 1]'' and so on                                                                   |
-| ar         | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
-| kr         | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
-| push       | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
-| addSpec    | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
-| midiratio  | Convert a number of semitones into a frequency factor                                                                                                             |
-| reciprocal | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
 
 * UGens								   :noexport:
 #+name: ugens
 | Type | Term         | Description                                                                                                                      | Arguments           |
 |------+--------------+----------------------------------------------------------------------------------------------------------------------------------+---------------------|
-| Osc  | SinOsc       | Sinewave oscillator                                                                                                              | freq, phase         |
-| Osc  | VarSaw       | Sawtooth oscillator with variable duty cycle. Not band-limited                                                                   | freq, iphase, width |
-| Osc  | LFNoise1     | Random number generator, linear interpolation                                                                                    | freq                |
-| Osc  | Saw          | Band-limited sawtooth oscillator                                                                                                 | freq                |
 | Filt | LPF          | Butterworth lowpass filter                                                                                                       | in, freq            |
-| Osc  | LFSaw        | Non-band-limited sawtooth oscillator                                                                                             | freq, iphase        |
-| Osc  | Pulse        | Band-limited pulse wave oscillator                                                                                               | freq, width         |
 | Filt | HPF          | Butterworth highpass filter                                                                                                      | in, freq            |
 | Filt | BPF          | Bandpass filter                                                                                                                  | in, freq, rq        |
 | Filt | RLPF         | Resonant lowpass filter                                                                                                          | in, freq, rq        |
@@ -95,6 +89,12 @@
 | Math | Mix          | Mix a group of signals together (addition). Preserves stereo/multichannel arrangement. Includes optimizations not found in =sum= | none                |
 | Math | BinaryOpUGen | Performs a binary math operation where at least one of the two inputs is another UGen                                            | Not used directly   |
 | Math | UnaryOpUGen  | Performs a unary math operation (neg, abs, log etc.) on another UGen                                                             | Not used directly   |
+| Osc  | SinOsc       | Sinewave oscillator                                                                                                              | freq, phase         |
+| Osc  | VarSaw       | Sawtooth oscillator with variable duty cycle. Not band-limited                                                                   | freq, iphase, width |
+| Osc  | LFNoise1     | Random number generator, linear interpolation                                                                                    | freq                |
+| Osc  | Saw          | Band-limited sawtooth oscillator                                                                                                 | freq                |
+| Osc  | LFSaw        | Non-band-limited sawtooth oscillator                                                                                             | freq, iphase        |
+| Osc  | Pulse        | Band-limited pulse wave oscillator                                                                                               | freq, width         |
 
 * src blocks 							   :noexport:
 
