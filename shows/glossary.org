@@ -46,7 +46,7 @@
 | scide                  | SuperCollider Integrated Development Environment. The main code-interaction interface                                                                                  |
 | sclang                 | SuperCollider language. Evaluates code and displays results                                                                                                            |
 | scsynth                | SuperCollider synthesis server. Receives OSC messages and produces audio                                                                                               |
-| segment                | In an envelope, a breakpoint consisting of a /target value/, /time/ and /curve/                                                                                        |
+| segment                | In an envelope, a breakpoint consisting of a target value, time and curve                                                                                              |
 | selector               | In a method call, the method's name                                                                                                                                    |
 | square wave            | A pulse wave with a width of 50\%                                                                                                                                      |
 | triangle wave          | A waveform made of straight, diagonal lines up and down                                                                                                                |
@@ -109,25 +109,25 @@
 
 * UGens								   :noexport:
 #+name: ugens
-| Type | Term         | Description                                                                                                                      | Arguments                                                    |
-|------+--------------+----------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------|
-| Ctl  | EnvGen       | Envelope Generator. Produces the envelope signal from an Env specification                                                       | envelope, gate, levelScale, levelBias, timeScale, doneAction |
-| Filt | LPF          | Butterworth lowpass filter                                                                                                       | in, freq                                                     |
-| Filt | HPF          | Butterworth highpass filter                                                                                                      | in, freq                                                     |
-| Filt | BPF          | Bandpass filter                                                                                                                  | in, freq, rq                                                 |
-| Filt | RLPF         | Resonant lowpass filter                                                                                                          | in, freq, rq                                                 |
-| Filt | RHPF         | Resonant highpass filter                                                                                                         | in, freq, rq                                                 |
-| Math | Mix          | Mix a group of signals together (addition). Preserves stereo/multichannel arrangement. Includes optimizations not found in =sum= | none                                                         |
-| Math | BinaryOpUGen | Performs a binary math operation where at least one of the two inputs is another UGen                                            | Not used directly                                            |
-| Math | UnaryOpUGen  | Performs a unary math operation (neg, abs, log etc.) on another UGen                                                             | Not used directly                                            |
-| Osc  | SinOsc       | Sinewave oscillator                                                                                                              | freq, phase                                                  |
-| Osc  | VarSaw       | Sawtooth oscillator with variable duty cycle. Not band-limited                                                                   | freq, iphase, width                                          |
-| Osc  | LFNoise1     | Random number generator, linear interpolation                                                                                    | freq                                                         |
-| Osc  | Saw          | Band-limited sawtooth oscillator                                                                                                 | freq                                                         |
-| Osc  | LFSaw        | Non-band-limited sawtooth oscillator                                                                                             | freq, iphase                                                 |
-| Osc  | Pulse        | Band-limited pulse wave oscillator                                                                                               | freq, width                                                  |
-| Trig | Impulse      | Produces triggers at equal time intervals---single sample impulses, /freq/ times per second                                      | freq, phase                                                  |
-| Trig | Dust         | Produces randomly timed triggers, averaging /density/ triggers per second                                                        | density                                                      |
+| Type | Term         | Description                                                                                                                        | Arguments                                                    |
+|------+--------------+------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------|
+| Ctl  | EnvGen       | Envelope Generator. Produces the envelope signal from an Env specification                                                         | envelope, gate, levelScale, levelBias, timeScale, doneAction |
+| Filt | LPF          | Butterworth lowpass filter                                                                                                         | in, freq                                                     |
+| Filt | HPF          | Butterworth highpass filter                                                                                                        | in, freq                                                     |
+| Filt | BPF          | Bandpass filter                                                                                                                    | in, freq, rq                                                 |
+| Filt | RLPF         | Resonant lowpass filter                                                                                                            | in, freq, rq                                                 |
+| Filt | RHPF         | Resonant highpass filter                                                                                                           | in, freq, rq                                                 |
+| Math | Mix          | Mix a group of signals together (addition). Preserves stereo/multichannel arrangement. Includes optimizations not found in ``sum'' | none                                                         |
+| Math | BinaryOpUGen | Performs a binary math operation where at least one of the two inputs is another UGen                                              | Not used directly                                            |
+| Math | UnaryOpUGen  | Performs a unary math operation (neg, abs, log etc.) on another UGen                                                               | Not used directly                                            |
+| Osc  | SinOsc       | Sinewave oscillator                                                                                                                | freq, phase                                                  |
+| Osc  | VarSaw       | Sawtooth oscillator with variable duty cycle. Not band-limited                                                                     | freq, iphase, width                                          |
+| Osc  | LFNoise1     | Random number generator, linear interpolation                                                                                      | freq                                                         |
+| Osc  | Saw          | Band-limited sawtooth oscillator                                                                                                   | freq                                                         |
+| Osc  | LFSaw        | Non-band-limited sawtooth oscillator                                                                                               | freq, iphase                                                 |
+| Osc  | Pulse        | Band-limited pulse wave oscillator                                                                                                 | freq, width                                                  |
+| Trig | Impulse      | Produces triggers at equal time intervals---single sample impulses, /freq/ times per second                                        | freq, phase                                                  |
+| Trig | Dust         | Produces randomly timed triggers, averaging /density/ triggers per second                                                          | density                                                      |
 
 * src blocks 							   :noexport:
 
