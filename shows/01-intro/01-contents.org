@@ -485,7 +485,7 @@ In \cd{SinOsc.ar(440)}:
     Now we know enough to start exploring standard synthesis techniques.
 
 * Subtractive synthesis
-** Overview
+** Overview							   :noexport:
 *** Subtractive synthesis
 **** One of the most basic techniques
      - Easy to implement
@@ -574,7 +574,7 @@ p.clear;
     - Phase :: \cd{[0, 2pi, \textbackslash lin, 0, 0]} (in radians)
 #     - Amplitude :: \cd{[0, 1, \amp]}
 
-** Analog-style oscillators
+** Analog-style oscillators					   :noexport:
 *** Sawtooth oscillator
 **** A geometric \gls{sawtooth} is made of straight lines.
     This is a problem for digital audio.
@@ -773,7 +773,7 @@ p.clear;
 **** Mix together several detuned oscillators for a richer sound.
      - Multichannel expansion can help.
 
-** Filters
+** Filters							   :noexport:
 *** Filters
 #+latex: \glsadd{Saw}\glsadd{LPF}\glsadd{HPF}
 **** We identify filters based on their \egls{frequency response}.
@@ -893,6 +893,178 @@ Env(
 w = Window("env", Rect(800, 200, 400, 300)).front;
 x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
 
+*** Envelope definition
+**** An envelope is made of:
+     - A starting value
+     - A number of \eglspl{segment} (no practical limit):
+       - A target level
+       - A time duration
+       - A segment shape (curve)
+     - A \egls{releaseNode} and \egls{loopNode} (optional)
+**** Note the difference between the /starting value/ and the segments' /target values/.
+     This will become important later.
+
+*** Writing an envelope definition
+**** It's written like this:
+#+begin_latex
+\cd{Env(\\<all>
+\hspace{0.5cm}levels: [start, level$_0$, level$_1$, level$_2$...],\\<all>
+\hspace{0.5cm}times: [time$_0$, time$_1$, time$_2$...],\\<all>
+\hspace{0.5cm}curve: [curve$_0$, curve$_1$, curve$_2$...],\\<all>
+\hspace{0.5cm}releaseNode: nil, loopNode: nil\\<all>
+)}
+#+end_latex
+**** Notes
+     - Segment 0 is defined by @@latex:\cd{levels[\textbf{1}]}@@,
+       \cd{times[0]} and \cd{curve[0]}.
+     - \cd{levels[0]} is the starting value---not part of any segment!
+     - \ci{curve} may be an array or a single value (which applies to
+       every segment).
+
+*** Add an envelope to the synth
+**** All synths should have an amplitude envelope.
+     - Start from silence, end with silence.
+     - Amplitude envelope is usually last in the chain.
+#+Name: ampenv1
+#+Caption: Apply an evenly-triggered amplitude envelope.
+#+Begin_src {} -i
+p = ProxySpace.new; p.push;
+
+~oscil = { |freq = 220, detun = 1.003|
+   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], 0.1))
+};
+~filter = { |ffreq = 2000| LPF.ar(~oscil.ar, ffreq) };
+~filter.addSpec(\ffreq, \freq);
+~eg = { EnvGen.kr(
+   Env([0, 1, 0], [0.01, 0.6], -4),
+   gate: Impulse.kr(1)
+) };
+
+~out = { (~filter.ar * ~eg).dup }; ~out.play;
+
+~out.stop;  // We'll use these proxies some more
+#+End_src
+
+*** TODO Envelope generator structure and use
+
+*** Explore envelope behavior
+**** Add two parameters: trigger frequency and decay time.
+     Try these settings. Why do they sound like that?
+     - Normal decay, high trigger rate > 30.
+     - Short decay, high trigger rate.
+     - Long decay > 1, medium trigger rate $\approx$ 3.5.
+#+Name: ampenv2
+#+Caption: Add parameters to the envelope generator.
+#+Begin_src {} -i
+~eg = { |tfreq = 1, decay = 0.6|
+   EnvGen.kr(
+      Env([0, 1, 0], [0.01, decay], -4),
+      Impulse.kr(tfreq)
+   )
+};
+~eg.addSpec(\tfreq, [0.5, 50, \exp]);
+~eg.addSpec(\decay, [0.05, 1.5, 2]);
+p.gui;
+#+End_src
+
+*** Envelope graphs
+**** Plot functions						   :noexport:
+{ EnvGen.ar(Env.perc(0.01, 0.6), Impulse.ar(300), timeScale: 1/300) }.plot;
+{ EnvGen.ar(Env.perc(0.01, 0.6), Impulse.ar(300*30), timeScale: 1/300) }.plot;
+{ EnvGen.ar(Env.perc(0.01, 0.05), Impulse.ar(300*30), timeScale: 1/300) }.plot;
+{ EnvGen.ar(Env.perc(0.01, 1.12), Impulse.ar(300*3), timeScale: 1/300) }.plot;
+**** {1\textwidth}{3in}					      :B_overlayarea:
+     :PROPERTIES:
+     :BEAMER_env: overlayarea
+     :END:
+***** O1							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 1
+      :END:
+****** Initial settings
+****** left							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.5
+       :END:
+       The envelope has plenty of time to fall to 0 (silence) between
+       notes.
+****** right							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.5
+       :END:
+       #+attr_latex: :width 0.4\paperwidth
+       [[./img/eg-normal-d0.6-f1.png]]
+***** O2							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 2
+      :END:
+****** Same decay, much faster triggers
+****** left							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.5
+       :END:
+       The envelope doesn't have enough time to decay, so the sound is
+       almost continuous.
+****** right							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.5
+       :END:
+       #+attr_latex: :width 0.4\paperwidth
+       [[./img/eg-d0.6-f30.png]]
+***** O3 							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 3
+      :END:
+****** Fast triggers, very short decay.
+****** left							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.5
+       :END:
+       The envelope decays quickly, so the sound gets much quieter
+       between triggers. But the triggers come very quickly---30 Hz is
+       within audio range---so we hear a strong amplitude modulation
+       effect, adding another pitch.
+****** right							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.5
+       :END:
+       #+attr_latex: :width 0.4\paperwidth
+       [[./img/eg-d0.05-f30.png]]
+***** O4							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 4
+      :END:
+****** Medium triggers, long decay
+****** left							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.5
+       :END:
+       You can hear the envelope decay, but it doesn't go all the way
+       to silence. So the effect is more like /legato/ playing.
+****** right							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.5
+       :END:
+       #+attr_latex: :width 0.4\paperwidth
+       [[./img/eg-d1.12-f3.png]]
+
+# #+Name: ampenv2
+# #+Caption: Add parameters to the envelope generator.
+# #+Begin_src {} -i
+# {
+#    [
+#       EnvGen.ar(Env.perc(0.01, 0.6), Impulse.ar(300), timeScale: 1/300),
+#       EnvGen.ar(Env.perc(0.01, 0.6), Impulse.ar(300*30), timeScale: 1/300),
+#       EnvGen.ar(Env.perc(0.01, 0.05), Impulse.ar(300*30), timeScale: 1/300),
+#       EnvGen.ar(Env.perc(0.01, 1.12), Impulse.ar(300*3), timeScale: 1/300)
+#    ]
+# }.plot;
+# #+End_src
+
 *** Refinements							   :noexport:
 **** Making it sound richer
      - Detuned oscillators
@@ -904,7 +1076,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
        - External: GUI and device input
 
 
-* Effects common in subtractive synthesis
+* Effects common in subtractive synthesis			   :noexport:
 ** Chorus
 ** Distortion
 * Glossary							   :noexport:

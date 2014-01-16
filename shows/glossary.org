@@ -15,6 +15,7 @@
 | declare                | Of a variable, to define its name and initial value using a ``var'' statement                                                                                          |
 | doneAction             | A UGen parameter that determines node releases when the UGen is finished. Most typically 0 (do nothing) or 2 (free only this synth)                                    |
 | envelope               | A control signal that shapes amplitude or another parameter. Important for note control. A standard shape is ADSR                                                      |
+| envelope generator     | The standard name for the unit and a synthesizer that produces an envelope signal from the envelope's parameters                                                       |
 | environment            | Named storage for objects, which can be retrieved using the convenient variable-like syntax \textasciitilde name                                                       |
 | filter                 | A signal processor that changes a sound's spectrum                                                                                                                     |
 | frequency response     | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                         |
@@ -23,6 +24,7 @@
 | interpreter            | Referring to the single-letter variables a--z                                                                                                                          |
 | iteration              | Performing the same operation several times, over items in a collection or a series of numbers                                                                         |
 | local                  | Referring to a variable that exists only within a class, method or function definition. The variable is completely unavailable outside that scope                      |
+| loopNode               | In an envelope, the breakpoint to which the envelope generator will jump after reaching the releaseNode, while ``gate'' > 0                                            |
 | method                 | An action which an object can perform. Very similar to a function, but it belongs to a class and has a name                                                            |
 | method call            | A request to an object to perform one of its predefined actions. It consists of three parts: receiver, selector and arguments                                          |
 | multichannel expansion | Math operators and UGens ``expand'' an array of inputs into an array of results: [1, 2] * 2 = [2, 4]. Convenient for stereo processing                                 |
@@ -35,16 +37,20 @@
 | Q                      | Short for a filter's ``quality''                                                                                                                                       |
 | quality                | The ``precision'' of a filter. High Q produces sharp slopes in the frequency response, narrower bandwidth and higher resonance. Mathematically, $\frac{f_c}{\Delta f}$ |
 | receiver               | In a method call, the object that determines which method definition is used                                                                                           |
+| releaseNode            | In an envelope, the breakpoint where the envelope generator will pause (or loop back) as long as ``gate'' > 0                                                          |
 | sawtooth               | A waveform that makes a ramp in one direction and a sudden jump in the other, looking somewhat like teeth of a saw                                                     |
 | scide                  | SuperCollider Integrated Development Environment. The main code-interaction interface                                                                                  |
 | sclang                 | SuperCollider language. Evaluates code and displays results                                                                                                            |
 | scsynth                | SuperCollider synthesis server. Receives OSC messages and produces audio                                                                                               |
+| segment                | In an envelope, a breakpoint consisting of a /target value/, /time/ and /curve/                                                                                        |
 | selector               | In a method call, the method's name                                                                                                                                    |
 | square wave            | A pulse wave with a width of 50\%                                                                                                                                      |
 | triangle wave          | A waveform made of straight, diagonal lines up and down                                                                                                                |
+| trigger                | In the server, a trigger happens when a signal crosses 0: i.e., when the previous sample was $\le$ 0 and the current sample is > 0                                     |
 | UGen                   | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                 |
 | unordered              | Of a collection, indicates that the collection may rearrange the items' order for faster lookup, e.g., Set, Dictionary                                                 |
 | variable               | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                        |
+
 
 * Classes 							   :noexport:
 #+name: class
@@ -101,6 +107,8 @@
 | Osc  | Saw          | Band-limited sawtooth oscillator                                                                                                 | freq                                                         |
 | Osc  | LFSaw        | Non-band-limited sawtooth oscillator                                                                                             | freq, iphase                                                 |
 | Osc  | Pulse        | Band-limited pulse wave oscillator                                                                                               | freq, width                                                  |
+| Trig | Impulse      | Produces triggers at equal time intervals---single sample impulses, /freq/ times per second                                      | freq, phase                                                  |
+| Trig | Dust         | Produces randomly timed triggers, averaging /density/ triggers per second                                                        | density                                                      |
 
 * src blocks 							   :noexport:
 
