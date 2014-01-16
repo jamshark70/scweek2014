@@ -184,3 +184,107 @@ Bus(\control, 0, 1, s).get(_.postln)
 ~num = [3, 2, 1];
 
 ~num = [1, { LFNoise0.kr(10) }, 3];
+
+
+
+
+// psSet event
+// need to figure how to handle multiple objects in a proxy
+// bug: sustain > delta should suppress release (but we don't know at sched time)
+
+Event.addEventType(\psSet, {
+	var value,
+	sustain = ~sustain.value;
+	~proxyspace.keysValuesDo { |name, proxy|
+		var ctl = proxy.objects[0];
+		case
+		{ ctl.isKindOf(SynthDefControl) } {
+			ctl.synthDef.allControlNames.do { |cn|
+				if(#[gate, fadeTime, out].includes(cn.name.asSymbol).not and: {
+					(value = cn.name.asSymbol.envirGet).notNil
+				}) {
+					proxy.set(cn.name, value);
+				};
+				if(cn.name == \gt and: { sustain.notNil }) {
+					thisThread.clock.sched(sustain, { proxy.set(cn.name, 0) });
+				};
+			};
+		}
+		{ ctl.isKindOf(ScalarSynthControl) } {
+			if((value = name.envirGet).notNil) {
+				proxy.set(\value0, value);
+				proxy.source = value;
+			};
+			if(name == \gt and: { sustain.notNil }) {
+				thisThread.clock.sched(sustain, {
+					proxy.set(name, 0);
+					proxy.source = 0;
+				});
+			};
+		}
+	};
+});
+
+AbstractPlayControl.proxyControlClasses[\psSet] = PatternControl;
+AbstractPlayControl.buildMethods[\psSet] = { |pattern, proxy, channelOffset = 0, index|
+	Pbindf(pattern, \type, \psSet, \proxyspace, currentEnvironment)
+	.buildForProxy(proxy, channelOffset, index)
+};
+
+p = ProxySpace.new; p.push;
+
+~oscil = { |freq = 220, detun = 1.003|
+   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], 0.1))
+};
+~filter = { |ffreq = 2000| LPF.ar(~oscil.ar, ffreq) };
+~filter.addSpec(\ffreq, \freq);
+~eg = { |t_trig = 0, decay = 0.6|
+	EnvGen.kr(
+		envelope: Env([0, 1, 0], [0.01, decay], -4),
+		gate: t_trig
+	)
+};
+
+~out = { (~filter.ar * ~eg).dup }; ~out.play;
+
+~eg.set(\t_trig, 1);
+
+(type: \psSet, proxyspace: Environment.current, freq: exprand(200, 800), t_trig: 1).play;
+
+~sequencer = \psSet -> Pbind(\freq, Pexprand(110, 440, inf), \t_trig, 1, \dur, 0.25);
+
+~sequencer = \psSet -> Pbind(
+	\freq, Pexprand(110, 440, inf),
+	\t_trig, 1,
+	\dur, Pexprand(0.05, 0.5, inf),
+	\decay, Pkey(\dur) * 1.2
+);
+
+~sequencer = nil;
+
+~out.stop;  // We'll use these proxies some more
+
+// introspect oscil
+~oscil.dump
+~oscil.objects[0].dump
+~oscil.objects[0].synthDef.dump
+~oscil.objects[0].synthDef.allControlNames
+
+p.gui;
+
+
+~eg = { |gt = 0, decay = 0.6|
+	EnvGen.kr(
+		envelope: Env.adsr(0.01, 0.15, 0.4, 0.1),
+		gate: gt
+	)
+};
+
+~sequencer = \psSet -> Pbind(
+	\freq, Pexprand(110, 440, inf),
+	\gt, 1,
+	\dur, Pexprand(0.12, 0.5, inf),
+	\legato, Pwhite(0.5, 1.3, inf)
+);
+
+~sequencer = nil;
