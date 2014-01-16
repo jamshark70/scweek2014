@@ -57,6 +57,11 @@
 #+LATEX_HEADER: \newcommand{\mth}[1]{\ci{\gls{#1}}}
 #+LATEX_HEADER: \newcommand{\ugen}[1]{\ci{\gls{#1}}}
 
+#+LATEX_HEADER: \makeatletter
+#+LATEX_HEADER: \def\@seccntformat#1{\protect\makebox[0pt][r]{\csname
+#+LATEX_HEADER: the#1\endcsname\quad}}
+#+LATEX_HEADER: \makeatother
+
 #+BEGIN_LaTeX
 \mode<article>{\setbeamertemplate{frametitle}{%
        \subsubsection{\insertframetitle\\%
