@@ -962,6 +962,22 @@ p = ProxySpace.new; p.push;
        - Rises quickly to 1 over 0.01 seconds every time a trigger comes into \ci{gate};
        - Falls back to 0 over 0.6 seconds.
 
+*** Triggers
+**** Plot code							   :noexport:
+{ var trig = Impulse.ar(300);
+	[trig, EnvGen.ar(Env.perc(0.01, 0.6), trig, timeScale: 1/300)]
+}.plot;
+**** A \egls{trigger} happens when a signal crosses from $\le$ 0 to > 0.
+     - Many UGens respond to triggers.
+     - Here, the trigger signal consists of \eglspl{impulse}.
+     - Common trigger UGens:
+       - \ugen{Impulse} :: Impulses at a constant frequency.
+       - \ugen{Dust} :: Impulses at random durations, according to an average density.
+#+Begin_center
+#+attr_latex: :height 1in
+[[./img/trigger-and-envgen.png]]
+#+End_center
+
 *** Envelope generator as amplifier
 **** Amplifier is multiplication (\ci{*}).
 #+Begin_src {} -i
@@ -1053,7 +1069,7 @@ p.gui;
        :END:
        The envelope decays quickly, so the sound gets much quieter
        between triggers. But the triggers come very quickly---30 Hz is
-       within audio range---so we hear a strong amplitude modulation
+       within audio range---so we hear a strong \egls{amplitude modulation}
        effect, adding another pitch.
 ****** right							      :BMCOL:
        :PROPERTIES:
@@ -1093,27 +1109,153 @@ p.gui;
 # }.plot;
 # #+End_src
 
-*** Standard envelope shapes: Helper methods
-**** Timed envelopes (OK with \glspl{trigger})
-     - \mth{linen} :: Linear attack and decay, flat sustain.
-     - \mth{perc} :: Curved attack and decay, no sustain.
-     - \mth{sine} :: Sine-shaped attack and decay, no sustain.
-**** Sustaining envelopes (OK with \glspl{gate})
-     *Note:* For these two, \ci{sustain} is a level, not a time.
-     - \mth{adsr} :: Attack-Decay-Sustain-Release.\\
-       This is one of the most standard envelope types, found in
-                     almost any synthesizer.
-     - \mth{asr} :: Same as \ci{adsr}, but without the decay
-                    portion.
-#+name: tryEnv
-#+caption: Try plotting these different envelope shapes. Modify the example to try the other methods. Use auto-completion to see the parameter names and defaults.
+*** Standard envelope shapes: Timed
+    - \mth{linen} :: Linear attack and decay, flat sustain.
+    - \mth{perc} :: Curved attack and decay, no sustain.
+    - \mth{sine} :: Sine-shaped attack and decay, no sustain.
+#+name: tryEnv1
+#+caption: Try plotting these timed envelope shapes. Modify the example to try the other methods. Use auto-completion to see the parameter names and defaults.
 #+begin_src {} -i
 Env.linen(0.1, 1, 0.1).plot;
 #+end_src
 
+*** Sustaining envelopes (OK with \glspl{gate})
+    *Note:* For these two, \ci{sustain} is a level, not a time.
+    - \mth{adsr} :: Attack-Decay-Sustain-Release.\\
+      This is one of the most standard envelope types, found in
+		    almost any synthesizer.
+    - \mth{asr} :: Same as \ci{adsr}, but without the decay
+		   portion.
+#+name: tryEnv2
+#+caption: Try plotting these sustaining envelope shapes.
+#+begin_src {} -i
+Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
+#+end_src
 
+*** Sustaining envelopes
+**** Why sustaining envelopes?
+     - When playing on a MIDI keyboard, you don't know in advance how long to sustain.
+     - So you need an envelope that will wait for a signal to release.
+**** \egls{releaseNode} creates a sustaining envelope.
+     - The release node is the release segment's index.
+     - For example, ADSR has:
+       - Attack: Segment 0
+       - Decay: Segment 1
+       - Release: Segment 2
+     - So releaseNode is 2.
 
-*** Refinements 						   :noexport:
+*** Sustaining envelopes and gates
+**** Plot code							   :noexport:
+{ var trig = Impulse.ar(30);
+	trig = Trig1.ar(trig, TRand.ar(1/120, 1/40, trig));
+	[trig, EnvGen.ar(Env.adsr(0.01, 0.1, 0.5, 0.01), trig, timeScale: 1/30)]
+}.plot(0.1);
+**** That signal is a \egls{gate}.
+     - A gate is > 0 when open, and $\le$ 0 when closed.
+     - \ugen{EnvGen} triggers when a gate opens, and releases when it closes.
+     Note the effect of the different open/close times.
+#+Begin_center
+#+attr_latex: :height 1.5in
+[[./img/gates-and-env.png]]
+#+End_center
+
+*** Sustaining envelope in ProxySpace
+**** Replace the timed envelope with a sustaining envelope.
+     - No longer a trigger, so change \ci{t\textunderscore trig} to \ci{gt}.
+       - Normally a \clss{SynthDef} calls the gate input \ci{gate},
+         but that's reserved for another use in \clss{ProxySpace}.
+     - Use \mth{set} to open and close the gate.
+#+name: susEnv
+#+caption: Plug a sustaining envelope into the analog-style synth.
+#+begin_src {} -i
+~eg = { |gt = 0|
+   EnvGen.kr(
+      envelope: Env.adsr(0.01, 0.15, 0.4, 0.1),
+      gate: gt
+   )
+};
+
+~eg.set(\gt, 1);  // trigger
+~eg.set(\gt, 0);  // release
+#+end_src
+
+*** More convenience for gates: Events
+**** Sequencing: inconvenient to close gates by hand.
+     Introducing \clss{Event}.
+     - We will learn more about events as we go.
+     - Events have lots of pryoperties, including timing.
+       - \ci{dur} :: Number of beats until the next event.
+       - \ci{sustain} :: Number of beats to keep a gate open. (May
+                         also be calculated from \cd{dur * legato}.)
+
+*** Events with ProxySpace
+    - In \clss{ProxySpace}, a special event type can set parameters globally in the entire space.
+      - \mth{setEvent}
+    - This event type handles \ci{gt} specially.
+      - It automatically closes the gate if you provide a \ci{sustain} time.
+      - So, for this usage pattern, get used to using \ci{gt} for gates.
+#+name: gateEvent
+#+caption: Hold a gate open for a given amount of time using an Event.
+#+begin_src {} -i
+p.setEvent((gt: 1, sustain: 0.5)).play;
+p.setEvent((gt: 1, sustain: 3)).play;
+#+end_src
+
+*** Coordinated changes with Events
+**** An \clss{Event} can set lots of controls at once.
+     - Just list them in the same \cd{name: value} syntax.
+     - If the name exists anywhere in the \clss{ProxySpace}, the event will find it and set it.
+     - \mth{exprand}: random frequency according to an exponential scale.
+     - \mth{degree}: interprets \mth{rrand} number as a diatonic scale degree.
+# nb: \mth{degree} is actually listed in the main glossary
+#+name: multiSetEvent
+#+caption: Set both frequency and gate.
+#+begin_src {} -i
+p.setEvent((freq: exprand(100, 400), gt: 1,
+   sustain: rrand(0.2, 0.8))).play;
+
+p.setEvent((degree: rrand(-14, 0), gt: 1,
+   sustain: rrand(0.2, 0.8))).play;
+#+end_src
+     We are now /centimeters/ away from sequencing!
+
+*** Envelopes for articulation
+**** Envelopes can control any parameter.
+     /Very/ common: control the filter frequency, for articulation.
+     - Create a new \ugen{EnvGen}, as a multiplier for \ci{ffreq}.
+     - Use it in the \ci{\textasciitilde filter} module.
+#+latex: \glsadd{clip}
+#+name: filterEg
+#+caption: Apply an envelope to the filter frequency.
+#+begin_src {} -i
+~feg = { |gt = 0|
+   EnvGen.kr(Env([1, 4, 1], [0.01, 0.15], -4), gt)
+};
+
+~filter = { |ffreq = 2000, rq = 0.2|
+   RLPF.ar(~oscil.ar,
+      clip(ffreq * ~feg, 20, 20000),
+      rq
+   )
+};
+
+p.setEvent((freq: exprand(100, 400), gt: 1,
+   sustain: rrand(0.2, 0.8))).play;
+#+end_src
+
+*** Notes on that example
+**** Filter envelope as a multiplier.
+     - The envelope /modulates/ the set filter frequency. You get
+       articulation /and/ independent timbre control.
+     - \cd{ffreq * \textasciitilde feg} may go outside the valid
+       frequency range. \mth{clip} it for safety.
+       - \mth{clip} moves out-of-range values to the nearest boundary.
+       - Filters tend to blow up if the frequency goes out of range.
+**** \cd{p.setEvent} treats the control inputs globally.
+     - \cd{gt: 1} in the event sets \ci{gt} in both envelope modules
+       simultaneously.
+
+*** Refinements							   :noexport:
 **** Making it sound richer
      - Detuned oscillators
      - ??
@@ -1123,6 +1265,16 @@ Env.linen(0.1, 1, 0.1).plot;
        - Internal: Low Frequency Oscillators (LFOs)
        - External: GUI and device input
 
+
+
+* Sequencing
+*** Sequencing: Basic requirements
+**** For sequencing, we need:
+     - /Musical/ information (pitch, timbre controls, etc.)
+     - /Rhythm/ information:
+       - How long to hold a note
+       - How long to wait until the next note
+     - A way to /pause/ activity for some time, and resume exactly where it left off.
 
 * Effects common in subtractive synthesis			   :noexport:
 ** Chorus
