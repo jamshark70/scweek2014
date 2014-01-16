@@ -20,6 +20,7 @@
 | filter                 | A signal processor that changes a sound's spectrum                                                                                                                     |
 | frequency response     | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                         |
 | function               | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object     |
+| gate                   | Related to triggers. The gate is ``open'' when > 0, and closed when $\le$ 0. Used with sustaining envelopes such as ADSR                                               |
 | global                 | Referring to a variable that is available everywhere in the system. Interpreter variables a--z are global                                                              |
 | interpreter            | Referring to the single-letter variables a--z                                                                                                                          |
 | iteration              | Performing the same operation several times, over items in a collection or a series of numbers                                                                         |
@@ -77,14 +78,19 @@
 | Term       | Description                                                                                                                                                       |
 |------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | addSpec    | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
+| adsr       | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                      |
 | ar         | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
+| asr        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain faith is gated rather than timed                                       |
 | dup        | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(3)'' becomes ``[1, 1, 1]'' and so on                                                                   |
 | kr         | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
+| linen      | \cd{Env.linen} makes a linear (trapezoidal) envelope                                                                                                              |
 | midiratio  | Convert a number of semitones into a frequency factor                                                                                                             |
+| perc       | \cd{Env.perc} makes a percussive envelope (quick attack, curved decay)                                                                                            |
 | play       | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
 | push       | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
 | reciprocal | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
 | release    | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
+| sine       | \cd{Env.sine} makes an attack-decay envelope with sine-shaped segments. More or less a bell curve                                                                 |
 | stop       | Stop a process that was previously started by ``play''                                                                                                            |
 | value      | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
 

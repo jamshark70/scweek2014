@@ -922,9 +922,9 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
        every segment).
 
 *** Add an envelope to the synth
-**** All synths should have an amplitude envelope.
+**** Audio synths should have an amplitude envelope.
      - Start from silence, end with silence.
-     - Amplitude envelope is usually last in the chain.
+#+latex: \glsadd{EnvGen}\glsadd{Impulse}
 #+Name: ampenv1
 #+Caption: Apply an evenly-triggered amplitude envelope.
 #+Begin_src {} -i
@@ -936,7 +936,7 @@ p = ProxySpace.new; p.push;
 ~filter = { |ffreq = 2000| LPF.ar(~oscil.ar, ffreq) };
 ~filter.addSpec(\ffreq, \freq);
 ~eg = { EnvGen.kr(
-   Env([0, 1, 0], [0.01, 0.6], -4),
+   envelope: Env([0, 1, 0], [0.01, 0.6], -4),
    gate: Impulse.kr(1)
 ) };
 
@@ -945,7 +945,35 @@ p = ProxySpace.new; p.push;
 ~out.stop;  // We'll use these proxies some more
 #+End_src
 
-*** TODO Envelope generator structure and use
+*** Envelope generator UGen
+# deliberately no caption: Don't want this numbered or collated
+#+Begin_src {} -i
+~eg = { EnvGen.kr(
+   envelope: Env([0, 1, 0], [0.01, 0.6], -4),
+   gate: Impulse.kr(1)
+) };
+#+End_src
+**** \clss{Env} defines the envelope. \ugen{EnvGen} plays it.
+     - Inputs used here:
+       - envelope :: The \clss{Env} definition.
+       - gate :: The trigger or gate input. (More about gates later.)
+     - Its output is a signal which:
+       - Starts at 0;
+       - Rises quickly to 1 over 0.01 seconds every time a trigger comes into \ci{gate};
+       - Falls back to 0 over 0.6 seconds.
+
+*** Envelope generator as amplifier
+**** Amplifier is multiplication (\ci{*}).
+#+Begin_src {} -i
+~out = { (~filter.ar * ~eg).dup }; ~out.play;
+#+End_src
+     Amplitude envelope is usually last in the chain.
+     - Here, it's in an \cd{\textasciitilde out} proxy.
+     - \cd{\textasciitilde out} is the one that gets played.
+#+begin_center
+#+attr_latex: :height 1.5in
+[[./img/visualize-proxy-network.pdf]]
+#+end_center
 
 *** Explore envelope behavior
 **** Add two parameters: trigger frequency and decay time.
@@ -1065,7 +1093,27 @@ p.gui;
 # }.plot;
 # #+End_src
 
-*** Refinements							   :noexport:
+*** Standard envelope shapes: Helper methods
+**** Timed envelopes (OK with \glspl{trigger})
+     - \mth{linen} :: Linear attack and decay, flat sustain.
+     - \mth{perc} :: Curved attack and decay, no sustain.
+     - \mth{sine} :: Sine-shaped attack and decay, no sustain.
+**** Sustaining envelopes (OK with \glspl{gate})
+     *Note:* For these two, \ci{sustain} is a level, not a time.
+     - \mth{adsr} :: Attack-Decay-Sustain-Release.\\
+       This is one of the most standard envelope types, found in
+                     almost any synthesizer.
+     - \mth{asr} :: Same as \ci{adsr}, but without the decay
+                    portion.
+#+name: tryEnv
+#+caption: Try plotting these different envelope shapes. Modify the example to try the other methods. Use auto-completion to see the parameter names and defaults.
+#+begin_src {} -i
+Env.linen(0.1, 1, 0.1).plot;
+#+end_src
+
+
+
+*** Refinements 						   :noexport:
 **** Making it sound richer
      - Detuned oscillators
      - ??
