@@ -6,6 +6,9 @@
     - 'key.argname'?
     - I think maybe even better to share control names across proxies
       Dictionary: argname -> Set of NodeProxies with that argname
+*** TODO Move psSet support into a proper file
+*** TODO Support multiple NP objects in psSet
+*** TODO Move ProxySpace:setEvent into a proper file
 ** Numbers in ProxySpace: DC or control?
 *** DONE Changing number doesn't update proxy's source
 *** INPROG Switching back to numberproxy uses old value in set of args
@@ -89,10 +92,9 @@
    - Related
      - Formant synthesis (Formlet)
      - Banded waveguides (feedback delays)
-* Glossary decisions [0/3]
+* Glossary decisions [0/2]
   - [ ] range
   - [ ] Nyquist
-  - [ ] 
 * Overview (MD export)
   :PROPERTIES:
   :EXPORT_TITLE: Synthesis and Performance with SuperCollider

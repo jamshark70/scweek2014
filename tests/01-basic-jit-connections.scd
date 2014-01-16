@@ -192,9 +192,11 @@ Bus(\control, 0, 1, s).get(_.postln)
 // need to figure how to handle multiple objects in a proxy
 // bug: sustain > delta should suppress release (but we don't know at sched time)
 
+(
 Event.addEventType(\psSet, {
 	var value,
-	sustain = ~sustain.value;
+	sustain = ~sustain.value,
+	releaseHolder = ~releaseHolder;
 	~proxyspace.keysValuesDo { |name, proxy|
 		var ctl = proxy.objects[0];
 		case
@@ -206,7 +208,14 @@ Event.addEventType(\psSet, {
 					proxy.set(cn.name, value);
 				};
 				if(cn.name == \gt and: { sustain.notNil }) {
-					thisThread.clock.sched(sustain, { proxy.set(cn.name, 0) });
+					if(releaseHolder.notNil) {
+						releaseHolder[proxy] = thisThread.beats + sustain;
+					};
+					thisThread.clock.sched(sustain, {
+						if(releaseHolder.isNil or: { releaseHolder[proxy] ? 0 <= thisThread.beats }) {
+							proxy.set(cn.name, 0)
+						};
+					});
 				};
 			};
 		}
@@ -216,9 +225,14 @@ Event.addEventType(\psSet, {
 				proxy.source = value;
 			};
 			if(name == \gt and: { sustain.notNil }) {
+				if(releaseHolder.notNil) {
+					releaseHolder[proxy] = thisThread.clock.beats + sustain;
+				};
 				thisThread.clock.sched(sustain, {
-					proxy.set(name, 0);
-					proxy.source = 0;
+					if(releaseHolder.isNil or: { releaseHolder[proxy] ? 0 <= thisThread.clock.beats }) {
+						proxy.set(name, 0);
+						proxy.source = 0;
+					};
 				});
 			};
 		}
@@ -227,9 +241,18 @@ Event.addEventType(\psSet, {
 
 AbstractPlayControl.proxyControlClasses[\psSet] = PatternControl;
 AbstractPlayControl.buildMethods[\psSet] = { |pattern, proxy, channelOffset = 0, index|
-	Pbindf(pattern, \type, \psSet, \proxyspace, currentEnvironment)
+	if(currentEnvironment.isKindOf(ProxySpace).not) {
+		Error("\\psSet may not be used outside of a ProxySpace").throw;
+	};
+	// releaseHolder may well be a hack,
+	// but it should actually be local to the pattern
+	// must protect in a Ref
+	// Pbindf will extract its value automatically
+	// but not use composeEvents()
+	Pbindf(pattern, \type, \psSet, \proxyspace, currentEnvironment, \releaseHolder, `(IdentityDictionary.new))
 	.buildForProxy(proxy, channelOffset, index)
 };
+)
 
 p = ProxySpace.new; p.push;
 
@@ -248,6 +271,8 @@ p = ProxySpace.new; p.push;
 ~out = { (~filter.ar * ~eg).dup }; ~out.play;
 
 ~eg.set(\t_trig, 1);
+
+p.setEvent((freq: exprand(200, 800), t_trig: 1)).play;
 
 (type: \psSet, proxyspace: Environment.current, freq: exprand(200, 800), t_trig: 1).play;
 
@@ -273,18 +298,25 @@ p = ProxySpace.new; p.push;
 p.gui;
 
 
-~eg = { |gt = 0, decay = 0.6|
+~eg = { |gt = 0|
 	EnvGen.kr(
 		envelope: Env.adsr(0.01, 0.15, 0.4, 0.1),
 		gate: gt
 	)
 };
 
+~eg.set(\gt, 1);  // trigger
+~eg.set(\gt, 0);  // release
+
+p.setEvent((freq: exprand(200, 800), gt: 1, sustain: 3)).play;
+
 ~sequencer = \psSet -> Pbind(
 	\freq, Pexprand(110, 440, inf),
 	\gt, 1,
-	\dur, Pexprand(0.12, 0.5, inf),
-	\legato, Pwhite(0.5, 1.3, inf)
+	\dur, 1, // Pexprand(0.12, 0.5, inf),
+	\legato, 1.2 // Pwhite(0.9, 1.1, inf)
 );
 
 ~sequencer = nil;
+
+p.clear;
