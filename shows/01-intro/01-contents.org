@@ -555,7 +555,7 @@ p.clear;
        @@latex:\ci{\textbackslash ffreq}@@ argument. The \ci{gui}
        instruction then uses this range.
      - \ci{\textbackslash freq} is a predefined range: 20--20000 Hz,
-       with an exponential curve (because you go up an octave by
+       with an \egls{exponential} curve (because you go up an octave by
        /multiplying/, not adding).
 
 *** Writing ranges in SC
@@ -563,7 +563,7 @@ p.clear;
     - Short form: \cd{[low, high, curve, step, default]}
 **** Curves
      - \ci{\textbackslash lin} :: Linear.
-     - \ci{\textbackslash exp} :: Exponential.
+     - \ci{\textbackslash exp} :: \eGls{exponential}.
      - \ci{\textbackslash sin} :: Sine-shaped.
      - Number :: User-controllable curve.
 **** Examples
@@ -1202,7 +1202,7 @@ p.setEvent((gt: 1, sustain: 3)).play;
 **** An \clss{Event} can set lots of controls at once.
      - Just list them in the same \cd{name: value} syntax.
      - If the name exists anywhere in the \clss{ProxySpace}, the event will find it and set it.
-     - \mth{exprand}: random frequency according to an exponential scale.
+     - \mth{exprand}: random frequency according to an \egls{exponential} scale.
      - \mth{degree}: interprets \mth{rrand} number as a diatonic scale degree.
 # nb: \mth{degree} is actually listed in the main glossary
 #+name: multiSetEvent
@@ -1311,19 +1311,71 @@ p.gui;
 #+name: scifi2
 #+caption: Add an LFO to the filter.
 #+begin_src {} -i
-~filtlfo = { |lfreq = 1, depth = 0.1|
-   depth = depth + 1;
-   SinOsc.kr(lfreq).exprange(depth.reciprocal, depth)
-};
+~lfreq = 1; ~lfreq.addSpec(\value0, [0.5, 18, \exp]);
+~depth = 100; ~depth.addSpec(\value0, [0, 1000]);
+~filtlfo = { SinOsc.kr(~lfreq) * ~depth };
 
 ~filter = { |ffreq = 2000, rq = 0.08|
-   ffreq = (ffreq * ~filtlfo).clip(20, 20000);
+   ffreq = (ffreq + ~filtlfo).clip(20, 20000);
    RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
 };
 
 ~filtlfo.addSpec(\lfreq, [0.5, 18, \exp]);
 ~filtlfo.addSpec(\depth, [0, 4]);
 #+end_src
+
+*** LFO shape
+**** Many common LFO shapes exist.
+     This one is a simple sinewave (\clss{SinOsc}).\\
+     Audio UGens may often be used for control signals.
+**** Try some other shapes.
+     What do they sound like?
+#+name: lfoshapes
+#+caption: Play with some other common LFO shapes.
+#+begin_src {} -i
+~filtlfo = { LFPulse.kr(~lfreq) * ~depth };
+~filtlfo = { LFTri.kr(~lfreq) * ~depth };
+~filtlfo = { LFSaw.kr(~lfreq) * ~depth };
+~filtlfo = { LFSaw.kr(~lfreq) * ~depth.neg };
+#+end_src
+
+*** Uncommon LFO shapes
+
+#+name: lfoshapes2
+#+caption: LFO shapes not commonly found in other software.
+#+begin_src {} -i
+~filtlfo = { LFNoise0.kr(~lfreq) * ~depth };
+~filtlfo = { LFNoise1.kr(~lfreq) * ~depth };
+#+end_src
+
+*** Modulation: All about signal ranges
+**** Remember the key questions from before:
+     - What is the range I /get from/ a UGen?
+       - \ugen{SinOsc} range: -1--1 (bipolar).
+     - What is the range I need to /put into/ a UGen?
+       - Frequency is an \gls{exponential} scale.
+       - Modulation should be by /multiplying/.
+       - 
+     - How can I convert one to the other, mathematically?
+
+# later
+# #+name: scifi3
+# #+caption: Exponential-scale LFO for frequency.
+# #+begin_src {} -i
+# ~filtlfo = { |lfreq = 1, depth = 0.1|
+#    depth = depth + 1;
+#    SinOsc.kr(lfreq).exprange(depth.reciprocal, depth)
+# };
+# 
+# ~filter = { |ffreq = 2000, rq = 0.08|
+#    ffreq = (ffreq * ~filtlfo).clip(20, 20000);
+#    RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+# };
+# 
+# ~filtlfo.addSpec(\lfreq, [0.5, 18, \exp]);
+# ~filtlfo.addSpec(\depth, [0, 4]);
+# #+end_src
+
 
 *** Take it apart: How does it work?
 **** Here, a simple sinewave.

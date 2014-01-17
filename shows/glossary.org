@@ -19,6 +19,7 @@
 | envelope               | A control signal that shapes amplitude or another parameter. Important for note control. A standard shape is ADSR                                                      |
 | envelope generator     | The standard name for the unit and a synthesizer that produces an envelope signal from the envelope's parameters                                                       |
 | environment            | Named storage for objects, which can be retrieved using the convenient variable-like syntax \textasciitilde name                                                       |
+| exponential            | A unit of measurement that works by multiplication. If $f$ is a frequency, ``up an octave'' is $2f$                                                                    |
 | filter                 | A signal processor that changes a sound's spectrum                                                                                                                     |
 | frequency response     | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                         |
 | function               | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object     |
