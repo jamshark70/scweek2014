@@ -13,11 +13,11 @@
 *** DONE Changing number doesn't update proxy's source
 *** INPROG Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
-*** TODO Filter to remove non-frame text
+*** POSTPONED Filter to remove non-frame text
 *** TODO Listings numbering problem with onlyenv
 *** INPROG Extract code examples
-*** TODO Index entries
-*** TODO Glossary
+*** DONE Index entries
+*** DONE Glossary
 *** DONE Why do subsections become frames in beamerarticle?
 #+begin_src emacs-lisp -i
 (defun hjh-print-src-blocks ()
