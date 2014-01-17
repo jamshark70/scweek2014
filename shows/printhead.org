@@ -57,10 +57,21 @@
 #+LATEX_HEADER: \newcommand{\mth}[1]{\ci{\gls{#1}}}
 #+LATEX_HEADER: \newcommand{\ugen}[1]{\ci{\gls{#1}}}
 
+# http://en.wikibooks.org/wiki/LaTeX/List_Structures#Customizing_manually
+#+LATEX_HEADER: \let\olditemize\itemize
+#+LATEX_HEADER: \renewcommand{\itemize}{
+#+LATEX_HEADER:   \olditemize
+#+LATEX_HEADER:   \setlength{\itemsep}{1pt}
+#+LATEX_HEADER:   \setlength{\parskip}{0pt}
+#+LATEX_HEADER:   \setlength{\parsep}{0pt}
+#+LATEX_HEADER: }
+
+# sectsty manual
 #+LATEX_HEADER: \makeatletter
 #+LATEX_HEADER: \def\@seccntformat#1{\protect\makebox[0pt][r]{\csname
 #+LATEX_HEADER: the#1\endcsname\quad}}
 #+LATEX_HEADER: \makeatother
+
 
 #+BEGIN_LaTeX
 \mode<article>{\setbeamertemplate{frametitle}{%
