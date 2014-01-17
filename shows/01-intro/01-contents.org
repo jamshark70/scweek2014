@@ -10,11 +10,8 @@
 
 #+include: "../glossary.org"
 
-* Resume export						    :B_ignoreheading:
-  :PROPERTIES:
-  :BEAMER_env: ignoreheading
-  :END:
-
+* Temp, just to put it in a frame
+*** Temp, just to put it in a frame
 #+call: makegloss
 #+results: makegloss
 
@@ -856,7 +853,7 @@ Close the old GUI window, and try different \ci{rq} values.
      - \ugen{RHPF} :: Highpass filter /with/ resonance
      - \ugen{BPF} :: Bandpass filter.
 **** Filter quality (Q) and \ci{rq} parameter.
-     - Q is a standard measure. SC uses $rq = \frac{1}{Q}$ to save CPU.
+     - Q is a standard measure. SC uses \ci{rq} = $\frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
 ** Note control
 *** Playing separate notes
@@ -1254,6 +1251,83 @@ p.setEvent((freq: exprand(100, 400), gt: 1,
 **** \cd{p.setEvent} treats the control inputs globally.
      - \cd{gt: 1} in the event sets \ci{gt} in both envelope modules
        simultaneously.
+
+*** Note control summary: Envelopes
+**** \eGls{breakpoint} \eglspl{envelope}
+     - Idea: Start level, list of segments
+     - Written in \clss{Env} using three arrays: \ci{levels}, \ci{times}, \ci{curve}
+**** \eGls{envelope generator}
+     - Renders the segments into a signal.
+     - Responds to \eglspl{trigger} and \eglspl{gate}.
+**** Triggers and gates: signal > 0
+     - A \te{trigger} is instantaneous, when the signal becomes > 0.
+     - A \te{gate} is open when > 0, closed otherwise.
+
+*** Note control summary: gates and events
+**** \eGlspl{gate} must be opened and closed.
+     - By hand, using \cd{\textasciitilde something.set(\textbackslash gt, 1)} or \cd{0}.
+     - An \clss{Event} can close the gate for you, after a given \ci{sustain} time.
+       - \ci{sustain} can be given directly, or you can provide \ci{dur} and \ci{legato}.
+**** Events can set many parameters at once.
+     Very useful for sequencing: The start of a note can change pitch,
+     amplitude, timbre controls all at once.
+
+** Modulation: Low-Frequency Oscillators
+
+*** Modulation
+**** Little secret: Synthesis techniques are sometimes /really simple/.
+     We just beef them up with /layering/ and \egls{modulation}.
+**** Modulate a parameter by another signal.
+     - We already did this, with the filter frequency envelope.
+     - Another modulation source: \eglspl{LFO} (Low-Frequency Oscillators)
+     - SC has a /lot/ of them.
+
+*** LFO + filter
+**** Start with an earlier synth, slightly modified.
+#+name: scifi1
+#+caption: Basic detuned synth.
+#+begin_src {} -i
+p = ProxySpace.new; p.push;
+
+~oscil = { |freq = 120|
+   var freq1 = freq * [0.5, 0.498, 0.503],
+   freq2 = freq * [1, 0.997, 1.004];
+   Mix(Pulse.ar(freq1)) + Mix(Saw.ar(freq2))
+};
+~filter = { |ffreq = 2000, rq = 0.08|
+   RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+};
+~filter.play;
+
+~filter.addSpec(\ffreq, \freq);
+~filter.addSpec(\rq, [1, 0.02, \exp]);
+p.gui;
+#+end_src
+
+*** Add an LFO: sci-fi heaven
+**** Same pattern as before:
+     - Add a new module (\ci{\textasciitilde filtlfo}).
+     - Use it in the filter (\cd{ffreq * \textasciitilde filtlfo}).
+#+name: scifi2
+#+caption: Add an LFO to the filter.
+#+begin_src {} -i
+~filtlfo = { |lfreq = 1, depth = 0.1|
+   depth = depth + 1;
+   SinOsc.kr(lfreq).exprange(depth.reciprocal, depth)
+};
+
+~filter = { |ffreq = 2000, rq = 0.08|
+   ffreq = (ffreq * ~filtlfo).clip(20, 20000);
+   RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+};
+
+~filtlfo.addSpec(\lfreq, [0.5, 18, \exp]);
+~filtlfo.addSpec(\depth, [0, 4]);
+#+end_src
+
+*** Take it apart: How does it work?
+**** Here, a simple sinewave.
+      \egls{LFO} frequency control ranges from 0.5--18 Hz.
 
 *** Refinements							   :noexport:
 **** Making it sound richer
