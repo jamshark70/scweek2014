@@ -125,9 +125,13 @@
    - Related
      - Formant synthesis (Formlet)
      - Banded waveguides (feedback delays)
-* Glossary decisions [0/2]
+* Glossary decisions [0/3]
   - [ ] range
   - [ ] Nyquist
+  - [ ] interpolation [0/3]
+    - [ ] linear
+    - [ ] cubic
+    - [ ] quadratic
 * Overview (MD export)
   :PROPERTIES:
   :EXPORT_TITLE: Synthesis and Performance with SuperCollider
