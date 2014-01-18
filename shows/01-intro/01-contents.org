@@ -618,9 +618,8 @@ p.clear;
    #+attr_latex: :height 2in
    [[./img/three-waves2.png]]
    #+end_center
-\\ *Note:* The upper partials of a triangle wave are much weaker than
-in a sawtooth or pulse wave. So there is no band-limited triangle UGen
-in SC.
+\\ *Note:* Band-limited triangle oscillators may be found in the
+sc3-plugins package.
 
 *** Pulse width
 **** \Gls{pulse wave}: Up and down times can differ
@@ -855,7 +854,8 @@ Close the old GUI window, and try different \ci{rq} values.
 **** Filter quality (Q) and \ci{rq} parameter.
      - Q is a standard measure. SC uses \ci{rq} = $\frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
-** Note control
+
+** Note control							   :noexport:
 *** Playing separate notes
 **** What defines a "note"?
      Mainly, it has a beginning and end!
@@ -1273,7 +1273,6 @@ p.setEvent((freq: exprand(100, 400), gt: 1,
      amplitude, timbre controls all at once.
 
 ** Modulation: Low-Frequency Oscillators
-
 *** Modulation
 **** Little secret: Synthesis techniques are sometimes /really simple/.
      We just beef them up with /layering/ and \egls{modulation}.
@@ -1306,8 +1305,11 @@ p.gui;
 
 *** Add an LFO: sci-fi heaven
 **** Same pattern as before:
-     - Add a new module (\ci{\textasciitilde filtlfo}).
-     - Use it in the filter (\cd{ffreq * \textasciitilde filtlfo}).
+     - Add a new module (\ci{\textasciitilde filtlfo}). This is a slowly-changing signal.
+     - Use it in the filter (\cd{ffreq + \textasciitilde
+       filtlfo}). Adding it to the basic filter frequency means that
+       the actual filter cutoff goes slowly above and below the set
+       frequency.
 #+name: scifi2
 #+caption: Add an LFO to the filter.
 #+begin_src {} -i
@@ -1319,9 +1321,6 @@ p.gui;
    ffreq = (ffreq + ~filtlfo).clip(20, 20000);
    RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
 };
-
-~filtlfo.addSpec(\lfreq, [0.5, 18, \exp]);
-~filtlfo.addSpec(\depth, [0, 4]);
 #+end_src
 
 *** LFO shape
@@ -1330,6 +1329,8 @@ p.gui;
      Audio UGens may often be used for control signals.
 **** Try some other shapes.
      What do they sound like?
+     - \ugen{LFNoise0} is like a standard synthesizer LFO called \egls{sample-and-hold}.
+#+latex: \glsadd{LFPulse}\glsadd{LFTri}\glsadd{LFSaw}
 #+name: lfoshapes
 #+caption: Play with some other common LFO shapes.
 #+begin_src {} -i
@@ -1337,51 +1338,99 @@ p.gui;
 ~filtlfo = { LFTri.kr(~lfreq) * ~depth };
 ~filtlfo = { LFSaw.kr(~lfreq) * ~depth };
 ~filtlfo = { LFSaw.kr(~lfreq) * ~depth.neg };
+~filtlfo = { LFNoise0.kr(~lfreq) * ~depth };
 #+end_src
 
 *** Uncommon LFO shapes
-
+**** SC goes further than the standard shapes.
+     - Ramps (\ugen{LFNoise1}) and curves (\ugen{LFNoise2}) between random numbers.
+     - Various functions from mathematics:
+       - Gaussian (bell-curve) wave
+       - Many, many \egls{chaotic} generators. 
+#+latex: \glsadd{LFGauss}\glsadd{LinCongL}\glsadd{QuadL}
 #+name: lfoshapes2
 #+caption: LFO shapes not commonly found in other software.
 #+begin_src {} -i
-~filtlfo = { LFNoise0.kr(~lfreq) * ~depth };
 ~filtlfo = { LFNoise1.kr(~lfreq) * ~depth };
+~filtlfo = { LFNoise2.kr(~lfreq) * ~depth };
+~filtlfo = { LFGauss.ar(~lfreq) * ~depth };
+
+// chaotic
+~filtlfo = { LinCongL.ar(~lfreq, 1.2, 0.08) * ~depth };
+~filtlfo = { QuadL.ar(~lfreq) * ~depth };
 #+end_src
 
 *** Modulation: All about signal ranges
 **** Remember the key questions from before:
      - What is the range I /get from/ a UGen?
-       - \ugen{SinOsc} range: -1--1 (bipolar).
      - What is the range I need to /put into/ a UGen?
-       - Frequency is an \gls{exponential} scale.
-       - Modulation should be by /multiplying/.
-       - 
      - How can I convert one to the other, mathematically?
+**** In this case:
+#+attr_latex: :align |l|c|
+|------------------------------------+----------------------|
+| *Operation*                        | *Range*              |
+|------------------------------------+----------------------|
+| \ugen{SinOsc}                      | Bipolar: $-1$ to $1$ |
+|------------------------------------+----------------------|
+| \cd{* \textasciitilde depth} ($d$) | $-d$ to $d$          |
+|------------------------------------+----------------------|
+| \cd{+ ffreq} ($f$)                 | $f-d$ to $f+d$       |
+|------------------------------------+----------------------|
 
-# later
-# #+name: scifi3
-# #+caption: Exponential-scale LFO for frequency.
-# #+begin_src {} -i
-# ~filtlfo = { |lfreq = 1, depth = 0.1|
-#    depth = depth + 1;
-#    SinOsc.kr(lfreq).exprange(depth.reciprocal, depth)
-# };
-# 
-# ~filter = { |ffreq = 2000, rq = 0.08|
-#    ffreq = (ffreq * ~filtlfo).clip(20, 20000);
-#    RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
-# };
-# 
-# ~filtlfo.addSpec(\lfreq, [0.5, 18, \exp]);
-# ~filtlfo.addSpec(\depth, [0, 4]);
-# #+end_src
+*** Modulation range for frequency
+**** Using \ci{+} for frequency is not quite right.
+     - We hear frequency in terms of multiplication (an
+       \egls{exponential} scale), not addition (\egls{linear} scale).
+     - Using \ci{+}, the center frequency is in the middle, but the
+       center /pitch/ is higher.
+     - We should use \ci{*} to make the center frequency sound like
+       the middle.
+#+latex: \glsadd{cpsmidi}\glsadd{round}\glsadd{differentiate}
+#+name: expscale
+#+caption: Convert modulation ranges for frequency into intervals.
+#+begin_src {} -i
+[1000, 2000, 3000].cpsmidi.round(0.01);
+// prints: [ 83.21, 95.21, 102.23 ]
 
+[1000, 2000, 3000].cpsmidi.differentiate.round(0.01);
+// prints: [ 83.21, 12, 7.02 ]
+// 1000-2000 is an octave; 2000-3000 is a P5
 
-*** Take it apart: How does it work?
-**** Here, a simple sinewave.
-      \egls{LFO} frequency control ranges from 0.5--18 Hz.
+[2000 / 1.5, 2000, 2000 * 1.5].cpsmidi.differentiate.round(0.01);
+// prints: [ 88.19, 7.02, 7.02 ]
+// 1500-2000 is a P5; 2000-3000 is a P5
+#+end_src
 
-*** Refinements							   :noexport:
+*** Converting the LFO to multiplication
+**** Give \ci{depth} in terms of a /multiplier/.
+     - It's more natural to think of depth 0 meaning no modulation.
+     - The multiplier should center around 1.
+     - So we will add 1 to get the range.
+**** Convert the LFO's \egls{linear} signal into an \egls{exponential} range.
+     - The \mth{exprange} method does this automatically.
+     - The lower bound should be $\frac{1}{depth}$; upper, $depth$.
+
+*** Exponentially-scaled modulator: Code
+**** *Note:* You will probably have to close the GUI window and re-create it using \cd{p.gui}.
+#+latex: \glsadd{exprange}\glsadd{reciprocal}
+#+name: explfo
+#+caption: Replace the linear-scale LFO with an exponential-scale LFO.
+#+begin_src {} -i
+~filtlfo = {
+   var depth = ~depth + 1;
+   SinOsc.kr(~lfreq).exprange(depth.reciprocal, depth)
+};
+
+~filter = { |ffreq = 2000, rq = 0.08|
+   ffreq = (ffreq * ~filtlfo).clip(20, 20000);
+   RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+};
+
+~lfreq.addSpec(\lfreq, [0.5, 18, \exp]);
+~depth.addSpec(\depth, [0, 4]);
+#+end_src
+
+*** Refinements 						   :noexport:
 **** Making it sound richer
      - Detuned oscillators
      - ??
