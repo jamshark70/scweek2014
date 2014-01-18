@@ -321,3 +321,60 @@ p.setEvent((freq: exprand(200, 800), gt: 1, sustain: 3)).play;
 ~sequencer = nil;
 
 p.clear;
+
+
+
+/*********
+Listing 29. Basic detuned synth.
+ *********/
+
+p = ProxySpace.new; p.push;
+
+~oscil = { |freq = 120|
+   var freq1 = freq * [0.5, 0.498, 0.503],
+   freq2 = freq * [1, 0.997, 1.004];
+   Mix(Pulse.ar(freq1)) + Mix(Saw.ar(freq2))
+};
+~filter = { |ffreq = 2000, rq = 0.08|
+   RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+};
+// ~filter.play;
+
+~filter.addSpec(\ffreq, \freq);
+~filter.addSpec(\rq, [1, 0.02, \exp]);
+p.gui;
+
+
+/*********
+Listing 30. Add an LFO to the filter.
+ *********/
+
+~lfreq = 1; ~lfreq.addSpec(\value0, [0.5, 18, \exp]);
+~depth = 100; ~depth.addSpec(\value0, [0, 1000]);
+~filtlfo = { SinOsc.kr(~lfreq) * ~depth };
+
+~filter = { |ffreq = 2000, rq = 0.08|
+   ffreq = (ffreq + ~filtlfo).clip(20, 20000);
+   RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+};
+
+
+
+/*********
+Listing 31. Play with some other common LFO shapes.
+ *********/
+
+~filtlfo = { LFPulse.kr(~lfreq) * ~depth };
+~filtlfo = { LFTri.kr(~lfreq) * ~depth };
+~filtlfo = { LFSaw.kr(~lfreq) * ~depth };
+~filtlfo = { LFSaw.kr(~lfreq) * ~depth.neg };
+
+
+/*********
+Listing 32. LFO shapes not commonly found in other software.
+ *********/
+
+~filtlfo = { LFNoise0.kr(~lfreq) * ~depth };
+~filtlfo = { LFNoise1.kr(~lfreq) * ~depth };
+
+
