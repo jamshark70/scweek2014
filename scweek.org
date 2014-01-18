@@ -15,7 +15,7 @@
 ** Org/LaTeX
 *** POSTPONED Filter to remove non-frame text
 *** TODO Listings numbering problem with onlyenv
-*** INPROG Extract code examples
+*** DONE Extract code examples
 #+begin_src emacs-lisp :exports none
 (defun hjh-get-string-from-nested-thing (thing)
   "Peel off 'car's from a nested list until the car is a string."
@@ -24,33 +24,33 @@
   thing
 )
 
-(defun hjh-src-blocks-to-string ()
+(defun hjh-src-blocks-to-string (counter)
   "Iterate src blocks from org-element and add them to a string."
-  (interactive)
+  (interactive "nStarting listing number: ")
+  (when (not counter) (setq counter 1))
   (let ((tree (org-element-parse-buffer))
-	(string "")
-	(counter 0))
+	(string ""))
     (org-element-map tree 'src-block
       (lambda (element)
 	(setq element (car (cdr element)))
 	(let ((caption (hjh-get-string-from-nested-thing (plist-get element :caption)))
 	      (source (hjh-get-string-from-nested-thing (plist-get element :value))))
 	  (when caption
-	    (setq counter (1+ counter))
-	    (setq string (concat string (format "/*********
-Listing %d. %s
- *********/
+	    (setq string (concat string (format "/**************
+ Listing %d. %s
+ **************/
 
 %s\n\n"
 					  counter
 					  (substring-no-properties caption)
-					  (substring-no-properties source))))))))
+					  (substring-no-properties source))))
+	    (setq counter (1+ counter))))))
     string))
 
-(defun hjh-src-blocks-to-buffer ()
+(defun hjh-src-blocks-to-buffer (counter)
   "Put all the captioned source blocks from a buffer into another buffer."
-  (interactive)
-  (let* ((contents (hjh-src-blocks-to-string))
+  (interactive "nStarting listing number: ")
+  (let* ((contents (hjh-src-blocks-to-string counter))
 	 (bufpath (buffer-file-name))
 	 (newname (concat (file-name-sans-extension bufpath) ".scd"))
 	 (bufname (file-name-nondirectory newname))
@@ -64,18 +64,6 @@ Listing %d. %s
 *** DONE Index entries
 *** DONE Glossary
 *** DONE Why do subsections become frames in beamerarticle?
-#+begin_src emacs-lisp -i
-(defun hjh-print-src-blocks ()
-  "Iterate src blocks from org-element and print them to *Messages*."
-  (interactive)
-  (let ((tree (org-element-parse-buffer)))
-    (org-element-map tree 'src-block
-      (lambda (element)
-	(message "\n\n\nELEMENT:")
-	(print (plist-get (car (cdr element)) :caption)))))
-  ""
-)
-#+end_src
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?
