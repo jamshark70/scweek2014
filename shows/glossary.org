@@ -93,15 +93,23 @@
 | asr           | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain faith is gated rather than timed                                       |
 | clip          | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
 | cpsmidi       | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
+| curvelin      | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
 | differentiate | Returns an array $y$ where $y_0 = x_0 - 0$, $y_1 = x_1 - x_0$ and so on                                                                                           |
+| drop          | On an array, remove $n$ items. If $n > 0$, remove the first $n$; if $n < 0$, remove the last $n$                                                               |
 | dup           | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(3)'' becomes ``[1, 1, 1]'' and so on                                                                   |
+| explin        | Convert an exponential input range (inMin, inMax) to a linear output range (outMin, outMax)                                                                       |
 | exprand       | \cd{exprand(low, high)}: Generate a random number $x$ where $low \le x \le high$, with an exponential distribution                                                |
 | exprange      | Converts a UGen's range into a different exponential range                                                                                                        |
 | fold          | Constrain a number within a range. The boundaries are like mirrors: A value above the maximum gets reflected back into the range                                  |
+| integrate     | Given an array, return a new array where each item is the sum of all the previous original items                                                                  |
 | kr            | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
+| lincurve      | Convert a linear input range (inMin, inMax) to a curved output range (outMin, outMax) with a user-specified curve factor                                          |
 | linen         | \cd{Env.linen} makes a linear (trapezoidal) envelope                                                                                                              |
+| linexp        | Convert a linear input range (inMin, inMax) to an exponential output range (outMin, outMax)                                                                       |
+| linlin        | Convert a linear input range (inMin, inMax) to a linear output range (outMin, outMax)                                                                             |
 | midicps       | Convert a MIDI note number to a frequency in Hz                                                                                                                   |
 | midiratio     | Convert a number of semitones into a frequency factor                                                                                                             |
+| neg           | Same result as \cd{-1 * n}, but slightly faster                                                                                                                   |
 | perc          | \cd{Env.perc} makes a percussive envelope (quick attack, curved decay)                                                                                            |
 | play          | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
 | push          | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
@@ -118,35 +126,36 @@
 | value         | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
 | wrap          | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                             |
 
-
 * UGens								   :noexport:
 #+name: ugens
-| Type  | Term         | Description                                                                                                                        | Arguments                                                    |
-|-------+--------------+------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------|
-| Math  | BinaryOpUGen | Performs a binary math operation where at least one of the two inputs is another UGen                                              | Not used directly                                            |
-| Filt  | BPF          | Bandpass filter                                                                                                                    | in, freq, rq                                                 |
-| Trig  | Dust         | Produces randomly timed triggers, averaging /density/ triggers per second                                                          | density                                                      |
-| Ctl   | EnvGen       | Envelope Generator. Produces the envelope signal from an Env specification                                                         | envelope, gate, levelScale, levelBias, timeScale, doneAction |
-| Filt  | HPF          | Butterworth highpass filter                                                                                                        | in, freq                                                     |
-| Trig  | Impulse      | Produces triggers at equal time intervals---single sample impulses, /freq/ times per second                                        | freq, phase                                                  |
-| Osc   | LFGauss      | A waveform modeled after the Gaussian normal distribution (``bell curve'')                                                         | duration, width, iphase, loop                                |
-| Osc   | LFNoise0     | Generates \ci{freq} random numbers per second, holding the value between each one                                                  | freq                                                         |
-| Osc   | LFNoise1     | Generates \ci{freq} random numbers per second and makes a linear ramp between each one                                             | freq                                                         |
-| Osc   | LFNoise2     | Generates \ci{freq} random numbers per second and makes a quadratic-interpolation curve between each one                           | freq                                                         |
-| Osc   | LFPulse      | Non-band-limited pulse wave, intended as an LFO for modulation. Unlike most other oscillators, its output range is unipolar (0--1) | freq, iphase, width                                          |
-| Osc   | LFSaw        | Non-band-limited sawtooth oscillator                                                                                               | freq, iphase                                                 |
-| Osc   | LFTri        | Non-band-limited triangle wave. It may be used as an audio oscillator because of limited aliasing                                  | freq, iphase                                                 |
-| Chaos | LinCongL     | Linear-congruent chaos generator. Has N and C variants                                                                             | See helpfile                                                 |
-| Filt  | LPF          | Butterworth lowpass filter                                                                                                         | in, freq                                                     |
-| Math  | Mix          | Mix a group of signals together (addition). Preserves stereo/multichannel arrangement. Includes optimizations not found in ``sum'' | none                                                         |
-| Osc   | Pulse        | Band-limited pulse wave oscillator                                                                                                 | freq, width                                                  |
-| Chaos | QuadL        | Quadratic-map chaos generator. Has N and C variants                                                                                | See helpfile                                                 |
-| Filt  | RHPF         | Resonant highpass filter                                                                                                           | in, freq, rq                                                 |
-| Filt  | RLPF         | Resonant lowpass filter                                                                                                            | in, freq, rq                                                 |
-| Osc   | Saw          | Band-limited sawtooth oscillator                                                                                                   | freq                                                         |
-| Osc   | SinOsc       | Sinewave oscillator                                                                                                                | freq, phase                                                  |
-| Math  | UnaryOpUGen  | Performs a unary math operation (neg, abs, log etc.) on another UGen                                                               | Not used directly                                            |
-| Osc   | VarSaw       | Sawtooth oscillator with variable duty cycle. Not band-limited                                                                     | freq, iphase, width                                          |
+| Type  | Term         | Description                                                                                                                               | Arguments                                                    |
+|-------+--------------+-------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------|
+| Math  | BinaryOpUGen | Performs a binary math operation where at least one of the two inputs is another UGen                                                     | Not used directly                                            |
+| Filt  | BPF          | Bandpass filter                                                                                                                           | in, freq, rq                                                 |
+| Trig  | Dust         | Produces randomly timed triggers, averaging /density/ triggers per second                                                                 | density                                                      |
+| Ctl   | EnvGen       | Envelope Generator. Produces the envelope signal from an Env specification                                                                | envelope, gate, levelScale, levelBias, timeScale, doneAction |
+| Filt  | HPF          | Butterworth highpass filter                                                                                                               | in, freq                                                     |
+| Trig  | Impulse      | Produces triggers at equal time intervals---single sample impulses, /freq/ times per second                                               | freq, phase                                                  |
+| Osc   | LFGauss      | A waveform modeled after the Gaussian normal distribution (``bell curve'')                                                                | duration, width, iphase, loop                                |
+| Osc   | LFNoise0     | Generates \ci{freq} random numbers per second, holding the value between each one                                                         | freq                                                         |
+| Osc   | LFNoise1     | Generates \ci{freq} random numbers per second and makes a linear ramp between each one                                                    | freq                                                         |
+| Osc   | LFNoise2     | Generates \ci{freq} random numbers per second and makes a quadratic-interpolation curve between each one                                  | freq                                                         |
+| Osc   | LFPulse      | Non-band-limited pulse wave, intended as an LFO for modulation. Unlike most other oscillators, its output range is unipolar (0--1)        | freq, iphase, width                                          |
+| Osc   | LFSaw        | Non-band-limited sawtooth oscillator                                                                                                      | freq, iphase                                                 |
+| Osc   | LFTri        | Non-band-limited triangle wave. It may be used as an audio oscillator because of limited aliasing                                         | freq, iphase                                                 |
+| Chaos | LinCongL     | Linear-congruent chaos generator. Has N and C variants                                                                                    | See helpfile                                                 |
+| Filt  | LPF          | Butterworth lowpass filter                                                                                                                | in, freq                                                     |
+| Math  | Mix          | Mix a group of signals together (addition). Preserves stereo/multichannel arrangement. Includes optimizations not found in ``sum''        | none                                                         |
+| Osc   | Pulse        | Band-limited pulse wave oscillator                                                                                                        | freq, width                                                  |
+| Chaos | QuadL        | Quadratic-map chaos generator. Has N and C variants                                                                                       | See helpfile                                                 |
+| Filt  | RHPF         | Resonant highpass filter                                                                                                                  | in, freq, rq                                                 |
+| Filt  | RLPF         | Resonant lowpass filter                                                                                                                   | in, freq, rq                                                 |
+| Osc   | Saw          | Band-limited sawtooth oscillator                                                                                                          | freq                                                         |
+| Osc   | SinOsc       | Sinewave oscillator                                                                                                                       | freq, phase                                                  |
+| Math  | UnaryOpUGen  | Performs a unary math operation (neg, abs, log etc.) on another UGen                                                                      | Not used directly                                            |
+| Osc   | VarSaw       | Sawtooth oscillator with variable duty cycle. Not band-limited                                                                            | freq, iphase, width                                          |
+| Ctl   | Line         | A straight line from \ci{start} to \ci{end}, in \ci{dur} seconds                                                                          | start, end, dur                                              |
+| Ctl   | XLine        | An exponentially-curved line from \ci{start} to \ci{end}, in \ci{dur} seconds. \ci{start} and \ci{end} must be the same sign and non-zero | start, end, dur                                              |
 
 * src blocks 							   :noexport:
 
