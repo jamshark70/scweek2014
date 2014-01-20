@@ -289,7 +289,7 @@ p.push;
      #+begin_center
      [[./img/take-apart-02-function.pdf]]
      #+end_center
-***** A \egls{function} is a block of code in curly braces.
+***** A \clss{Function} is a block of code in curly braces.
      - Functions can take information in through \egls{arguments}.
      - They always return one result.
      - \te{Call} a function using \mth{value}.
@@ -458,7 +458,7 @@ In \cd{SinOsc.ar(440)}:
 #+end_src
 
 *** Beginning usage: Summary 1
-**** Write audio processing into \eglspl{function}.
+**** Write audio processing into a \clss{Function}.
      - These functions should create \eglspl{UGen}: \cd{SinOsc.ar} or \cd{.kr}.
      - \cd{aFunction.play} /adds/ new synthesis into the server.
 **** \clss{ProxySpace} for plug-and-play.
@@ -481,7 +481,7 @@ In \cd{SinOsc.ar(440)}:
 *** Next: Synthesis techniques
     Now we know enough to start exploring standard synthesis techniques.
 
-* Subtractive synthesis
+* Subtractive synthesis						   :noexport:
 ** Overview							   :noexport:
 *** Subtractive synthesis
 **** One of the most basic techniques
@@ -1273,7 +1273,6 @@ p.setEvent((freq: exprand(100, 400), gt: 1,
      amplitude, timbre controls all at once.
 
 ** Modulation: Low-Frequency Oscillators
-*** TODO Prepare for range discussion				   :noexport:
 *** Modulation
 **** Little secret: Synthesis techniques are sometimes /really simple/.
      We just beef them up with /layering/ and \egls{modulation}.
@@ -1281,6 +1280,9 @@ p.setEvent((freq: exprand(100, 400), gt: 1,
      - We already did this, with the filter frequency envelope.
      - Another modulation source: \eglspl{LFO} (Low-Frequency Oscillators)
      - SC has a /lot/ of them.
+**** For this section:
+     - Introduce LFO shapes and mechanism
+     - Talk about signal ranges
 
 *** LFO + filter
 **** Start with an earlier synth, slightly modified.
@@ -1550,6 +1552,8 @@ item, use \mth{drop}:
 ~depth.addSpec(\depth, [0, 4]);
 #+end_src
 
+*** TODO Modulation summary?
+
 *** Refinements 						   :noexport:
 **** Making it sound richer
      - Detuned oscillators
@@ -1560,16 +1564,138 @@ item, use \mth{drop}:
        - Internal: Low Frequency Oscillators (LFOs)
        - External: GUI and device input
 
-
-
 * Sequencing
-*** Sequencing: Basic requirements
+** Overview: Routines and Tasks
+*** Sequencing: Basic requirements *REVISE*
 **** For sequencing, we need:
      - /Musical/ information (pitch, timbre controls, etc.)
      - /Rhythm/ information:
        - How long to hold a note
        - How long to wait until the next note
+     - Ways to do things /repeatedly/.
      - A way to /pause/ activity for some time, and resume exactly where it left off.
+
+*** Pausing: Routine
+**** In SC, a \clss{Routine} can pause and resume.
+     - Routines \mth{yield} values.
+     - Call \mth{next} to advance to the next \mth{yield}.
+     - The routine will give back the value, and wait at exactly that point.
+     - The next \mth{next} call will advance from there.
+#+name: routine1
+#+caption: A simple routine. Run r.next four times. How would you explain the results?
+#+begin_src {} -i
+r = Routine {
+   1.yield;
+   3.yield;
+   5.yield;
+};
+
+r.next;
+#+end_src
+
+*** Repeated actions: Loops
+**** Computer languages use \eglspl{loop} to do things again and again.
+     - It's inconvenient to write \mth{yield} again and again.
+     - We can use a \egls{loop} to write \mth{yield} once, but run it several times.
+**** Loops make it easier to write bigger programs.
+     - The last example yielded three values.
+     - What if I want to yield 100 values?
+     - Using a loop, I can write the values into a \egls{collection},
+       and write the action only once.
+
+*** Do loops
+**** \mth{do} loops
+     - \mth{do} runs a \clss{Function} several times.
+     - We'll put the desired values into an \clss{Array}, then \mth{do} over it.
+     - If \ci{func} is the function, this loop calls:
+       - \cd{func.value(1, 0)}---1 is the item; 0 is its index
+       - \cd{func.value(3, 1)}
+       - \cd{func.value(5, 2)}
+     - The array could be 100 items, but the \mth{do} function can stay the same.
+#+name: do1
+#+caption: A do loop.
+#+begin_src {} -i
+[1, 3, 5].do { |item|
+   item.postln;
+};
+#+end_src
+
+*** Do loop output
+**** Let's look at the printed output from Listing [[do1]].
+     - 1, 3 and 5 are easy enough to understand.
+#+begin_src {} -i
+1
+3
+5
+[ 1, 3, 5 ]
+#+end_src
+**** Why is the \clss{Array} repeated at the end?
+     - Every code block returns something as its result.
+     - \mth{do} returns its \egls{receiver}, which is the array.
+     - So: 1, 3 and 5 are printed inside the \mth{do} loop.
+     - \cd{[ 1, 3, 5 ]} is returned by \mth{do} itself, and printed as
+       the result of the whole code block.
+
+*** Routines and yielding within loops
+**** You may \mth{yield} inside a \mth{do} loop.
+     Or any other kind of loop.
+#+name: routine2_do
+#+caption: A simple routine with a do loop. Run r.next four times.
+#+begin_src {} -i
+r = Routine {
+   [1, 3, 5].do { |item|
+      item.yield;
+   };
+};
+
+r.next;
+#+end_src
+     - Same behavior as the earlier routine, but now easier to expand
+       (just write a longer array).
+
+*** Loops: When to stop
+**** Without a \clss{Routine}, a \gls{loop} must stop somehow.
+     - In Listing [[do1]], it stops at the end of the array.
+     - \cd{5.do...} would run the function five times and stop.
+     - \cd{inf.do...} will hang SC language. *Don't do that.*
+       - \Gls{infinite loop} :: A loop with no end. Locks up the
+            interpreter until you force-quit.
+**** Use the /Language/ menu $\to$ /Quit interpreter/ to regain control. :B_alertblock:
+     :PROPERTIES:
+     :BEAMER_env: alertblock
+     :END:
+     Once the interpreter is locked, you can't run any code. Killing
+     it is the only option.
+
+*** Infinite loops in Routines
+**** You /can/ write an \gls{infinite loop}, if it \mth{yield}s from a \clss{Routine}.
+     - \mth{yield} means that the routine temporarily gives up control: No lockup.
+     - The routine can produce an infinite number of values.\\
+       Of course, you can never /ask for/ an infinite number!
+**** Shortcut for an infinite loop: \ci{loop}.
+     - *Never* use this without \mth{yield}!
+#+latex: \glsadd{rrand}
+#+name: routine2_do
+#+caption: A simple routine with a infinite loop. Run r.next as many times as you like.
+#+begin_src {} -i
+r = Routine {
+   loop {
+      rrand(1, 10).yield;
+   }
+};
+
+r.next;
+#+end_src
+
+*** Routines: Sequences of values
+    Now we know how to make sequences of values, of any length, and
+    parcel them out one by one.
+
+*** Timing
+
+
+** Patterns							   :noexport:
+
 
 * Effects common in subtractive synthesis			   :noexport:
 ** Chorus
