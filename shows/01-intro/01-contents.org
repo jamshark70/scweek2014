@@ -1273,6 +1273,7 @@ p.setEvent((freq: exprand(100, 400), gt: 1,
      amplitude, timbre controls all at once.
 
 ** Modulation: Low-Frequency Oscillators
+*** TODO Prepare for range discussion				   :noexport:
 *** Modulation
 **** Little secret: Synthesis techniques are sometimes /really simple/.
      We just beef them up with /layering/ and \egls{modulation}.
@@ -1329,7 +1330,6 @@ p.gui;
      Audio UGens may often be used for control signals.
 **** Try some other shapes.
      What do they sound like?
-     - \ugen{LFNoise0} is like a standard synthesizer LFO called \egls{sample-and-hold}.
 #+latex: \glsadd{LFPulse}\glsadd{LFTri}\glsadd{LFSaw}
 #+name: lfoshapes
 #+caption: Play with some other common LFO shapes.
@@ -1340,6 +1340,7 @@ p.gui;
 ~filtlfo = { LFSaw.kr(~lfreq) * ~depth.neg };
 ~filtlfo = { LFNoise0.kr(~lfreq) * ~depth };
 #+end_src
+     - \ugen{LFNoise0} is like a standard synthesizer LFO called \egls{sample-and-hold}.
 
 *** Uncommon LFO shapes
 # **** SC goes further than the standard shapes.
@@ -1377,11 +1378,12 @@ p.gui;
 
 *** mul, add
 **** Almost all UGens have \ci{mul} and \ci{add} arguments.
-     - @@latex:\cd{SinOsc.ar(440, 0, 100, 440)} $\to$ \cd{SinOsc.ar(440, 0) * 100 + 440}.@@
+     - @@latex:\cd{SinOsc.ar(440, 0, 100, 440)} $\to$\\
+       \cd{SinOsc.ar(440, 0) * 100 + 440}.@@
      - Converts the normal output range $-1$ to $1$ into 340 to 540.
      - If \ci{add} is 0, \ci{mul} acts like an amplifier.
 **** In the previous LFO example:
-#+attr_latex: :align |l|c|
+#+attr_latex: :align |c|c|
 |------------------------------------+----------------------|
 | *Operation*                        | *Range*              |
 |------------------------------------+----------------------|
@@ -1416,8 +1418,9 @@ Arguments: inMin, inMax, outMin, outMax, clip.
 #+caption: Plot a line covering four octaves of frequency, first linearly, second exponentially.
 #+begin_src {} -i
 {
-   var line = Line.ar(0, 1, 0.01);
+   var line = Line.ar(0, 1, 0.01);  // out: 0.0-1.0
    [
+      // in range: 0-1; out range: 55-880
       line.linlin(0, 1, 55, 880),
       line.linexp(0, 1, 55, 880)
    ]
@@ -1447,10 +1450,7 @@ Arguments: inMin, inMax, outMin, outMax, clip.
 **** Earlier, we used \ci{+} to modulate frequency.
      Using the \mth{cpsmidi} method, we can get MIDI note numbers, and
      see how many semitones between given frequencies.
-     - With $f=2000$ and $d=1000$, \gls{linear} modulation goes
-       between 1000 and 3000 Hz: 12 semitones below and 7 above.
-     - To go 7 semitones above and below, the lower frequency should
-       be 1500 Hz. $1500 = \frac{2000}{1.5}$; $3000 = 2000 \cdot 1.5$.
+     - Assuming the base frequency is 2000 and the depth is 1000:
 #+latex: \glsadd{round}\glsadd{differentiate}
 #+name: expscale
 #+caption: Convert modulation ranges for frequency into intervals.
@@ -1488,16 +1488,32 @@ item, use \mth{drop}:
 // prints: [ 12, 7.02 ]
 #+end_src
 
+*** How to make the intervals match?
+    - The linear way uses inverse math operators: $+$ and $-$.\\
+      But $-$ by the same amount produces a larger interval than $+$.
+    - The exponential way also uses inverses: $\times$ and $\div$.\\
+      Multiplying and dividing by the same amount produces the same interval.
+#+attr_latex: :align |c|c|c|c|c|
+|-------------+--------------------------+----------------------------|
+| *Mapping*   | *Low*                    | *High*                     |
+|-------------+--------------------------+----------------------------|
+| Linear      | $2000-1000=1000$: P8     | $2000+1000=3000$: P5       |
+|-------------+--------------------------+----------------------------|
+| Exponential | $2000 \div 1.5=1500$: P5 | $2000 \times 1.5=3000$: P5 |
+|-------------+--------------------------+----------------------------|
+**** So:
+     For frequency, the depth should be a multiplier.
+
 *** Thought process
 **** /Reason/ about the UGen ranges.
-     - The range I've got: $-1$ to $1$.
-     - The range I need is \egls{exponential}: Use \mth{exprange}.
+     - The range I've got: $-1$ to $1$. \pause
+     - The range I need is \egls{exponential}: Use \mth{exprange}. \pause
      - A balanced \egls{linear} range is $-d$ to $d$.\\
        - Lower bound = negative (\mth{neg}) of upper bound.
-       - Center = 0.
+       - Center = 0. \pause
      - A balanced \egls{exponential} range is $\frac{1}{d}$ to $d$.
        - Lower bound = \mth{reciprocal} of upper bound.
-       - Center = 1.
+       - Center = 1. \pause
 **** Give \ci{depth} in terms of a /multiplier/.
      - It's more natural to think of depth 0 meaning no modulation.
      - The multiplier should center around 1.
