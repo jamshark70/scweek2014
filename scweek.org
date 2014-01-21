@@ -61,6 +61,10 @@
       (set-visited-file-name newname))
     (switch-to-buffer-other-window newbuf)))
 #+end_src
+
+#+RESULTS:
+: hjh-src-blocks-to-buffer
+
 *** DONE Index entries
 *** DONE Glossary
 *** DONE Why do subsections become frames in beamerarticle?
