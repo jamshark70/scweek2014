@@ -5,13 +5,24 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL: 
 
-#+INCLUDE: "../slidehead.org"
-# #+INCLUDE: "../printhead.org"
+# #+INCLUDE: "../slidehead.org"
+#+INCLUDE: "../printhead.org"
 
 #+include: "../glossary.org"
 
-* Temp, just to put it in a frame
+* Temp, just to put it in a frame				   :noexport:
 *** Temp, just to put it in a frame
+
+* Workshop introduction
+*** Who am I?
+**** Composer, programmer, nerd
+     - Ph.D., music composition, Duke University (2001)
+     - Now: Associate Professor, Xinghai Conservatory, Guangzhou
+     - Subjects: Electronic music production, Film music
+**** Special interests:
+     - Danceclub music
+     - Real-time performance with computers
+
 #+call: makegloss
 #+results: makegloss
 
@@ -25,16 +36,6 @@
 
 #+call: ugengloss
 #+results: ugengloss
-
-* Workshop introduction						   :noexport:
-*** Who am I?
-**** Composer, programmer, nerd
-     - Ph.D., music composition, Duke University (2001)
-     - Now: Associate Professor, Xinghai Conservatory, Guangzhou
-     - Subjects: Electronic music production, Film music
-**** Special interests:
-     - Danceclub music
-     - Real-time performance with computers
 
 *** What is SuperCollider?
 **** /Programming language/ for audio and composition
@@ -110,7 +111,7 @@ if(0.25.coin) {
      - SC3 ("SC Server")
        - Audio processing is more efficient, by handling audio in a /server/ process
 
-* SC architecture, usage					   :noexport:
+* SC architecture, usage
 *** SC is three applications
 **** Really? /Three/ applications?
      Yes. They work together:
@@ -202,7 +203,7 @@ if(0.25.coin) {
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps					   :noexport:
+* SC language: Beginning steps
 ** Making noise
 *** Let's make some noise!
    1. Boot the audio server: \ks{Ctrl-B} \\
@@ -481,8 +482,8 @@ In \cd{SinOsc.ar(440)}:
 *** Next: Synthesis techniques
     Now we know enough to start exploring standard synthesis techniques.
 
-* Subtractive synthesis						   :noexport:
-** Overview							   :noexport:
+* Subtractive synthesis
+** Overview
 *** Subtractive synthesis
 **** One of the most basic techniques
      - Easy to implement
@@ -571,7 +572,7 @@ p.clear;
     - Phase :: \cd{[0, 2pi, \textbackslash lin, 0, 0]} (in radians)
 #     - Amplitude :: \cd{[0, 1, \amp]}
 
-** Analog-style oscillators					   :noexport:
+** Analog-style oscillators
 *** Sawtooth oscillator
 **** A geometric \gls{sawtooth} is made of straight lines.
     This is a problem for digital audio.
@@ -769,7 +770,7 @@ p.clear;
 **** Mix together several detuned oscillators for a richer sound.
      - Multichannel expansion can help.
 
-** Filters							   :noexport:
+** Filters
 *** Filters
 #+latex: \glsadd{Saw}\glsadd{LPF}\glsadd{HPF}
 **** We identify filters based on their \egls{frequency response}.
@@ -855,7 +856,7 @@ Close the old GUI window, and try different \ci{rq} values.
      - Q is a standard measure. SC uses \ci{rq} = $\frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
 
-** Note control							   :noexport:
+** Note control
 *** Playing separate notes
 **** What defines a "note"?
      Mainly, it has a beginning and end!
@@ -1636,6 +1637,20 @@ r.next;
      - \cd{[ 1, 3, 5 ]} is returned by \mth{do} itself, and printed as
        the result of the whole code block.
 
+*** Loops: When to stop
+**** Without a \clss{Routine}, a \gls{loop} must stop somehow.
+     - In Listing [[do1]], it stops at the end of the array.
+     - \cd{5.do...} would run the function five times and stop.
+     - \cd{inf.do...} will hang SC language. *Don't do that.*
+       - \Gls{infinite loop} :: A loop with no end. Locks up the
+            interpreter until you force-quit.
+**** Use the /Language/ menu $\to$ /Quit interpreter/ to regain control. :B_alertblock:
+     :PROPERTIES:
+     :BEAMER_env: alertblock
+     :END:
+     Once the interpreter is locked, you can't run any code. Killing
+     it is the only option.
+
 *** Routines and yielding within loops
 **** You may \mth{yield} inside a \mth{do} loop.
      Or any other kind of loop.
@@ -1652,20 +1667,6 @@ r.next;
 #+end_src
      - Same behavior as the earlier routine, but now easier to expand
        (just write a longer array).
-
-*** Loops: When to stop
-**** Without a \clss{Routine}, a \gls{loop} must stop somehow.
-     - In Listing [[do1]], it stops at the end of the array.
-     - \cd{5.do...} would run the function five times and stop.
-     - \cd{inf.do...} will hang SC language. *Don't do that.*
-       - \Gls{infinite loop} :: A loop with no end. Locks up the
-            interpreter until you force-quit.
-**** Use the /Language/ menu $\to$ /Quit interpreter/ to regain control. :B_alertblock:
-     :PROPERTIES:
-     :BEAMER_env: alertblock
-     :END:
-     Once the interpreter is locked, you can't run any code. Killing
-     it is the only option.
 
 *** Infinite loops in Routines
 **** You /can/ write an \gls{infinite loop}, if it \mth{yield}s from a \clss{Routine}.
@@ -1688,19 +1689,199 @@ r.next;
 #+end_src
 
 *** Routines: Sequences of values
-    Now we know how to make sequences of values, of any length, and
-    parcel them out one by one.
+**** Now we know how to make sequences of values.
+     - \mth{yield} values from a \clss{Routine}.
+     - Any length sequence---even infinite!
+     - Get values one by one using \mth{next}.
+**** \clss{Routine} is a type of \clss{Stream}.
+     - A \clss{Stream} responds to \mth{next} with its sequence's next value.
+     - For example, a \clss{File} is a kind of stream, returning the
+       file's characters one by one for \mth{next}.
 
 *** Timing
+**** To play musical sequences, we need rhythm.
+     Two key concepts:
+     - \eGlspl{scheduler} :: An object that handles timing. Schedule
+          actions to take place at a given time. The scheduler will
+          "awaken" the action at the right time.
+     - \eGlspl{delta} :: The amount of time between successive
+                         events. Formally called "inter-onset
+                         interval" or \egls{IOI} for short.
 
+*** Scheduling
+**** \eGlspl{scheduler} make something happen at a specific time in the future.
+     - A scheduler is a \clss{Clock}. Most commonly used:
+       - \clss{TempoClock} :: Adjustable tempo, given in beats per second (bps). Time is measured in \eglspl{beat}. Normally used for musical sequencing.
+**** Scheduling methods
+     - \mth{sched} :: Time is given as a number of beats later than "now."
+     - \mth{schedAbs} :: Time is given as an absolute time point.
 
-** Patterns							   :noexport:
+*** Scheduler usage
+     Note that the order of the statements doesn't matter to the
+     scheduler. The functions run at the /scheduled/ time, no matter
+     which one went into the scheduler first.
+#+name: sched1
+#+caption: Scheduling simple actions. Run the blocks and watch the post window.
+#+begin_src {} -i
+(
+"Right now".postln;
+TempoClock.sched(1, { "one".postln });
+TempoClock.sched(2, { "two".postln });
+)
+
+(
+TempoClock.sched(2, { "two".postln });
+"Right now".postln;
+TempoClock.sched(1, { "one".postln });
+)
+#+end_src
+
+*** Automatic rescheduling
+**** Returning a number will /reschedule/ the action.
+     - The number is a \egls{delta} time into the future.
+**** *IMPORTANT:* Do not return delta $\le$ 0 accidentally!    :B_alertblock:
+     :PROPERTIES:
+     :BEAMER_env: alertblock
+     :END:
+     - If the return value is always $\le$ 0, it will lock up the interpreter.
+     - To be safe, when scheduling a function, write \cd{nil} as the
+       last expression.
+#+name: resched1
+#+caption: Automatic rescheduling. You'll have to use ctrl-. to stop it.
+#+begin_src {} -i
+(
+var x = 0;
+TempoClock.sched(1, {
+   x = x + 1;
+   x.postln;
+   0.5  // this is the delta time
+});
+)
+#+end_src
+
+*** Rescheduling routines
+**** A \clss{Routine}'s return value is \mth{yield}ed.
+     - So, \mth{yield} the \gls{delta} time.
+     - You can also write \mth{wait}.
+**** Because it's a Routine, you can \mth{stop} it.
+#+name: resched2
+#+caption: Automatic rescheduling of a Routine with ``wait.''
+#+begin_src {} -i
+(
+r = Routine {
+   var x = 0;
+   loop {
+      x = x + 1;
+      x.postln;
+      0.5.wait;
+   }
+};
+
+TempoClock.sched(1, r);
+)
+
+r.stop;
+#+end_src
+
+*** Note sequencing
+**** To play notes, do it before \mth{wait}.
+     - \cd{\textasciitilde out.set}: Trigger the envelope and set a new pitch.
+     - Note \mth{play} here: More convenient than \cd{TempoClock.sched}.
+#+name: noteseq1
+#+caption: Note sequencing in a Routine.
+#+begin_src {} -i
+p = ProxySpace.new; p.push;
+
+~out = { |freq = 440, t_trig = 1|
+   var eg = EnvGen.kr(Env.perc(0.01, 0.5), t_trig);
+   (VarSaw.ar(freq) * eg * 0.1).dup
+};
+~out.play;
+
+r = Routine {
+   loop {
+      ~out.set(\t_trig, 1, \freq, exprand(110, 440));
+      0.5.wait;
+   };
+}.play;
+
+r.stop;
+#+end_src
+
+*** Task and Tdef
+**** \clss{Task} is like \clss{Routine}, with one advantage:
+     - \mth{stop}ping a \clss{Routine} stops it permanently. You can
+       only \mth{reset} back to the beginning.
+     - After \mth{stop}ping a \clss{Task}, you can re-\mth{play} it
+       and it will continue from the middle.
+**** \clss{Tdef} is global storage for Tasks.
+     - \mth{play} and \mth{stop} it just like a \clss{Task} or \clss{Routine}.
+     - Get a play/stop control panel from \clss{TdefAllGui}.
+     - You can switch the \clss{Tdef} function at any time.
+       - This is like switching a synthesis function in a \clss{NodeProxy}.
+**** Storage will become important later.
+
+*** Graphical control of Tdef
+#+name: tdef1
+#+caption: Using Tdef for graphical control and replacing sequencing functions on-the-fly.
+#+begin_src {} -i
+Tdef(\player, {
+   loop {
+      ~out.set(\t_trig, 1, \freq, exprand(110, 440));
+      0.5.wait;
+   };
+});
+
+TdefAllGui.new;
+
+Tdef(\player, {
+   loop {
+      ~out.set(\t_trig, 1, \freq, exprand(440, 1760));
+      0.125.wait;
+   };
+});
+#+end_src
+
+*** Using ProxySpace-set Events
+**** Remember the \clss{Event} type from "Events with ProxySpace"?[fn:1]
+     - You can use \cd{p.setEvent((...))} in a \clss{Task} as well.
+     - This is much easier than setting the controls individually on
+       specific \clss{NodeProxy} objects.
+#+name: tdefEvent
+#+caption: Replace out.set with Events.
+#+begin_src {} -i
+Tdef(\player, {
+   loop {
+      p.setEvent((t_trig: 1, freq: exprand(110, 440))).play;
+      0.5.wait;
+   };
+});
+#+end_src
+**** There is another really good reason to use Events: \eGlspl{pattern}.
+
+*** Routine summary
+**** \clss{Routine}, \clss{Task}: Pausable operations
+     - Do work, then \mth{yield} something.
+**** \eGlspl{loop}: Write code once, do it many times.
+     - \cd{number.do}: Do it $n$ times.
+     - \cd{array.do}: Do it once for every item in the array.
+     - Loops should always have a way to stop. Avoid \eglspl{infinite loop}.
+
+*** Note sequencing summary
+**** Note sequencing with \clss{Routine} and \clss{Task}
+     1. Calculate new musical values (pitch, rhythm etc.).
+     2. Set controls within the \clss{ProxySpace}. Use \mth{setEvent} for convenience.
+     3. Yield the time until the next event: \cd{time.wait}. \glsadd{wait}
+**** Storage and GUI control with \clss{Tdef}
+     - Also allows you to replace the function without breaking the flow.
+
+** Patterns 							   :noexport:
 
 
 * Effects common in subtractive synthesis			   :noexport:
 ** Chorus
 ** Distortion
-* Glossary							   :noexport:
+* Glossary
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
@@ -1712,3 +1893,7 @@ r.next;
 #+LaTeX: \printglossary[type=class]
 ** Methods
 #+LaTeX: \printglossary[type=mth]
+* Footnotes
+
+[fn:1] Events with ProxySpace: [[Events with ProxySpace]].
+

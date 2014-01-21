@@ -9,6 +9,7 @@
 | array                  | One type of collection, consisting of an ordered list of items, enclosed in square brackets \cd{[ ]}                                                                                  |
 | assignment             | To replace a variable's current value with a new object. Written ``name = value''                                                                                                     |
 | band-limited           | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                                            |
+| beat                   | The unit of time in a TempoClock. A beat's duration depends on the clock's tempo, given in beats per second. If the tempo is 2 bps, 1 beat == 0.5 seconds                             |
 | breakpoint             | The endpoint of a line segment in an envelope                                                                                                                                         |
 | chaotic                | Chaotic functions are dynamic systems with large differences in the results based on small differences in the inputs. They sound like something between normal waves and random noise |
 | class                  | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                                            |
@@ -17,6 +18,7 @@
 | control inputs         | Arguments of a synthesis function. The server exposes them as settable controls                                                                                                       |
 | declare                | Of a variable, to define its name and initial value using a ``var'' statement                                                                                                         |
 | degree                 | A property of an event, specifying a diatonic scale degree. Many scale patterns are available                                                                                         |
+| delta                  | How long to wait until the next event. SuperCollider terminology for Inter-Onset Interval (IOI)                                                                                       |
 | doneAction             | A UGen parameter that determines node releases when the UGen is finished. Most typically 0 (do nothing) or 2 (free only this synth)                                                   |
 | envelope               | A control signal that shapes amplitude or another parameter. Important for note control. A standard shape is ADSR                                                                     |
 | envelope generator     | The standard name for the unit and a synthesizer that produces an envelope signal from the envelope's parameters                                                                      |
@@ -29,6 +31,7 @@
 | impulse                | In theory, an infinitely short burst of sound. In practice, a single non-zero sample (shortest possible digital sound) surrounded by silence                                          |
 | infinite loop          | A programming error in which a loop never stops. The loop will try to execute forever, blocking all other activities in sclang                                                        |
 | interpreter            | Referring to the single-letter variables a--z                                                                                                                                         |
+| IOI                    | ``Inter-Onset Interval'': The amount of time between successive note beginnings. SuperCollider Events refer to this as ``delta''                                                      |
 | iteration              | Performing the same operation several times, over items in a collection or a series of numbers                                                                                        |
 | LFO                    | Low-Frequency Oscillator, commonly used as a modulation source to control synthesis parameters                                                                                        |
 | linear                 | A unit of measurement that works by addition, like semitones or MIDI note numbers                                                                                                     |
@@ -42,6 +45,7 @@
 | ordered                | Of a collection, indicates that the collection remembers the order of items, e.g., Array, List                                                                                        |
 | OSC                    | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                                   |
 | oscillator             | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                                            |
+| pattern                | An object that describes a stream of values without requiring the programming logic to be repeated. The pattern object makes Streams that perform the calculations                    |
 | pulse wave             | A waveform that jumps suddenly up and down and stays flat in between                                                                                                                  |
 | pulse width            | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                                              |
 | Q                      | Short for a filter's ``quality''                                                                                                                                                      |
@@ -50,6 +54,7 @@
 | releaseNode            | In an envelope, the breakpoint where the envelope generator will pause (or loop back) as long as ``gate'' > 0                                                                         |
 | sample-and-hold        | A standard synthesizer trick for random-number generation: \emph{sample} a value from a waveform and \emph{hold} it until the next sample                                             |
 | sawtooth               | A waveform that makes a ramp in one direction and a sudden jump in the other, looking somewhat like teeth of a saw                                                                    |
+| scheduler              | An object that registers actions and times to execute them. Each action will wait until its given time to execute. \ci{Clock}s implement schedulers in SC                             |
 | scide                  | SuperCollider Integrated Development Environment. The main code-interaction interface                                                                                                 |
 | sclang                 | SuperCollider language. Evaluates code and displays results                                                                                                                           |
 | scsynth                | SuperCollider synthesis server. Receives OSC messages and produces audio                                                                                                              |
@@ -69,10 +74,13 @@
 |--------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | AppClock           | A permanent clock, which always ticks in seconds. It is lower-priority, thus, less likely to interfere with musical activity. Required for GUI actions             |
 | Array              | An ordered list of items with a fixed maximum number of items. When adding, be sure to reassign: \cd{array = array.add(item)}                                      |
+| Buffer             | An object in the audio server that can hold large amounts of audio or other data. Used for sample playback and soundfile input/output                              |
+| Clock              | The general class of schedulers. Any actions scheduled at a given time will wait until that time to execute. See TempoClock, SystemClock and AppClock              |
 | ControlSpec        | Defines a numeric range, with low and high values, a curve, step size (for quantization) and a default value                                                       |
 | Dictionary         | An unordered set of associations \cd{key -> value}. \cd{dictionary[key]} returns the value for that key                                                            |
 | Env                | Defines an envelope specification, based on segments (target values, times and curves)                                                                             |
 | Event              | Stores information like IdentityDictionary. Playing an event gets musical results: play a note, change values etc. Patterns can produce events for sequencing      |
+| File               | Read and write text or binary files on the local filesystem                                                                                                        |
 | Function           | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object |
 | IdentityDictionary | Like Dictionary, but restricts the types of keys for faster lookup. Usually the keys are Symbols                                                                   |
 | IdentitySet        | Like Set, but restricts the types of items for faster membership testing                                                                                           |
@@ -81,6 +89,8 @@
 | ProxySpace         | An environment that automatically makes a NodeProxy from any item in it                                                                                            |
 | Routine            | Executes a Function. The function may \ci{yield} a value, and the next call into the routine will resume just after the yield                                      |
 | Set                | An unordered collection of items, optimized for iteration and testing membership: \cd{set.do}, \cd{set.includes(item)}                                             |
+| SoundFile          | Read and write audio files from the language (no server involvement). See \ci{Buffer} for reading and writing files in the server                                  |
+| Stream             | A category of classes representing sequences of values, of which \ci{Routine} is the most common. One value is returned by calling \ci{next} on the stream         |
 | String             | A list of characters that behaves like text                                                                                                                        |
 | Symbol             | Like a String, but ``atomic'': You can't manipulate the contents of a Symbol, only use it as an identifier                                                         |
 | Synth              | Represents a synthesis node on the server                                                                                                                          |
@@ -88,7 +98,9 @@
 | SystemClock        | A permanent clock, which always ticks in seconds                                                                                                                   |
 | Task               | A placeholder for a Routine. Replaying a Task after stopping will continue just after the stopping point                                                           |
 | TempoClock         | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
-
+| TdefAllGui         | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
+| Tdef               | Global storage for Tasks. Give the task function a name, and Tdef will treat the function as a Task                                                                | 
+  
 
 * Methods							   :noexport:
 #+name: mth
@@ -122,18 +134,23 @@
 | next          | When called on a Routine (or any Stream), returns the stream's next yield value                                                                                   |
 | perc          | \cd{Env.perc} makes a percussive envelope (quick attack, curved decay)                                                                                            |
 | play          | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
+| postln        | Print an object as a string into the post window                                                                                                                  |
 | push          | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
 | rand          | \cd{num.rand}: Generate a random number $x$ where $0 \le x < num$                                                                                                 |
 | range         | Converts a UGen's range into a different linear range                                                                                                             |
 | reciprocal    | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
 | release       | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
+| reset         | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                      |
 | round         | Round a number to the nearest division--- by default, 1 (integers) but it may also be fractional                                                                  |
 | rrand         | \cd{rrand(low, high)}: Generate a random number $x$ where $low \le x \le high$                                                                                    |
+| sched         | Schedule an activity to happen a certain number of beats/seconds in the future (i.e., later than now)                                                             |
+| schedAbs      | Schedule an activity to happen at a specific (``absolute'') time                                                                                                  |
 | set           | On a synth node or NodeProxy, set a new value for a control input: \cd{n.set(\textbackslash name, value...)}                                                      |
 | setEvent      | Called on a ProxySpace, setEvent returns an event prepared to set controls within that ProxySpace                                                                 |
 | sine          | \cd{Env.sine} makes an attack-decay envelope with sine-shaped segments. More or less a bell curve                                                                 |
 | stop          | Stop a process that was previously started by ``play''                                                                                                            |
 | value         | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
+| wait          | In a Routine, same as \ci{yield}, but works only for numbers. Used for deltas (wait times).                                                                       |
 | wrap          | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                             |
 | yield         | Within a Routine or Task, return a value to the caller and wait for the next request                                                                              |
 
