@@ -74,6 +74,9 @@
 *** DONE Index entries
 *** DONE Glossary
 *** DONE Why do subsections become frames in beamerarticle?
+* Content
+** TODO Exercises
+*** 
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?

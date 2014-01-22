@@ -323,6 +323,8 @@ p.setEvent((freq: exprand(200, 800), gt: 1, sustain: 3)).play;
 p.clear;
 
 
+Halo.lib;
+
 
 /*********
 Listing 29. Basic detuned synth.
