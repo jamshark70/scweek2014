@@ -1,0 +1,306 @@
+#+startup: beamer
+
+#+TITLE: SuperCollider Week, Day 2 \\ Synthesis Techniques
+#+DATE: \today
+#+AUTHOR: H. James Harkins
+#+EMAIL: 
+
+# #+INCLUDE: "../slidehead.org"
+#+INCLUDE: "../printhead.org"
+
+#+include: "../glossary.org"
+
+* Modulation: Low-Frequency Oscillators
+** Modulation: Low-Frequency Oscillators
+*** Modulation
+**** Little secret: Synthesis techniques are sometimes /really simple/.
+     We just beef them up with /layering/ and \egls{modulation}.
+**** Modulate a parameter by another signal.
+     - We already did this, with the filter frequency envelope.
+     - Another modulation source: \eglspl{LFO} (Low-Frequency Oscillators)
+     - SC has a /lot/ of them.
+**** For this section:
+     - Introduce LFO shapes and mechanism
+     - Talk about signal ranges
+
+*** LFO + filter
+**** Start with an earlier synth, slightly modified.
+#+name: scifi1
+#+caption: Basic detuned synth.
+#+begin_src {} -i
+p = ProxySpace.new; p.push;
+
+~oscil = { |freq = 120|
+   var freq1 = freq * [0.5, 0.498, 0.503],
+   freq2 = freq * [1, 0.997, 1.004];
+   Mix(Pulse.ar(freq1)) + Mix(Saw.ar(freq2))
+};
+~filter = { |ffreq = 2000, rq = 0.08|
+   RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+};
+~filter.play;
+
+~filter.addSpec(\ffreq, \freq);
+~filter.addSpec(\rq, [1, 0.02, \exp]);
+p.gui;
+#+end_src
+
+*** Add an LFO: sci-fi heaven
+**** Same pattern as before:
+     - Add a new module (\ci{\textasciitilde filtlfo}). This is a slowly-changing signal.
+     - Use it in the filter (@@latex:\cd{ffreq + \textasciitilde
+       filtlfo}@@). Adding it to the basic filter frequency means that
+       the actual filter cutoff goes slowly above and below the set
+       frequency.
+#+name: scifi2
+#+caption: Add an LFO to the filter.
+#+begin_src {} -i
+~lfreq = 1; ~lfreq.addSpec(\value0, [0.5, 18, \exp]);
+~depth = 100; ~depth.addSpec(\value0, [0, 1000]);
+~filtlfo = { SinOsc.kr(~lfreq) * ~depth };
+
+~filter = { |ffreq = 2000, rq = 0.08|
+   ffreq = (ffreq + ~filtlfo).clip(20, 20000);
+   RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+};
+#+end_src
+
+*** LFO shape
+**** Many common LFO shapes exist.
+     This one is a simple sinewave (\clss{SinOsc}).\\
+     Audio UGens may often be used for control signals.
+**** Try some other shapes.
+     What do they sound like?
+#+latex: \glsadd{LFPulse}\glsadd{LFTri}\glsadd{LFSaw}
+#+name: lfoshapes
+#+caption: Play with some other common LFO shapes.
+#+begin_src {} -i
+~filtlfo = { LFPulse.kr(~lfreq) * ~depth };
+~filtlfo = { LFTri.kr(~lfreq) * ~depth };
+~filtlfo = { LFSaw.kr(~lfreq) * ~depth };
+~filtlfo = { LFSaw.kr(~lfreq) * ~depth.neg };
+~filtlfo = { LFNoise0.kr(~lfreq) * ~depth };
+#+end_src
+     - \ugen{LFNoise0} is like a standard synthesizer LFO called \egls{sample-and-hold}.
+
+*** Uncommon LFO shapes
+# **** SC goes further than the standard shapes.
+    - Single-shot lines (\ugen{Line}, \ugen{XLine}).
+    - Ramps (\ugen{LFNoise1}) and curves (\ugen{LFNoise2}) between random numbers.
+    - Various functions from mathematics:
+      - Gaussian (bell-curve) wave
+      - Many, many \egls{chaotic} generators. 
+#+latex: \glsadd{LFGauss}\glsadd{LinCongL}\glsadd{QuadL}
+#+name: lfoshapes2
+#+caption: LFO shapes not commonly found in other software.
+#+begin_src {} -i
+~filtlfo = { LFNoise1.kr(~lfreq) * ~depth };
+~filtlfo = { LFNoise2.kr(~lfreq) * ~depth };
+~filtlfo = { LFGauss.ar(~lfreq) * ~depth };
+
+// chaotic
+~filtlfo = { LinCongL.ar(~lfreq, 1.2, 0.08) * ~depth };
+~filtlfo = { QuadL.ar(~lfreq) * ~depth };
+#+end_src
+
+** Range mapping for modulation
+*** Modulation: All about signal ranges
+**** Remember the key questions from before:
+     - What is the range I /get from/ a UGen?
+     - What is the range I need to /put into/ a UGen?
+     - How can I convert one to the other, mathematically?
+
+*** Modulation range for frequency
+**** Frequency needs a wider range of variation.
+     - Suppose the base frequency is 440.
+     - If the modulator's range is $-1$ to $1$, the frequency will vary between 439 and 441.
+     - That's $\frac{1}{440}=$ 0.23\%. The ear can't tell that it's changing!
+**** You need to expand the range.
+     That's the purpose of the \ci{\textasciitilde depth} module.
+
+*** mul, add
+**** Almost all UGens have \ci{mul} and \ci{add} arguments.
+     - @@latex:\cd{SinOsc.ar(440, 0, 100, 440)} $\to$\\
+       \cd{SinOsc.ar(440, 0) * 100 + 440}.@@
+     - Converts the normal output range $-1$ to $1$ into 340 to 540.
+     - If \ci{add} is 0, \ci{mul} acts like an amplifier.
+**** In the previous LFO example:
+#+attr_latex: :align |c|c|
+|------------------------------------+----------------------|
+| *Operation*                        | *Range*              |
+|------------------------------------+----------------------|
+| \ugen{SinOsc}                      | Bipolar: $-1$ to $1$ |
+|------------------------------------+----------------------|
+| \cd{* \textasciitilde depth} ($d$) | $-d$ to $d$          |
+|------------------------------------+----------------------|
+| \cd{+ ffreq} ($f$)                 | $f-d$ to $f+d$       |
+|------------------------------------+----------------------|
+
+*** Range mapping methods
+**** All UGens have two methods to make it easier:
+     - \cd{UGen.ar(...).range(low, high)}: \eGls{linear} mapping.
+     - \cd{UGen.ar(...).exprange(low, high)}: \eGls{exponential} mapping.
+#+latex: \glsadd{range}\glsadd{exprange}
+**** Also, methods that are good for numbers as well as UGens:
+Arguments: inMin, inMax, outMin, outMax, clip.
+     - \mth{linlin} :: \eGls{linear} input, \egls{linear} output.
+     - \mth{linexp} :: \eGls{linear} input, \egls{exponential} output.
+     - \mth{explin} :: \eGls{exponential} input, \egls{linear} output.
+     - \mth{lincurve} :: \eGls{linear} input, \te{curved} output. (Extra argument for the curve factor.)
+     - \mth{curvelin} :: \te{Curved} input, \egls{linear} output.
+
+*** What is "exponential"?
+**** \eGls{exponential} means using multiplication in place of addition.
+     - Every octave up means multiplying by 2.
+     - Start at 55 Hz, octaves are 55, 110, 220, 440, 880.
+     - \cd{0.5.linlin(0, 1, 55, 880)} is 467.5.\\
+       Halfway between 55 and 880, but it isn't the /octave/.
+     - \cd{0.5.linexp(0, 1, 55, 880)} is 220.
+#+name: linExpPlot
+#+caption: Plot a line covering four octaves of frequency, first linearly, second exponentially.
+#+begin_src {} -i
+{
+   var line = Line.ar(0, 1, 0.01);  // out: 0.0-1.0
+   [
+      // in range: 0-1; out range: 55-880
+      line.linlin(0, 1, 55, 880),
+      line.linexp(0, 1, 55, 880)
+   ]
+}.plot(minval: 50, maxval: 900);
+#+end_src
+
+*** What is "curved"?
+**** \te{Curved} mappings let you control the amount of curve.
+     - If \ci{curve} is 0, you get a straight line.
+     - A negative curve "pulls" the line to the left.
+     - A positive curve pulls it to the right.
+     - The larger the number, the more extreme the curve.
+#+name: linCurvePlot
+#+caption: Plot a line covering four octaves of frequency with different curve factors.
+#+begin_src {} -i
+{
+   var line = Line.ar(0, 1, 0.01);
+   [
+      line.lincurve(0, 1, 55, 880, -6),
+      line.lincurve(0, 1, 55, 880, -2),
+      line.lincurve(0, 1, 55, 880, 4)
+   ]
+}.plot(minval: 50, maxval: 900);
+#+end_src
+
+*** Exponential modulation for frequency
+**** Earlier, we used \ci{+} to modulate frequency.
+     Using the \mth{cpsmidi} method, we can get MIDI note numbers, and
+     see how many semitones between given frequencies.
+     - Assuming the base frequency is 2000 and the depth is 1000:
+#+latex: \glsadd{round}\glsadd{differentiate}
+#+name: expscale
+#+caption: Convert modulation ranges for frequency into intervals.
+#+begin_src {} -i
+[1000, 2000, 3000].cpsmidi.round(0.01);
+// prints: [ 83.21, 95.21, 102.23 ]
+
+[1000, 2000, 3000].cpsmidi.differentiate.round(0.01);
+// prints: [ 83.21, 12, 7.02 ]
+
+[2000 / 1.5, 2000, 2000 * 1.5].cpsmidi.differentiate.round(0.01);
+// prints: [ 88.19, 7.02, 7.02 ]
+#+end_src
+
+*** Note: Differentiate					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+Listing [[expscale]] illustrates how we can use arrays to do the same
+operation repeatedly. To get the interval (number of semitones)
+between two frequencies, we subtract the higher frequency's MIDI note
+number from the same for the lower frequency. Here, we have three
+frequencies---let's call them $f_0$, $f_1$ and $f_2$---and we want the
+results $f_1 - f_0$ and $f_2 - f_1$. That's what \mth{differentiate}
+does: it makes a new array where each item is the difference between
+two of the original items that are right next to each other.
+
+It also copies the first item. This is so that you can reconstruct the
+original array using \mth{integrate}. We aren't interested in the
+first item, so we can ignore it. If you need to get rid of the first
+item, use \mth{drop}:
+
+#+begin_src {} -i
+[1000, 2000, 3000].cpsmidi.differentiate.drop(1).round(0.01);
+// prints: [ 12, 7.02 ]
+#+end_src
+
+*** How to make the intervals match?
+    - The linear way uses inverse math operators: $+$ and $-$.\\
+      But $-$ by the same amount produces a larger interval than $+$.
+    - The exponential way also uses inverses: $\times$ and $\div$.\\
+      Multiplying and dividing by the same amount produces the same interval.
+#+attr_latex: :align |c|c|c|c|c|
+|-------------+--------------------------+----------------------------|
+| *Mapping*   | *Low*                    | *High*                     |
+|-------------+--------------------------+----------------------------|
+| Linear      | $2000-1000=1000$: P8     | $2000+1000=3000$: P5       |
+|-------------+--------------------------+----------------------------|
+| Exponential | $2000 \div 1.5=1500$: P5 | $2000 \times 1.5=3000$: P5 |
+|-------------+--------------------------+----------------------------|
+**** So:
+     For frequency, the depth should be a multiplier.
+
+*** Thought process
+**** /Reason/ about the UGen ranges.
+     - The range I've got: $-1$ to $1$. \pause
+     - The range I need is \egls{exponential}: Use \mth{exprange}. \pause
+     - A balanced \egls{linear} range is $-d$ to $d$.\\
+       - Lower bound = negative (\mth{neg}) of upper bound.
+       - Center = 0. \pause
+     - A balanced \egls{exponential} range is $\frac{1}{d}$ to $d$.
+       - Lower bound = \mth{reciprocal} of upper bound.
+       - Center = 1. \pause
+**** Give \ci{depth} in terms of a /multiplier/.
+     - It's more natural to think of depth 0 meaning no modulation.
+     - The multiplier should center around 1.
+     - So we will add 1 to get the range.
+
+*** Converting the LFO to multiplication			   :noexport:
+**** Give \ci{depth} in terms of a /multiplier/.
+     - It's more natural to think of depth 0 meaning no modulation.
+     - The multiplier should center around 1.
+     - So we will add 1 to get the range.
+**** Convert the LFO's \egls{linear} signal into an \egls{exponential} range.
+     - The \mth{exprange} method does this automatically.
+     - The lower bound should be $\frac{1}{depth}$; upper, $depth$.
+
+*** Exponentially-scaled modulator: Code
+**** *Note:* You will probably have to close the GUI window and re-create it using \cd{p.gui}.
+#+latex: \glsadd{reciprocal}
+#+name: explfo
+#+caption: Replace the linear-scale LFO with an exponential-scale LFO.
+#+begin_src {} -i
+~filtlfo = {
+   var depth = ~depth + 1;  // Add 1
+   // Use reciprocal and exprange
+   SinOsc.kr(~lfreq).exprange(depth.reciprocal, depth)
+};
+
+~filter = { |ffreq = 2000, rq = 0.08|
+   // Multiply by the LFO, not add
+   ffreq = (ffreq * ~filtlfo).clip(20, 20000);
+   RLPF.ar(~oscil.ar, ffreq, rq, 0.1).dup;
+};
+
+~lfreq.addSpec(\lfreq, [0.5, 18, \exp]);
+~depth.addSpec(\depth, [0, 4]);
+#+end_src
+
+*** TODO Modulation summary?
+
+*** Refinements 						   :noexport:
+**** Making it sound richer
+     - Detuned oscillators
+     - ??
+**** Controlling the sound musically
+     - Envelopes: Playing notes
+     - Parameter control
+       - Internal: Low Frequency Oscillators (LFOs)
+       - External: GUI and device input
+
