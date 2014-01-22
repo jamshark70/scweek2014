@@ -10,19 +10,8 @@
 
 #+include: "../glossary.org"
 
-* Temp, just to put it in a frame				   :noexport:
+* Temp, just to put it in a frame
 *** Temp, just to put it in a frame
-
-* Workshop introduction
-*** Who am I?
-**** Composer, programmer, nerd
-     - Ph.D., music composition, Duke University (2001)
-     - Now: Associate Professor, Xinghai Conservatory, Guangzhou
-     - Subjects: Electronic music production, Film music
-**** Special interests:
-     - Danceclub music
-     - Real-time performance with computers
-
 #+call: makegloss
 #+results: makegloss
 
@@ -36,6 +25,16 @@
 
 #+call: ugengloss
 #+results: ugengloss
+
+* Workshop introduction						   :noexport:
+*** Who am I?
+**** Composer, programmer, nerd
+     - Ph.D., music composition, Duke University (2001)
+     - Now: Associate Professor, Xinghai Conservatory, Guangzhou
+     - Subjects: Electronic music production, Film music
+**** Special interests:
+     - Danceclub music
+     - Real-time performance with computers
 
 *** What is SuperCollider?
 **** /Programming language/ for audio and composition
@@ -111,7 +110,7 @@ if(0.25.coin) {
      - SC3 ("SC Server")
        - Audio processing is more efficient, by handling audio in a /server/ process
 
-* SC architecture, usage
+* SC architecture, usage					   :noexport:
 *** SC is three applications
 **** Really? /Three/ applications?
      Yes. They work together:
@@ -203,7 +202,7 @@ if(0.25.coin) {
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps
+* SC language: Beginning steps					   :noexport:
 ** Making noise
 *** Let's make some noise!
    1. Boot the audio server: \ks{Ctrl-B} \\
@@ -482,7 +481,7 @@ In \cd{SinOsc.ar(440)}:
 *** Next: Synthesis techniques
     Now we know enough to start exploring standard synthesis techniques.
 
-* Subtractive synthesis
+* Subtractive synthesis						   :noexport:
 ** Overview
 *** Subtractive synthesis
 **** One of the most basic techniques
@@ -710,7 +709,7 @@ Saw.ar([1, 2, 3])
 
 *** Unpacking multichannel expansion
 **** All three of these expressions are identical
-#+begin_example
+#+begin_src {} -i
 // Compact form
 Mix(Saw.ar(220 * [1, detun, detun.reciprocal], 0.1))
 
@@ -725,7 +724,7 @@ Mix(Saw.ar([
 Saw.ar(220 * 1, 0.1),
    + Saw.ar(220 * detun, 0.1),
    + Saw.ar(220 * detun.reciprocal, 0.1)
-#+end_example
+#+end_src
 
 *** Multichannel expansion is super cool
 **** Parallel processing of multiple channels is very common.
@@ -1150,6 +1149,11 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
 	trig = Trig1.ar(trig, TRand.ar(1/120, 1/40, trig));
 	[trig, EnvGen.ar(Env.adsr(0.01, 0.1, 0.5, 0.01), trig, timeScale: 1/30)]
 }.plot(0.1);
+
+{ var trig = Impulse.kr(1);
+    trig = Trig1.kr(trig, TRand.kr(3/12, 3/4, trig));
+    [trig, EnvGen.kr(Env.adsr(0.01, 0.1, 0.5, 0.2), trig)]
+}.plot(2);
 **** That signal is a \egls{gate}.
      - A gate is > 0 when open, and $\le$ 0 when closed.
      - \ugen{EnvGen} triggers when a gate opens, and releases when it closes.
@@ -1256,6 +1260,44 @@ p.setEvent((freq: exprand(100, 400), gt: 1,
 **** \cd{p.setEvent} treats the control inputs globally.
      - \cd{gt: 1} in the event sets \ci{gt} in both envelope modules
        simultaneously.
+
+*** Articulation: Noise oscillator with envelope
+**** With envelopes, we can use a noise generator.
+     - A classic analog synthesizer trick for a "chff" in the attack.
+     - Add a short, percussive (\cd{Env.perc}) burst of noise.
+     - Usually use a \clss{BPF} to color the noise.
+**** Typical noise generators
+     - \ugen{WhiteNoise} :: Very bright, harsh noise.
+     - \ugen{PinkNoise} :: Still bright, but more pleasant than white noise.
+     - \ugen{BrownNoise} :: Darker sound. Named after \egls{Brownian motion}, not the color.
+
+*** Add a noise attack to the previous example
+    Based on Listing [[filterEg]].
+#+name: noiseAtk
+#+caption: Create a noise generator, and an envelope and filter for it.
+#+begin_src {} -i
+~noiseEg = { |gt, noiseDur = 0.08|
+   EnvGen.kr(Env.perc(0.01, noiseDur), gt)
+};
+~noise = { |noiseAmp = 0.8|
+   PinkNoise.ar(noiseAmp * ~noiseEg)
+};
+~noiseFilt = { |ffreq = 11000, rq = 0.34|
+   BPF.ar(~noise.ar, ffreq, rq).dup
+};
+~noiseFilt.play;
+
+p.setEvent((freq: exprand(100, 400), gt: 1,
+   sustain: rrand(0.2, 0.8))).play;
+#+end_src
+**** You can also add an envelope to the \ugen{BPF} frequency.
+     Exercise for you.
+**** Settings for a BPF frequency envelope			   :noexport:
+ffreq = 2300
+~noiseFeg = { |gt|
+   EnvGen.kr(Env.perc(0.01, 0.2), gt)
+   .linexp(0, 1, 1, 4)
+};
 
 *** Note control summary: Envelopes
 **** \eGls{breakpoint} \eglspl{envelope}
