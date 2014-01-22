@@ -3,7 +3,7 @@
 #+TITLE: SuperCollider Week, Day 1 \\ Introductory SC, Synthesis and Sequencing
 #+DATE: \today
 #+AUTHOR: H. James Harkins
-#+EMAIL: 
+#+EMAIL:
 
 #+INCLUDE: "../slidehead.org"
 # #+INCLUDE: "../printhead.org"
@@ -343,7 +343,7 @@ f = {
      [[./img/take-apart-01-variable.pdf]]
      #+end_center
 ***** \eGls{interpreter} variables
-      - Single letters \cd{a}--\cd{z}. 
+      - Single letters \cd{a}--\cd{z}.
       - \eGls{global} scope. Interpreter variables may be used anywhere
        	(unless a function declares a single-letter variable).
 *** Taking it apart: Variables
@@ -360,6 +360,31 @@ f = {
       - You don't have to declare them.
       - "Quasi-global" scope.
 ***** ProxySpace uses environment variables for synth nodes.
+
+*** Variable assignment
+**** {1\textwidth}{3in}				     :B_overlayarea:noexport:
+     :PROPERTIES:
+     :BEAMER_env: overlayarea
+     :END:
+     #+begin_center
+     [[./img/take-apart-01-variable.pdf]]
+     #+end_center
+**** The \egls{assignment} operator (\ci{=}) puts an object into a variable.
+     Assignment is /not/ the same as $=$ in a math equation.
+     - In algebra, $x=x+1$ is simply false: meaningless.
+     - In most programming languages, \cd{x = x + 1} means to
+       /replace/ the number currently in \ci{x} with that number + 1.
+     - To test equality, use \ci{==}.
+#+name: varassg1
+#+caption: Variable assignment.
+#+begin_src {} -i
+x = 0;
+y = x;
+x == y;  // prints true
+
+y = y + 1;  // prints 1
+x == y;  // prints false
+#+end_src
 
 *** Taking it apart: Classes
 **** {1\textwidth}{3in}					      :B_overlayarea:
@@ -756,7 +781,7 @@ Saw.ar(220 * 1, 0.1),
 
 ~filter.addSpec(\ffreq, \freq);
 p.gui;
-	
+
 p.clear;
 #+end_src
 
@@ -855,7 +880,7 @@ Close the old GUI window, and try different \ci{rq} values.
      - Q is a standard measure. SC uses \ci{rq} = $\frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
 
-* Note control
+* Note control							   :noexport:
 ** Playing notes by envelopes
 *** Playing separate notes
 **** What defines a "note"?
@@ -884,7 +909,7 @@ Env(
      :BEAMER_col: 0.5
      :END:
 # #+name: env1png
-# #+caption: 
+# #+caption:
 #+attr_latex: :width 0.4\paperwidth
 [[./img/breakpoint-env.png]]
 **** Graphic comes from						   :noexport:
@@ -1183,7 +1208,7 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
 ~eg.set(\gt, 0);  // release
 #+end_src
 
-** Events and envelope gaets
+** Events and envelope gates
 *** More convenience for gates: Events
 **** Sequencing: inconvenient to close gates by hand.
      Introducing \clss{Event}.
@@ -1319,7 +1344,7 @@ ffreq = 2300
      Very useful for sequencing: The start of a note can change pitch,
      amplitude, timbre controls all at once.
 
-* Sequencing
+* Sequencing							   :noexport:
 ** Overview: Routines and Tasks
 *** Sequencing: Basic requirements
 **** For sequencing, we need:
@@ -1590,6 +1615,8 @@ Tdef(\player, {
 
 TdefAllGui.new;
 
+// Replace the Task function.
+// You should hear the effect immediately.
 Tdef(\player, {
    loop {
       ~out.set(\t_trig, 1, \freq, exprand(440, 1760));
@@ -1599,7 +1626,7 @@ Tdef(\player, {
 #+end_src
 
 *** Using ProxySpace-set Events
-**** Remember the \clss{Event} type from "Events with ProxySpace"?[fn:1]
+**** Remember the \clss{Event} type from "Events with ProxySpace"?
      - You can use \cd{p.setEvent((...))} in a \clss{Task} as well.
      - This is much easier than setting the controls individually on
        specific \clss{NodeProxy} objects.
@@ -1631,6 +1658,115 @@ Tdef(\player, {
 **** Storage and GUI control with \clss{Tdef}
      - Also allows you to replace the function without breaking the flow.
 
+* Introducing Patterns
+** Patterns and Streams
+*** Patterns describe Streams
+**** Streams (\clss{Routine}s) return sequences of values.
+     - *Plus:* They remember what they were doing before  pausing, and resume at exactly that point.
+     - *Minus:* You have to write all the calculation logic.\\
+       Some sequencing operations are complicated, and frequently needed.
+**** \eGlspl{pattern} "describe" sequencing behaviors that you can reuse.
+     No need to rewrite the logic---just use the pattern.
+
+*** Example: A counter
+**** Compare a \clss{Routine} and a Pattern to count upward from 0.
+     Why 0?
+     - Most programming languages start counting with 0... get used to it.
+     - E.g., the index of the first item in an \clss{Array} is 0.
+#+latex: \glsadd{Pseries}
+#+name: patt1
+#+caption: Two counters: a Routine and a Pattern. r and p have the same result.
+#+begin_src {} -i
+r = Routine {
+   var x = 0;
+   loop {
+      x.yield;
+      x = x + 1;
+   };
+};
+
+p = Pseries(0, 1, inf).asStream;
+
+// Run this several times
+[r.next, p.next];
+#+end_src
+
+*** Compare the two
+**** The \clss{Routine} shows a lot of detail.
+     - *Good:* You can see everything that's going on.
+     - *Bad:* You /have to/ see everything...
+       - 6 lines for a simple counter. (Could be 4 by using \cd{inf.do}.)
+       - Hard to see at a glance what all the details mean.
+       - Easy to make a mistake while rewriting the counter logic.
+**** The \clss{Pseries} is more compact, convenient.
+     - *Good:* It shows the /purpose/, not the implementation.
+     - *Bad:* Sometimes you need to know the implementation details.
+**** For me, the good /far/ outweighs the bad.
+
+*** asStream
+**** \Glspl{pattern} by themselves don't calculate anything.
+     - They only /specify/ what should happen.
+     - To do it, you need a \gls{Stream}.
+     - The \mth{asStream} method produces a stream from a pattern.
+**** Like making a building:
+     - The pattern is the /blueprint/.
+     - The stream is the construction crew. They follow the blueprint to make the building.
+     - Similarly, a SC stream follows the pattern's blueprint to produce the output values.
+**** Multiple, independent streams from the same pattern.
+     - Just like you can build many houses from one blueprint.
+
+*** asStream example
+#+name: asStream1
+#+caption: An illustration of why we need asStream for patterns.
+#+begin_src {} -i
+p = Pseries(0, 1, inf);
+
+// 'next' on a Pattern returns the pattern itself
+p.next;  // "a Pseries"
+
+q = p.asStream;  // a Routine
+q.next;  // run a few times
+
+r = p.asStream;
+r.next;
+#+end_src
+**** \ci{q} and \ci{r}: Same pattern, independent behavior
+     It doesn't matter how many values you pull from \ci{q}. \ci{r}
+     will count on its own, as if \ci{q} didn't exist.
+
+*** Basic list patterns
+    - \clss{Pseq} :: Return values from an array, one by one.
+    - \clss{Prand} :: Choose values randomly from an array.
+    - \clss{Pxrand} :: Choose values randomly from an array, without repeating the same one twice in a row.
+    - \clss{Pwrand} :: Choose values randomly from an array, with a different probability for each item.
+**** TODO Update URL.
+
+*** Basic math generator patterns
+    - \clss{Pwhite} :: Generate random numbers between low and high boundaries, with a linear distribution.
+    - \clss{Pexprand} :: Generate random numbers with an exponential distribution.
+    - \clss{Pseries} :: Yield an arithmetic series. Each value is the previous value plus a given step size.
+    - \clss{Pgeom} :: Yield a geometric series. Each value is the previous value times a given growth factor.
+**** You can get interesting results using just these.
+     For more patterns, see the /Practical Guide to Patterns/ help file series.[fn:1]
+
+** Patterns and Events
+*** Patterns make Events very easily
+**** An \clss{Event} is a set of named values.
+     Each value's name says how the value will be used for synthesis.
+**** A pattern called \clss{Pbind} is a list of /named patterns/.
+     - Every \mth{next} value collects one value from each child pattern.
+     - \mth{next} needs an empty \clss{Event} as a container for the new values.
+#+name: pbind1
+#+caption: Pbind collects child patterns' return values under given names.
+#+begin_src {} -i
+p = Pbind(
+   \freq, Pexprand(100, 400, inf),
+   \dur, Pwhite(1, 4, inf) * 0.125
+).asStream;
+
+p.next(Event.new);
+#+end_src
+
 
 * Effects common in subtractive synthesis			   :noexport:
 ** Chorus
@@ -1649,5 +1785,7 @@ Tdef(\player, {
 #+LaTeX: \printglossary[type=mth]
 * Footnotes
 
-[fn:1] Events with ProxySpace: [[Events with ProxySpace]].
+# [fn:1] Events with ProxySpace: [[Events with ProxySpace]].
+
+[fn:1] http://doc.sccode.org/...
 

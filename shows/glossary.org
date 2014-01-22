@@ -99,8 +99,17 @@
 | Task               | A placeholder for a Routine. Replaying a Task after stopping will continue just after the stopping point                                                           |
 | TempoClock         | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
 | TdefAllGui         | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
-| Tdef               | Global storage for Tasks. Give the task function a name, and Tdef will treat the function as a Task                                                                | 
-  
+| Tdef               | Global storage for Tasks. Give the task function a name, and Tdef will treat the function as a Task                                                                |
+| Pseries            | A Pattern yielding an arithmetic series. Each value is the previous value plus a given step size                                                                   |
+| Pgeom              | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
+| Pseq               | A Pattern to return values from an array, one by one                                                                                                               |
+| Prand              | A Pattern to choose values randomly from an array                                                                                                                  |
+| Pxrand             | A Pattern to choose values randomly from an array, without repeating the same one twice in a row                                                                   |
+| Pwrand             | A Pattern to choose values randomly from an array, with a different probability for each item                                                                      |
+| Pwhite             | A Pattern that generates random numbers between low and high boundaries, with a linear distribution                                                                |
+| Pexprand           | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
+| Pbind              | An Event Pattern that collects values from child patterns under their names                                                                                        |
+
 
 * Methods							   :noexport:
 #+name: mth
@@ -110,6 +119,7 @@
 | adsr          | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                      |
 | ar            | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
 | asr           | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain faith is gated rather than timed                                       |
+| asStream      | Produce a Stream from another object (usually a Pattern)                                                                                                          |
 | clip          | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
 | cpsmidi       | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
 | curvelin      | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
@@ -140,7 +150,7 @@
 | range         | Converts a UGen's range into a different linear range                                                                                                             |
 | reciprocal    | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
 | release       | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
-| reset         | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                      |
+| reset         | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                         |
 | round         | Round a number to the nearest division--- by default, 1 (integers) but it may also be fractional                                                                  |
 | rrand         | \cd{rrand(low, high)}: Generate a random number $x$ where $low \le x \le high$                                                                                    |
 | sched         | Schedule an activity to happen a certain number of beats/seconds in the future (i.e., later than now)                                                             |
