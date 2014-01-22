@@ -1,6 +1,11 @@
 # Planning for SC week-long workshop
 
 * Technical
+** TODO Distributing extensions [0/4]
+   - [ ] JIT extensions
+   - [ ] ddwlib
+   - [ ] crucial
+   - [ ] Write slides about this
 ** Patterns + ProxySpace
 *** Syntax to address nodeproxy controls
     - 'key.argname'?
@@ -13,6 +18,7 @@
 *** DONE Changing number doesn't update proxy's source
 *** INPROG Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
+*** TODO Reference to frame ID "undefined"
 *** POSTPONED Filter to remove non-frame text
 *** TODO Listings numbering problem with onlyenv
 *** DONE Extract code examples
