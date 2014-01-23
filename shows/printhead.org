@@ -54,6 +54,7 @@
 #+LATEX_HEADER: \newcommand{\eglspl}[1]{\emph{\glspl{#1}}}
 #+LATEX_HEADER: \newcommand{\eGlspl}[1]{\emph{\Glspl{#1}}}
 #+LATEX_HEADER: \newcommand{\clss}[1]{\ci{\gls{#1}}}
+#+LATEX_HEADER: \newcommand{\clsspl}[1]{\ci{\glspl{#1}}}
 #+LATEX_HEADER: \newcommand{\mth}[1]{\ci{\gls{#1}}}
 #+LATEX_HEADER: \newcommand{\ugen}[1]{\ci{\gls{#1}}}
 
