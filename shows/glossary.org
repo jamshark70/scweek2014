@@ -75,6 +75,8 @@
 | JITLib                 |         | The "Just-In-Time" Library. A system of ``proxies'' that allow you to define a synthesis structure and fill in the details a piece at a time                                          |
 | proxy                  | proxies | A placeholder that allows you to define connections between modules independent of each module's content                                                                              |
 
+# | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
+
 
 * Classes 							   :noexport:
 #+name: class

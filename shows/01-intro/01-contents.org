@@ -211,7 +211,7 @@ if(0.25.coin) {
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps
+* SC language: Beginning steps					   :noexport:
 ** Making noise
 *** Let's make some noise!
    1. Boot the audio server: \ks{Ctrl-B} \\
@@ -324,7 +324,7 @@ p.push;
      - Change the signal in the box at any time.
      - The filter is still looking in the box!
 
-** SC language syntax						   :noexport:
+** SC language syntax
 *** Taking it apart
 **** Now we know enough to step back and see what this is made of.
      - This part is a little dry and technical.
@@ -1926,6 +1926,69 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
      - We are beginning with a \egls{modular} approach, for reasons noted earlier.
      - This approach needs a different event type.
 
+** Special event keys: Pitch and Time
+*** Pitch and time in events
+**** Many levels to write pitch and time.
+     You can organize pitch and time in different ways, appropriate to different musical ideas.
+**** "Physical" level
+     Ultimately, SC uses specific event keys for the final result. These can be calculated from higher levels.
+     - Time :: \ci{delta} and \ci{sustain}
+     - Pitch :: \ci{freq}
+
+*** Time model
+**** Physical level: \ci{delta} and \ci{sustain}.
+     - \ci{delta} :: How many beats until the next event.
+     - \ci{sustain} :: How many beats before releasing the envelope.
+**** Higher level: \ci{dur}, \ci{legato}, \ci{stretch}
+     - Larger \ci{stretch} makes things go slower.
+     - Smaller \ci{legato} makes the notes shorter.
+     - \cd{delta = dur * stretch}
+     - \cd{sustain = dur * stretch * legato}
+
+*** Example: Articulation using \textbackslash legato
+    First a synth.
+#+name: legato1
+#+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
+#+begin_src {} -i
+~oscil = { |freq = 440|
+   Mix(Pulse.ar(
+      Lag.kr(freq, 0.08) * { exprand(1/1.005, 1.005) }.dup(5),
+      { rrand(0.4, 0.5) }.dup(5)
+   ))
+};
+~ampEg = { |gt|
+   EnvGen.kr(Env.adsr(0.01, 0.1, 0.6, 0.15), gt)
+};
+~feg = { |gt, width = 3|
+   EnvGen.kr(Env.perc(0.01, 0.14, width), gt) + 1
+};
+~filter = { |ffreq = 1800, rq = 0.2, amp = 0.05|
+   (RLPF.ar(~oscil.ar, clip(ffreq * ~feg, 20, 20000), rq)
+      * amp * ~ampEg).dup
+};
+~filter.play;
+#+end_src
+
+*** The \textbackslash legato pattern
+    Play it with a \mth{psSet} pattern.
+    - Two possible \ci{\textbackslash legato} values:
+      - 0.5: Half the note's duration---staccato
+      - 1.05: Longer than the note's duration---legato\\
+        This makes a sliding pitch, like a classic mono synth.
+    - \ci{\textbackslash legato} is easier than calculating
+      \ci{sustain} by hand.
+#+name: legato2
+#+caption: A pattern, to play the previous synth like a mono synth with fingered glides.
+#+begin_src {} -i
+~player = \psSet -> Pbind(
+   \freq, Pwhite(36, 48, inf),
+   \dur, Pwhite(1, 3, inf) * 0.125,
+   \legato, Prand(#[0.5, 1.05], inf),
+   \gt, 1
+);
+
+~player.clear;
+#+end_src
 
 * Effects common in subtractive synthesis			   :noexport:
 ** Chorus
