@@ -198,6 +198,7 @@ Event.addEventType(\psSet, {
 	sustain = ~sustain.value,
 	releaseHolder = ~releaseHolder;
 	~freq = ~detunedFreq.value;
+	~amp = ~amp.value;
 	~proxyspace.keysValuesDo { |name, proxy|
 		var ctl = proxy.objects[0];
 		case
