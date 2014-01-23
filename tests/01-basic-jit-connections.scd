@@ -268,7 +268,7 @@ AbstractPlayControl.buildMethods[\psSet] = { |pattern, proxy, channelOffset = 0,
 		\isRest, Pfunc { |ev|
 			rest or: { ev[\isRest] ?? { false } }
 		}
-	).trace.buildForProxy(proxy, channelOffset, index)
+	).buildForProxy(proxy, channelOffset, index)
 };
 )
 
