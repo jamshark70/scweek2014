@@ -128,7 +128,7 @@
 | addSpec       |        | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
 | adsr          |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                      |
 | ar            |        | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
-| asr           |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain faith is gated rather than timed                                       |
+| asr           |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                  |
 | asStream      |        | Produce a Stream from another object (usually a Pattern)                                                                                                          |
 | clip          |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
 | cpsmidi       |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
