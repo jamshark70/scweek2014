@@ -1672,7 +1672,7 @@ Tdef(\player, {
 **** Compare a \clss{Routine} and a Pattern to count upward from 0.
      Why 0?
      - Most programming languages start counting with 0... get used to it.
-     - E.g., the index of the first item in an \clss{Array} is 0.
+       (E.g., the index of the first item in an \clss{Array} is 0.)
 #+latex: \glsadd{Pseries}
 #+name: patt1
 #+caption: Two counters: a Routine and a Pattern. r and p have the same result.
@@ -1698,7 +1698,7 @@ p = Pseries(0, 1, inf).asStream;
        - 6 lines for a simple counter. (Could be 4 by using \cd{inf.do}.)
        - Hard to see at a glance what all the details mean.
        - Easy to make a mistake while rewriting the counter logic.
-**** The \clss{Pseries} is more compact, convenient.
+**** The \clss{Pseries} is more compact and convenient.
      - *Good:* It shows the /purpose/, not the implementation.
      - *Bad:* Sometimes you need to know the implementation details.
 **** For me, the good /far/ outweighs the bad.
@@ -1782,12 +1782,12 @@ p = Pbind(
        - Get a value from that name's stream.
        - Add the value into the input \clss{Event}.
 
-*** DebugPbind: Watch the process
+*** DebugPbind: Watch the event get filled
 **** In Listing [[pbind1]], change \clss{Pbind} to \clss{DebugPbind}.
      Now you can read exactly what's going on.
      1. Start with an empty event.
-     2. \ci{\textbackslash freq} gets the value 133.26.
-     3. The empty event becomes \cd{(freq: 133.26)}.
+     2. \ci{\textbackslash freq} gets the value 133.25.
+     3. The empty event becomes \cd{(freq: 133.25)}.
      4. \ci{\textbackslash dur} gets 0.125.
      5. The final event has both values, with the right names.
 #+begin_src {} -i
@@ -1800,8 +1800,6 @@ Event going in: ( 'freq': 133.24577125341 )
 streamout: 0.125
 Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 #+end_src
-
-
 
 *** Events and timing
 **** In a \clss{Routine}/\clss{Task}, you could \mth{wait} until the next event.
@@ -1831,23 +1829,53 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 #+begin_src {} -i
 ~player = \psSet -> Pbind(
    \t_trig, 1,
-   \freq, Pexprand(110, 440),
+   \freq, Pexprand(110, 440, inf),
    \dur, 0.5
 );
 
-~player = nil;
+~player.clear;
 #+end_src
 
-*** Pattern expresses the same idea
-**** They express the same, but in a different style:
-     - The \clss{Routine} says:
+**** \mth{psSet}						   :noexport:
+     This modifier tells the pattern's events to operate on existing
+     \clsspl{NodeProxy} within the \clss{ProxySpace}.
+
+*** Patterns: "Declarative" programming
+**** \eGlspl{Routine} are \egls{imperative}-style programming.
+     - Listing [[noteseq1]] said: "Do this, then that."
        - Set the trigger and the frequency.
        - Wait 0.5 beats.
-     - The \clss{Pbind} says:
-       - Each \clss{Event} has values for trigger, frequency and duration.
-       - It's the event's responsibility to handle the synthesis values.
-       - It's the \clss{EventStreamPlayer}'s responsibility to play
-         the event and handle timing.
+**** \eGlspl{pattern} are more like \egls{declarative}-style.
+     - Listing [[rVsPbind]] says:
+       - I want \ci{\textbackslash freq} to be like this.
+       - I want \ci{\textbackslash dur} to be like that.
+       - Go do it.
+**** The two examples /do/ the same thing, but write it differently.
+
+*** What is \textbackslash psSet?
+**** \ci{\textbackslash psSet} says how the pattern's events should be used.
+     - \clss{Pbind} doesn't say /what to do/.\\
+       It only says what information to use.
+     - The \clss{Event} interprets the data and takes action, based on the \egls{event type}.
+**** \ci{\textbackslash psSet} is an event type.
+     - It tells the pattern's events to operate on existing \clsspl{NodeProxy} within the \clss{ProxySpace}.
+     - Actually a bit more: It connects the events to the current \clss{ProxySpace}.
+
+*** Event types
+**** Common \glspl{event type}:
+     - \ci{\textbackslash note} :: Play a new \clss{Synth}.
+     - \ci{\textbackslash set} :: Set controls in an existing \clss{Synth}.
+     - \ci{\textbackslash off} :: Release an existing \clss{Synth}.
+     - \ci{\textbackslash midi} :: Send note or control data to a hardware MIDI device.
+**** Event types let you change the action without changing the data.
+     - You can write a \ci{\textbackslash note} pattern, and hear the notes in scsynth.
+     - Or, change to the \ci{\textbackslash midi} type and hear the notes from a hardware synth.
+
+*** Why not use \textbackslash note?
+**** If \ci{\textbackslash note} is the normal \gls{event type}, why not use it?
+     - We will, later.
+     - We are beginning with a \egls{modular} approach, for reasons noted earlier.
+
 
 * Effects common in subtractive synthesis			   :noexport:
 ** Chorus

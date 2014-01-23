@@ -11,6 +11,7 @@
 | band-limited           |        | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                                            |
 | beat                   |        | The unit of time in a TempoClock. A beat's duration depends on the clock's tempo, given in beats per second. If the tempo is 2 bps, 1 beat == 0.5 seconds                             |
 | breakpoint             |        | The endpoint of a line segment in an envelope                                                                                                                                         |
+| Brownian motion        |        | A ``random walk'': Imagine a particle that moves a random amount in each step. The trace it leaves behind is Brownian motion                                                          |
 | chaotic                |        | Chaotic functions are dynamic systems with large differences in the results based on small differences in the inputs. They sound like something between normal waves and random noise |
 | class                  |        | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                                            |
 | clock                  |        | A scheduler. Functions or Routines scheduled on the clock will wake up at the given time, and they will reschedule if the return value is a number                                    |
@@ -23,6 +24,7 @@
 | envelope               |        | A control signal that shapes amplitude or another parameter. Important for note control. A standard shape is ADSR                                                                     |
 | envelope generator     |        | The standard name for the unit and a synthesizer that produces an envelope signal from the envelope's parameters                                                                      |
 | environment            |        | Named storage for objects, which can be retrieved using the convenient variable-like syntax \textasciitilde name                                                                      |
+| event type             |        | A Symbol, stored under the name ``type,'' indicating which action function should interpret the event's values and take action. Normally \ci{\textbackslash note}                     |
 | exponential            |        | A unit of measurement that works by multiplication. If $f$ is a frequency, ``up an octave'' is $2f$                                                                                   |
 | filter                 |        | A signal processor that changes a sound's spectrum                                                                                                                                    |
 | frequency response     |        | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                                        |
@@ -39,6 +41,7 @@
 | loopNode               |        | In an envelope, the breakpoint to which the envelope generator will jump after reaching the releaseNode, while ``gate'' > 0                                                           |
 | method                 |        | An action which an object can perform. Very similar to a function, but it belongs to a class and has a name                                                                           |
 | method call            |        | A request to an object to perform one of its predefined actions. It consists of three parts: receiver, selector and arguments                                                         |
+| modular                |        | This workshop presents a modular approach to synthesis: Each component performs a small part of the work, and you can replace components freely                                       |
 | modulation             |        | Using a signal to control a synthesis parameter. Adds variety to simple synthesis techniques                                                                                          |
 | multichannel expansion |        | Math operators and UGens ``expand'' an array of inputs into an array of results: [1, 2] * 2 = [2, 4]. Convenient for stereo processing                                                |
 | Nyquist                |        | In digital sampling, the highest possible frequency is $\frac{sr}{2}$, where $sr$ is the sampling rate                                                                                |
@@ -46,6 +49,7 @@
 | OSC                    |        | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                                   |
 | oscillator             |        | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                                            |
 | pattern                |        | An object that describes a stream of values without requiring the programming logic to be repeated. The pattern object makes Streams that perform the calculations                    |
+| psSet                  |        | A NodeProxy ``modifier,'' telling the proxy to use the pattern to set controls in the proxies within a ProxySpace                                                                     |
 | pulse wave             |        | A waveform that jumps suddenly up and down and stays flat in between                                                                                                                  |
 | pulse width            |        | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                                              |
 | Q                      |        | Short for a filter's ``quality''                                                                                                                                                      |
@@ -66,7 +70,8 @@
 | UGen                   |        | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                                |
 | unordered              |        | Of a collection, indicates that the collection may rearrange the items' order for faster lookup, e.g., Set, Dictionary                                                                |
 | variable               |        | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                                       |
-| Brownian motion        |        | A ``random walk'': Imagine a particle that moves a random amount in each step. The trace it leaves behind is Brownian motion                                                          |
+| imperative             |        | A style of programming focusing on precise instructions---commands---that the computer should execute. Compare ``declarative'' programming                                            |
+| declarative            |        | A style of programming that describes the desired result, and allows the software to handle the details. SC patterns are more like declarative code                                   |
 
 
 * Classes 							   :noexport:
