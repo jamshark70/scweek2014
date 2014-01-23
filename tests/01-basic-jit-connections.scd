@@ -242,16 +242,32 @@ Event.addEventType(\psSet, {
 
 AbstractPlayControl.proxyControlClasses[\psSet] = PatternControl;
 AbstractPlayControl.buildMethods[\psSet] = { |pattern, proxy, channelOffset = 0, index|
+	var watcher, rest = false;
 	if(currentEnvironment.isKindOf(ProxySpace).not) {
 		Error("\\psSet may not be used outside of a ProxySpace").throw;
 	};
+	// I don't have access to the stream player in here.
+	// To silence the proxy upon 'stop', I have to set a flag
+	// to turn events into rests.
+	// If rest is false, all events will be rests.
+	// Otherwise respect the existing isRest
+	watcher = SimpleController(proxy)
+	.put(\play, { rest = false })
+	.put(\stop, { rest = true })
+	.put(\clear, { rest = true; watcher.remove });
 	// releaseHolder may well be a hack,
 	// but it should actually be local to the pattern
 	// must protect in a Ref
 	// Pbindf will extract its value automatically
 	// but not use composeEvents()
-	Pbindf(pattern, \type, \psSet, \proxyspace, currentEnvironment, \releaseHolder, `(IdentityDictionary.new))
-	.buildForProxy(proxy, channelOffset, index)
+	Pbindf(pattern,
+		\type, \psSet,
+		\proxyspace, currentEnvironment,
+		\releaseHolder, `(IdentityDictionary.new),
+		\isRest, Pfunc { |ev|
+			rest or: { ev[\isRest] ?? { false } }
+		}
+	).trace.buildForProxy(proxy, channelOffset, index)
 };
 )
 

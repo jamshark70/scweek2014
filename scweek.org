@@ -7,6 +7,14 @@
    - [ ] crucial
    - [ ] Write slides about this
 ** Patterns + ProxySpace
+*** Notes for documentation
+**** NodeProxy play/stop semantics
+     - If the NP exists, its source is processing, always.
+     - 'play' only allows it to be heard.
+     - 'stop' only suppresses the output.
+     - A \psSet pattern source behaves the same:
+       - It always produces events with its normal timing.
+       - 'stop' turns all the events into rests.
 *** Syntax to address nodeproxy controls
     - 'key.argname'?
     - I think maybe even better to share control names across proxies
