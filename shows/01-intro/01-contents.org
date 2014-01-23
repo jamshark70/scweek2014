@@ -1739,7 +1739,6 @@ r.next;
     - \clss{Prand} :: Choose values randomly from an array.
     - \clss{Pxrand} :: Choose values randomly from an array, without repeating the same one twice in a row.
     - \clss{Pwrand} :: Choose values randomly from an array, with a different probability for each item.
-**** TODO Update URL.
 
 *** Basic math generator patterns
     - \clss{Pwhite} :: Generate random numbers between low and high boundaries, with a linear distribution.
@@ -1752,7 +1751,8 @@ r.next;
 ** Patterns and Events
 *** Patterns make Events very easily
 **** An \clss{Event} is a set of named values.
-     Each value's name says how the value will be used for synthesis.
+     - Each value's name says how the value will be used for synthesis.
+     - To use the values, call \mth{play} on the event.
 **** A pattern called \clss{Pbind} is a list of /named patterns/.
      - Every \mth{next} value collects one value from each child pattern.
      - \mth{next} needs an empty \clss{Event} as a container for the new values.
@@ -1767,6 +1767,87 @@ p = Pbind(
 p.next(Event.new);
 #+end_src
 
+*** What does Pbind actually do?
+#+begin_src {} -i
+p = Pbind(
+   \freq, Pexprand(100, 400, inf),
+   \dur, Pwhite(1, 4, inf) * 0.125
+).asStream;
+#+end_src
+    1. Associate names with patterns:
+       - \ci{\textbackslash freq} will be random between 100 and 400.
+       - \ci{\textbackslash dur} will be a random multiple of 0.125.
+    2. Automatically make streams from those patterns.
+    3. Go through the pairs /in order/:
+       - Get a value from that name's stream.
+       - Add the value into the input \clss{Event}.
+
+*** DebugPbind: Watch the process
+**** In Listing [[pbind1]], change \clss{Pbind} to \clss{DebugPbind}.
+     Now you can read exactly what's going on.
+     1. Start with an empty event.
+     2. \ci{\textbackslash freq} gets the value 133.26.
+     3. The empty event becomes \cd{(freq: 133.26)}.
+     4. \ci{\textbackslash dur} gets 0.125.
+     5. The final event has both values, with the right names.
+#+begin_src {} -i
+Source event: (  )
+stream ID: freq
+Event going in: (  )
+streamout: 133.24577125341
+stream ID: dur
+Event going in: ( 'freq': 133.24577125341 )
+streamout: 0.125
+Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
+#+end_src
+
+
+
+*** Events and timing
+**** In a \clss{Routine}/\clss{Task}, you could \mth{wait} until the next event.
+     This happens automatically in an Event Pattern.
+     - Events can calculate a \gls{delta} time.
+     - Then, we just need something that will play the event and wait
+       the right amount of time.
+**** This is \clss{EventStreamPlayer}.
+     - If you call \mth{play} on a pattern, it makes an \clss{EventStreamPlayer}.
+     - This plays the events and waits for the event's delta.
+     - The \egls{delta} may be given directly, or calculated from \cd{\textasciitilde dur}.
+       - \cd{delta = \textasciitilde dur * \textasciitilde stretch}
+
+*** Event patterns: One-stop shopping
+    Let's be clear about the implications:
+**** Event patterns handle everything for sequencing
+     - Parameter setting
+       - New parameter values are saved in the event
+     - Timing
+       - Every event has a \egls{delta}
+
+*** Compare: Pattern vs. Routine to play notes
+    - We've seen a \clss{Routine} that plays notes, using \mth{set}.
+    - Let's see how the same is done with a \egls{pattern}.
+#+name: rVsPbind
+#+caption: A Pbind, expressing the same as the earlier Routine.
+#+begin_src {} -i
+~player = \psSet -> Pbind(
+   \t_trig, 1,
+   \freq, Pexprand(110, 440),
+   \dur, 0.5
+);
+
+~player = nil;
+#+end_src
+
+*** Pattern expresses the same idea
+**** They express the same, but in a different style:
+     - The \clss{Routine} says:
+       - Set the trigger and the frequency.
+       - Wait 0.5 beats.
+     - The \clss{Pbind} says:
+       - Each \clss{Event} has values for trigger, frequency and duration.
+       - It's the event's responsibility to handle the synthesis values.
+       - It's the \clss{EventStreamPlayer}'s responsibility to play
+         the event and handle timing.
 
 * Effects common in subtractive synthesis			   :noexport:
 ** Chorus
@@ -1787,5 +1868,5 @@ p.next(Event.new);
 
 # [fn:1] Events with ProxySpace: [[Events with ProxySpace]].
 
-[fn:1] http://doc.sccode.org/...
+[fn:1] Online copy at [[http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_01_Introduction.html][doc.sccode.org]].
 

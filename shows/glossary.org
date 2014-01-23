@@ -80,13 +80,23 @@
 | Dictionary         | An unordered set of associations \cd{key -> value}. \cd{dictionary[key]} returns the value for that key                                                            |
 | Env                | Defines an envelope specification, based on segments (target values, times and curves)                                                                             |
 | Event              | Stores information like IdentityDictionary. Playing an event gets musical results: play a note, change values etc. Patterns can produce events for sequencing      |
+| EventStreamPlayer  | Gets Events from an event stream. It plays each one in turn, and then waits event's delta time before retrieving the next event                                    |
 | File               | Read and write text or binary files on the local filesystem                                                                                                        |
 | Function           | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object |
 | IdentityDictionary | Like Dictionary, but restricts the types of keys for faster lookup. Usually the keys are Symbols                                                                   |
 | IdentitySet        | Like Set, but restricts the types of items for faster membership testing                                                                                           |
 | List               | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                                                         |
 | NodeProxy          | A hot-swappable placeholder for a Synth on the server                                                                                                              |
+| Pbind              | An Event Pattern that collects values from child patterns under their names                                                                                        |
+| Pexprand           | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
+| Pgeom              | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
+| Prand              | A Pattern to choose values randomly from an array                                                                                                                  |
 | ProxySpace         | An environment that automatically makes a NodeProxy from any item in it                                                                                            |
+| Pseq               | A Pattern to return values from an array, one by one                                                                                                               |
+| Pseries            | A Pattern yielding an arithmetic series. Each value is the previous value plus a given step size                                                                   |
+| Pwhite             | A Pattern that generates random numbers between low and high boundaries, with a linear distribution                                                                |
+| Pwrand             | A Pattern to choose values randomly from an array, with a different probability for each item                                                                      |
+| Pxrand             | A Pattern to choose values randomly from an array, without repeating the same one twice in a row                                                                   |
 | Routine            | Executes a Function. The function may \ci{yield} a value, and the next call into the routine will resume just after the yield                                      |
 | Set                | An unordered collection of items, optimized for iteration and testing membership: \cd{set.do}, \cd{set.includes(item)}                                             |
 | SoundFile          | Read and write audio files from the language (no server involvement). See \ci{Buffer} for reading and writing files in the server                                  |
@@ -97,19 +107,11 @@
 | SynthDef           | A Synthesis Definition. A fixed collection of unit generators, defining specific signal paths among them                                                           |
 | SystemClock        | A permanent clock, which always ticks in seconds                                                                                                                   |
 | Task               | A placeholder for a Routine. Replaying a Task after stopping will continue just after the stopping point                                                           |
-| TempoClock         | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
-| TdefAllGui         | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
 | Tdef               | Global storage for Tasks. Give the task function a name, and Tdef will treat the function as a Task                                                                |
-| Pseries            | A Pattern yielding an arithmetic series. Each value is the previous value plus a given step size                                                                   |
-| Pgeom              | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
-| Pseq               | A Pattern to return values from an array, one by one                                                                                                               |
-| Prand              | A Pattern to choose values randomly from an array                                                                                                                  |
-| Pxrand             | A Pattern to choose values randomly from an array, without repeating the same one twice in a row                                                                   |
-| Pwrand             | A Pattern to choose values randomly from an array, with a different probability for each item                                                                      |
-| Pwhite             | A Pattern that generates random numbers between low and high boundaries, with a linear distribution                                                                |
-| Pexprand           | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
-| Pbind              | An Event Pattern that collects values from child patterns under their names                                                                                        |
-
+| TdefAllGui         | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
+| TempoClock         | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
+| DebugPbind         | An extension class in the \emph{ddwPatterns} Quark, which prints every step of a Pbind's evaluation to the post window                                             | 
+  
 
 * Methods							   :noexport:
 #+name: mth
