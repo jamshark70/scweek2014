@@ -154,7 +154,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - SC3 ("SC Server").
        - Audio processing is more efficient, by handling audio in a /server/ process.
 
-* SC architecture, usage
+* SC architecture, usage					   :noexport:
 ** SC architecture
 *** SC is three applications
 **** Really? /Three/ applications?
@@ -204,38 +204,6 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - In free software, /user choice/ is important. Prefer /open/
        designs, rather than closed.
 
-*** "Canonical" SC synthesis
-#+name: canonical
-#+caption: SuperCollider's "native" style of synthesis.
-#+begin_src {} -i
-(
-SynthDef(\varsaw, { |out = 0, freq = 440, width = 0.5,
-   amp = 0.1, gate = 1, pan = 0|
-   var sig = VarSaw.ar(freq, 0, width),
-   env = EnvGen.kr(Env.adsr, gate, doneAction: 2);
-   Out.ar(out, Pan2.ar(sig * env, pan));
-}).add;
-)
-
-// Object style
-a = Synth(\varsaw, [freq: exprand(200, 500),
-   width: rrand(0.2, 0.5)]);
-a.release;
-
-// Event style
-(instrument: \varsaw, freq: exprand(200, 500),
-width: rrand(0.2, 0.5), sustain: 2).play;
-#+end_src
-
-*** Explanation of "canonical" style
-**** All these commands send \egls{OSC} messages.
-     1. \mth{add} a \clss{SynthDef} into the server.\\<all>
-	\clss{SynthDef}: A /synthesis definition/.
-     2. Play it, using \clsspl{Synth} or \clsspl{Event}.
-**** Drawbacks for learning:
-     - \clsspl{SynthDef} usually include everything for one note.
-     - Bigger code blocks are harder to understand at the beginning.
-
 ** Using the Integrated Development Environment
 *** Usage: IDE
 **** The IDE is your main interface.
@@ -249,6 +217,19 @@ width: rrand(0.2, 0.5), sustain: 2).play;
      - *Status bar*
        - Language and server status.
        - Server control (click on the server status).
+
+*** Asking for help
+**** Help system keyboard shortcuts
+     - Ctrl-D :: Look up help for the keyword under the cursor.
+     - Ctrl-Shift-D :: Pop up a box where you can type the search term.
+**** Try it
+     - Type \cd{SinOsc} into the code window.
+     - Hit \ks{Ctrl-D}.
+       - SC reads the help index the first time in the session.
+       - It's faster after that.
+**** Important help browser features
+     - "Search" and "Browse" pages.
+     - Table of contents in each help page.
 
 *** Code panel
 **** Run code: \ks{Ctrl-Return}
@@ -278,15 +259,95 @@ width: rrand(0.2, 0.5), sustain: 2).play;
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps					   :noexport:
+* SC language: Beginning steps
 ** Making noise
-*** Let's make some noise!
-   1. Boot the audio server: \ks{Ctrl-B}.\\<all>
-      See also /Language/ menu and server status.\\<all>
-      *Linux:* Start JACK before doing this.
-   2. Type and run some code.\\
-      Just run the first line at first.
-      @@latex:\glsadd{play}\glsadd{release}\glsadd{dup}\glsadd{SinOsc}@@
+*** Before making noise: Set up audio
+**** OSX
+     - Can choose the device within SC. See below.
+     - Or, choose the device in OSX's audio control panel.
+**** Windows
+     - You /must/ choose the device within SC.
+     - Boot the server, then quit, to get the list of devices.
+**** Linux
+     - \egls{scsynth} goes through the JACK audio server.
+     - All audio configuration, including device, is done in JACK. /qjackctl/ can help.
+     - *Start JACK before booting the server!*
+
+*** Setting devices within SC
+**** First, get a list of devices.
+     - *OSX:* \cd{ServerOptions.devices}
+     - *Windows:* Boot the server. Then look for the device list.
+**** Set the device in \clss{ServerOptions}.
+     - You must quote the device name exactly.
+#+begin_src {} -i
+s.options.device = "Device Name";
+#+end_src
+**** Reboot the server.
+     - Quit first, if needed.
+     - It should use the chosen device now.
+
+*** Windows: ASIO
+**** Strongly recommended to use an ASIO sound driver.
+     - The default Microsoft MME driver will work, but its \egls{latency} is very high.
+       - Latency: the delay between calculating the audio and hearing it.
+       - For live use, 30 ms is too much.
+       - MME can go as high as 230 ms!
+     - If your soundcard installed an ASIO driver, use it.
+     - For the built-in soundcard, use ASIO4ALL.
+
+*** Boot the server
+**** Boot the audio server.
+     - Code: \cd{s.boot}.
+     - IDE keyboard shortcut: \ks{Ctrl-B}.
+     - See also /Language/ menu and server status.
+      
+*** "Canonical" SC synthesis
+#+name: canonical
+#+caption: SuperCollider's "native" style of synthesis.
+#+begin_src {} -i
+// A synthesis definition
+(
+SynthDef(\varsaw, { |out = 0, freq = 440, width = 0.5,
+   amp = 0.1, gate = 1, pan = 0|
+   var sig = VarSaw.ar(freq, 0, width),
+   env = EnvGen.kr(Env.adsr, gate, doneAction: 2);
+   Out.ar(out, Pan2.ar(sig * env, pan));
+}).add;
+)
+
+// Playing it: Object style
+a = Synth(\varsaw, [freq: exprand(200, 500),
+   width: rrand(0.2, 0.5)]);
+
+a.release;  // to stop it
+
+// Playing it: Event style
+(instrument: \varsaw, freq: exprand(200, 500),
+width: rrand(0.2, 0.5), sustain: 2).play;
+#+end_src
+
+*** "Canonical" objects and messages
+**** All these commands send \egls{OSC} messages.
+#+begin_center
+[[./img/server-msg-diagram.pdf]]
+#+end_center
+
+*** When to use "canonical" style
+**** "Canonical" style is good for finished works.
+     - Maximum efficiency with structures that you've worked out in advance.
+     - Not good for experimenting with signal flow.
+     - Not ideal for learning: Too many details to learn before you
+       can use \clsspl{SynthDef} comfortably.
+**** Typical workflow
+     - Begin with loosely-structured code. Play freely with it.
+     - When you find sounds and sequences you like, "freeze" them into more stable structures.
+
+*** \{\}.play shortcut
+**** This shortcut makes it faster to experiment.
+     It handles both parts for you:
+     - Makes the \clss{SynthDef} automatically.
+     - Makes the \clss{Synth}.
+#+latex: \glsadd{play}\glsadd{release}\glsadd{dup}\glsadd{SinOsc}
 #+name: sound1
 #+Caption: A very simple synth.
 #+Begin_src {} -i
@@ -333,64 +394,6 @@ p.push;
 ~out.stop;
 #+end_src
 
-*** Important idea: /Modular/ design
-**** A \te{modular} approach breaks a problem into smaller pieces.
-     - For synthesis, it means you can play with the different pieces independently.
-     - For example, replace the \ci{\textasciitilde freq} module.
-     - It changes immediately to a changing frequency.
-#+name: ps2
-#+caption: Modularity in ProxySpace.
-#+begin_src {} -i
-~freq = 110;
-~width = 0.5;
-
-~out = { VarSaw.ar(~freq, 0, ~width, 0.1).dup };
-~out.play;
-
-~width = 0.1;
-~freq = { LFNoise1.kr(12).exprange(110, 220) };
-
-~out.stop;
-#+end_src
-
-*** SuperCollider's standard synthesis model
-**** The normal way to make sound in SC:
-     - Write a \clss{SynthDef}: A /synthesis definition/.\\
-       Compiled once and sent to the server in a binary format.
-     - Play many copies of the \clss{SynthDef} using \clsspl{Synth} or \clsspl{Event}.
-**** Problems for learning:
-     - \clsspl{SynthDef} usually include everything for one note.
-     - Bigger code blocks are harder to understand at the beginning.
-     - Then people complain, "SuperCollider is too hard."
-
-*** Modular approach
-**** Instead, we'll start with a \egls{modular} approach.
-     - Code blocks will be very small: 5--6 lines at most (at first).
-     - Instead of one big \clss{SynthDef}, we will:
-       - Make lots of small modules (\clsspl{NodeProxy});
-       - Connect them to get complex results.
-
-*** "Just-In-Time" Library (JITLib)
-**** JITLib is a system of \eglspl{proxy}.
-     - Write the /connections/ between signals (and other data) based on the proxies.
-     - You can change whatever is in the proxies at any time.
-     - This does not change the connections!
-     - Proxies can be very small and simple: easy to read and understand.
-**** JITLib lets us play with signals.
-     No need to worry about structure too soon, because you can change
-     the structure and content independently.
-
-*** Proxies: Cats and signals
-    - A proxy is like a magic box.
-    - If I give you a cat, you have the cat.
-    - If I give you the magic box, you have whatever cat is inside the box.
-    - You can reach into the box any time, and you know you'll pet a cat.
-    - But the /specific cat/ can change.
-**** Proxies and signals
-     - Tell a filter to operate on whatever signal is in the box.
-     - Change the signal in the box at any time.
-     - The filter is still looking in the box!
-
 ** SC language syntax
 *** Taking it apart
 **** Now we know enough to step back and see what this is made of.
@@ -407,16 +410,48 @@ p.push;
      #+end_center
 ***** A \clss{Function} is a block of code in curly braces.
      - Functions can take information in through \egls{arguments}.
-     - They always return one result.
      - \te{Call} a function using \mth{value}.
+     - When you call it, SC:
+       - Runs all the code inside;
+       - Returns the value of the last expression.
+     - SC uses Functions for:
+       - Synthesis
+       - Abstraction (packaging behavior to reuse later)
+
+*** Function example: Hypotenuse
+**** Remember right triangles from math class?
+     - $a^2 + b^2 = c^2$, so $c = \sqrt{a^2 + b^2}$.
+     - In SC: \cd{sqrt(a.squared + b.squared)}.
+**** How do we get \ci{a} and \ci{b} in there?
+     - That's what the \egls{arguments} are for.
+     - \cd{arg a, b;}: \ci{a} and \ci{b} will get their values from the \mth{value} call.
+     - \cd{f.value(3, 4)}: \ci{a} is 3, \ci{b} is 4.\\
+       So the whole expression is @@latex: \cd{sqrt(3.squared + 4.squared)} $\to$
+       \cd{sqrt(9 + 16)} $\to$ \cd{sqrt(25)} $\to$ 5@@.
 #+name: func1
 #+caption: A function to calculate a hypotenuse.
 #+begin_src {} -i
-f = { arg x, y; sqrt(x.squared + y.squared) };
+f = { arg a, b; sqrt(a.squared + b.squared) };
 
-f.value(3, 4);  // prints "5"
+f.value(3, 4);   // prints "5"
+f.value(5, 12);  // prints "13"
 #+end_src
-# **** More about functions later.
+
+*** Argument defaults
+**** What if you leave out an argument value?
+     You can specify a \egls{default} value, to use if you don't give another value.
+**** Initialize an argument to:
+     - Constant :: \cd{name = value}. Must be a \egls{literal} value: \cd{5}, \cd{'abc'}.
+     - Expression :: \cd{name(value)}.
+#+name: func2
+#+caption: Default values for a and b in the hypotenuse function.
+#+begin_src {} -i
+f = { arg a = 3, b = 4; sqrt(a.squared + b.squared) };
+
+f.value         // prints "5"
+f.value(5);     // prints "6.403..."; b is still 4
+f.value(b: 5);  // prints "5.830..."; a is still 3
+#+end_src
 
 *** Taking it apart: Variables
 **** {1\textwidth}{3in}					      :B_overlayarea:
@@ -429,6 +464,11 @@ f.value(3, 4);  // prints "5"
 ***** A \egls{variable} holds an object.
       - You must put an object in a variable if you want to address it later.
       - We need to \mth{release} the synth. So, save the \clss{Synth} object in a variable.
+***** Access a variable's value by referring to its name.
+#+latex: \glsadd{assignment}
+      After \te{assigning} the Synth to \ci{a}, a reference to \ci{a} gets the Synth.
+      - So \cd{a.release} acts on precisely that Synth.
+
 *** Taking it apart: Variables
 **** {1\textwidth}{3in}					      :B_overlayarea:
      :PROPERTIES:
@@ -441,6 +481,7 @@ f.value(3, 4);  // prints "5"
      - Any function can \egls{declare} variable names.
      - Declared variables exist only inside that function!\\
        This is called \egls{local} scope.
+     - \eGls{arguments} are variables, but get values from outside.
 #+name: declarevars
 #+caption: A function that declares a variable.
 #+begin_src {} -i
@@ -565,12 +606,15 @@ x == y;  // prints false
        	- mul :: Amplitude.
        	- add :: An offset (generally not used for audio).
 
-*** Syntax
-**** \te{Syntax}: Rules defining "legal" expressions.
-E.g., \cd{x + y} is legal, while \cd{x y + 3} is not. You can't have \cd{x} and \cd{y} next to each other with only a space in between.
-**** SC language syntax is all about /calling methods/.
-Everything happens in SC through method calls. *Everything.*\\
-(Except variable \egls{assignment}: \cd{x = 1}.)
+*** Method calls: Most important thing
+**** The SC language is all about /calling methods/.
+     Everything happens in SC through method calls. *Everything.*\\
+     (Except variable \egls{assignment}: \cd{x = 1}.)
+     - Function calls? \mth{value} method.
+     - Math? \cd{+}, \cd{-} are methods.
+     - Flow-of-control mechanisms? \ci{do}, \ci{while}, \ci{if} etc. are methods.
+**** If you understand how to use methods, you understand almost all of SC syntax.
+     The hard part: Learning which methods do what!
 
 *** Parts of a method call
 **** A \gls{method call} consists of three parts:
@@ -598,28 +642,44 @@ In \cd{SinOsc.ar(440)}:
 // answers: [ 8, 8, 8 ]
 #+end_src
 
-*** Beginning usage: Summary 1
-**** Write audio processing into a \clss{Function}.
-     - These functions should create \eglspl{UGen}: \cd{SinOsc.ar} or \cd{.kr}.
-     - \cd{aFunction.play} /adds/ new synthesis into the server.
-**** \clss{ProxySpace} for plug-and-play.
-     - Automatically turns functions into synthesis.
-     - Reassigning an environment variable /replaces/ synthesis.
-**** \te{Modular} style of writing.
-     - Use /small/ synthesis functions.
-     - Connect them by using the environment variable in another UGen's inputs.
+*** Polymorphism
+**** \eGls{polymorphism} is a fancy word for "one name, many meanings."
+     A \gls{class} can respond to a request in a way that makes sense for it.
+     - In Listing [[canonical]], we called \mth{play} on an \clss{Event}.
+     - In Listing [[sound1]], we called \mth{play} on a \clss{Function}.
+     - The specific actions are different.
+     - The results are compatible: Something starts happening (in this case, sound).
+**** In all cases, the \egls{receiver} chooses the method definition that's right for the object.
+#+name: polymath
+#+caption: Polymorphism with math operators. Try these one by one.
+#+begin_src {} -i
+1 + 2;
+Point(3, 4) + 2;
+[1, 2, 3, 4, 5] + 10;
+[1, 2, 3, 4, 5] + [10, 20, 30];
+SinOsc.ar + 1;
+#+end_src
 
-*** Beginning usage: Summary 2
-**** \eglspl{UGen} (Unit Generators)
-     - Input signals \to UGen \to Output signal
-     - Connections: UGen A's output \to UGen B's input
+*** Audio summary
+**** Making sound
+     - Synthesis definition (\clss{SynthDef}).
+     - A way to play the SynthDef (\clss{Synth}, \clss{Event}).
+     - Shortcuts: @@latex:\cd{\{\}.play}@@, \clss{ProxySpace}.
+**** SynthDefs connect \eglspl{UGen} (unit generators) together.
+     - The language only keeps track of their connections.
+     - The server processes them to make sound.
+
+*** Language summary
 **** Important SC language concepts
-     - \gls{class} :: An object definition: /Data/ and /actions/
-     - \gls{method} :: An action that an object that knows how to perform.
+     - \gls{Function} :: A package of instructions, to be executed any time.
      - \gls{variable} :: A placeholder for an object (a reference to it).
-     - \gls{arguments} :: Inputs to a function or method. UGens are created by the \ci{ar} and \ci{kr} methods; here is where you write the input signals.
+     - \gls{arguments} :: Inputs to a function or method.
+     - \gls{class} :: An object definition: /Data/ and /actions/.
+     - \gls{method} :: An action that an object that knows how to perform.
+     - \gls{receiver} :: The object that will answer the method call.
+     - \gls{polymorphism} :: Allows objects to respond to requests in appropriate ways.
 
-*** Next: Synthesis techniques
+*** Next: Synthesis techniques					   :noexport:
     Now we know enough to start exploring standard synthesis techniques.
 
 * Note control							   :noexport:
@@ -1695,6 +1755,93 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 #+LaTeX: \printglossary[type=class]
 ** Methods
 #+LaTeX: \printglossary[type=mth]
+* Removed (always noexport!!) 					   :noexport:
+*** Canonical explanation
+#      1. \mth{add} a \clss{SynthDef} into the server.\\<all>
+# 	\clss{SynthDef}: A /synthesis definition/.
+#      2. Play it, using \clsspl{Synth} or \clsspl{Event}.
+# 
+#      - 
+#      - \clsspl{SynthDef} usually include everything for one note.
+#      - Bigger code blocks are harder to understand at the beginning.
+*** Important idea: /Modular/ design
+**** A \te{modular} approach breaks a problem into smaller pieces.
+     - For synthesis, it means you can play with the different pieces independently.
+     - For example, replace the \ci{\textasciitilde freq} module.
+     - It changes immediately to a changing frequency.
+#+name: ps2
+#+caption: Modularity in ProxySpace.
+#+begin_src {} -i
+~freq = 110;
+~width = 0.5;
+
+~out = { VarSaw.ar(~freq, 0, ~width, 0.1).dup };
+~out.play;
+
+~width = 0.1;
+~freq = { LFNoise1.kr(12).exprange(110, 220) };
+
+~out.stop;
+#+end_src
+
+*** SuperCollider's standard synthesis model
+**** The normal way to make sound in SC:
+     - Write a \clss{SynthDef}: A /synthesis definition/.\\
+       Compiled once and sent to the server in a binary format.
+     - Play many copies of the \clss{SynthDef} using \clsspl{Synth} or \clsspl{Event}.
+**** Problems for learning:
+     - \clsspl{SynthDef} usually include everything for one note.
+     - Bigger code blocks are harder to understand at the beginning.
+     - Then people complain, "SuperCollider is too hard."
+
+*** Modular approach
+**** Instead, we'll start with a \egls{modular} approach.
+     - Code blocks will be very small: 5--6 lines at most (at first).
+     - Instead of one big \clss{SynthDef}, we will:
+       - Make lots of small modules (\clsspl{NodeProxy});
+       - Connect them to get complex results.
+
+*** "Just-In-Time" Library (JITLib)
+**** JITLib is a system of \eglspl{proxy}.
+     - Write the /connections/ between signals (and other data) based on the proxies.
+     - You can change whatever is in the proxies at any time.
+     - This does not change the connections!
+     - Proxies can be very small and simple: easy to read and understand.
+**** JITLib lets us play with signals.
+     No need to worry about structure too soon, because you can change
+     the structure and content independently.
+
+*** Proxies: Cats and signals
+    - A proxy is like a magic box.
+    - If I give you a cat, you have the cat.
+    - If I give you the magic box, you have whatever cat is inside the box.
+    - You can reach into the box any time, and you know you'll pet a cat.
+    - But the /specific cat/ can change.
+**** Proxies and signals
+     - Tell a filter to operate on whatever signal is in the box.
+     - Change the signal in the box at any time.
+     - The filter is still looking in the box!
+
+*** Syntax
+**** \te{Syntax}: Rules defining "legal" expressions.
+     E.g., \cd{x + y} is legal, while \cd{x y + 3} is not. You can't have \cd{x} and \cd{y} next to each other with only a space in between.
+*** Usage summary
+**** Write audio processing into a \clss{Function}.
+     - These functions should create \eglspl{UGen}: \cd{SinOsc.ar} or \cd{.kr}.
+     - \cd{aFunction.play} /adds/ new synthesis into the server.
+**** \clss{ProxySpace} for plug-and-play.
+     - Automatically turns functions into synthesis.
+     - Reassigning an environment variable /replaces/ synthesis.
+**** \te{Modular} style of writing.
+     - Use /small/ synthesis functions.
+     - Connect them by using the environment variable in another UGen's inputs.
+**** \eglspl{UGen} (Unit Generators)				   :noexport:
+     - Input signals \to UGen \to Output signal
+     - Connections: UGen A's output \to UGen B's input
+
+
+UGens are created by the \ci{ar} and \ci{kr} methods; here is where you write the input signals.
+
 * Footnotes
 
 # [fn:1] Events with ProxySpace: [[Events with ProxySpace]].
