@@ -140,13 +140,16 @@ if(0.25.coin) {
     [[./img/sc-with-guis.pdf]]
     #+end_center
 
-*** Why separate the functions?
+*** Why separate the functions?					   :noexport:
 **** If one component crashes, the others keep working.
      Especially important: The code window stays intact!
 **** They work together like one unit.
 
 *** Server/client design
 **** *Server/client* design
+     :PROPERTIES:
+     :BEAMER_act: presentation
+     :END:
      - Server does heavier work (e.g., databases).
      - Client makes requests of the server.
 **** How does this work for audio?
