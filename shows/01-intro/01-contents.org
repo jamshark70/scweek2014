@@ -5,8 +5,8 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL:
 
-#+INCLUDE: "../slidehead.org"
-# #+INCLUDE: "../printhead.org"
+# #+INCLUDE: "../slidehead.org"
+#+INCLUDE: "../printhead.org"
 
 #+include: "../glossary.org"
 
@@ -26,7 +26,7 @@
 #+call: ugengloss
 #+results: ugengloss
 
-* Workshop introduction						   :noexport:
+* Workshop introduction
 ** Workshop introduction
 *** Who am I?
 **** Composer, programmer, nerd
@@ -154,7 +154,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - SC3 ("SC Server").
        - Audio processing is more efficient, by handling audio in a /server/ process.
 
-* SC architecture, usage					   :noexport:
+* SC architecture, usage
 ** SC architecture
 *** SC is three applications
 **** Really? /Three/ applications?
@@ -259,7 +259,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps					   :noexport:
+* SC language: Beginning steps
 ** Making noise
 *** Before making noise: Set up audio
 **** OSX
@@ -706,7 +706,79 @@ SinOsc.ar + 1;
 **** Flexible patching
      Because they're separate modules, it's easy to reconnect them anytime.
 
-*** Example
+*** Modular example
+**** Build a synthesis structure up from modules		   :noexport:
+     - We will use this structure for most of the examples today.
+     - Tomorrow, we'll learn more about how the audio works.
+**** Start with an \egls{oscillator}.
+     - The first block just creates the oscillator as a \clss{NodeProxy}.
+     - It's not connected to to the output---\mth{play} does that.
+     - \ci{gui} makes a control panel, to adjust inputs.
+     - \mth{stop} to disconnect (but the module is still there).
+#+name: mod1
+#+caption: Within a ProxySpace, create an oscillator module.
+#+begin_src {} -i
+p = ProxySpace.new; p.push;
+
+~oscil = { |freq = 220, detun = 1.003, amp = 0.1|
+   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], amp)).dup
+};
+
+~oscil.play;
+p.gui;
+
+~oscil.stop;
+#+end_src
+
+*** Modular example: Add a filter
+**** Add a filter, for a brightness control.
+     - The filter needs an audio input.
+     - Provide this by referring to the oscillator: \cd{\textasciitilde oscil.ar}.
+     - Now the filter is the desired output, so \mth{play} and \mth{stop} that.
+#+name: mod2
+#+caption: Within a ProxySpace, create a filter module.
+#+begin_src {} -i
+~filter = { |ffreq = 2000|
+   LPF.ar(~oscil.ar, ffreq)
+};
+~filter.addSpec(\ffreq, \freq);
+
+~filter.play;
+
+~filter.stop;
+#+end_src
+
+**** EnvGen, not used yet					   :noexport:
+#+begin_example
+~eg = { |gt|
+	EnvGen.kr(
+		envelope: Env.adsr(0.01, 0.1, 0.4, 0.25),
+		gate: gt
+	)
+};
+
+~out = { ~filter.ar * ~eg };
+~out.play;
+
+~eg.set(\gt, 1);
+~eg.set(\gt, 0);
+
+p.setEvent((freq: exprand(200, 600), gt: 1, sustain: 2)).play;
+
+~out.stop;  // We'll use these proxies some more
+#+end_example
+
+*** Common "analog-style" structure
+**** This design is a classic.
+     - \Gls{oscillator} $\to$ \gls{filter}.
+     - Tomorrow, more types of oscillators and filters.
+#+begin_center
+#+attr_latex: :height 1in
+[[./img/visualize-proxy-network-no-eg.pdf]]
+#+end_center
+**** This is enough for today's topics.
+     - Controlling notes with envelopes.
+     - Automatically triggering notes by sequences.
 
 *** "Just-In-Time" Library (JITLib)
 **** JITLib is a system of \eglspl{proxy}.
@@ -729,8 +801,7 @@ SinOsc.ar + 1;
      - Change the signal in the box at any time.
      - The filter is still looking in the box!
 
-
-** Playing notes by envelopes					   :noexport:
+** Playing notes by envelopes
 *** Playing separate notes
 **** What defines a "note"?
      Mainly, it has a beginning and end!
@@ -796,17 +867,13 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
 *** Add an envelope to the synth
 **** Audio synths should have an amplitude envelope.
      - Start from silence, end with silence.
+**** Assuming you still have the previous oscillator and filter.
 #+latex: \glsadd{EnvGen}\glsadd{Impulse}
 #+Name: ampenv1
 #+Caption: Apply an evenly-triggered amplitude envelope.
 #+Begin_src {} -i
 p = ProxySpace.new; p.push;
 
-~oscil = { |freq = 220, detun = 1.003|
-   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], 0.1))
-};
-~filter = { |ffreq = 2000| LPF.ar(~oscil.ar, ffreq) };
-~filter.addSpec(\ffreq, \freq);
 ~eg = { EnvGen.kr(
    envelope: Env([0, 1, 0], [0.01, 0.6], -4),
    gate: Impulse.kr(1)
@@ -981,7 +1048,7 @@ p.gui;
 # }.plot;
 # #+End_src
 
-** Timed and sustaining envelopes				   :noexport:
+** Timed and sustaining envelopes
 *** Standard envelope shapes: Timed
     - \mth{linen} :: Linear attack and decay, flat sustain.
     - \mth{perc} :: Curved attack and decay, no sustain.
@@ -1057,7 +1124,7 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
 ~eg.set(\gt, 0);  // release
 #+end_src
 
-** Events and envelope gates					   :noexport:
+** Events and envelope gates
 *** More convenience for gates: Events
 **** Sequencing: inconvenient to close gates by hand.
      Introducing \clss{Event}.
@@ -1098,7 +1165,7 @@ p.setEvent((degree: rrand(-14, 0), gt: 1,
 #+end_src
      We are now /centimeters/ away from sequencing!
 
-** Another envelope use: Articulation				   :noexport:
+** Another envelope use: Articulation
 *** Envelopes for articulation
 **** Envelopes can control any parameter.
      /Very/ common: control the filter frequency, for articulation.
@@ -1193,7 +1260,7 @@ ffreq = 2300
      Very useful for sequencing: The start of a note can change pitch,
      amplitude, timbre controls all at once.
 
-* Sequencing							   :noexport:
+* Sequencing
 ** Overview: Routines and Tasks
 *** Sequencing: Basic requirements
 **** For sequencing, we need:
@@ -1507,7 +1574,7 @@ Tdef(\player, {
 **** Storage and GUI control with \clss{Tdef}
      - Also allows you to replace the function without breaking the flow.
 
-* Introducing Patterns						   :noexport:
+* Introducing Patterns
 ** Patterns and Streams
 *** Patterns describe Streams
 **** Streams (\clss{Routine}s) return sequences of values.
@@ -1790,7 +1857,7 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 ~player.clear;
 #+end_src
 
-* Glossary							   :noexport:
+* Glossary
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
