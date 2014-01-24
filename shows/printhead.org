@@ -78,4 +78,5 @@
 \mode<article>{\setbeamertemplate{frametitle}{%
        \subsubsection{\insertframetitle\\%
        \scriptsize\insertframesubtitle}}}
+\frenchspacing
 #+END_LaTeX

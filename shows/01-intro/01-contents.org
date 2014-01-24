@@ -150,7 +150,7 @@ if(0.25.coin) {
      - Server does heavier work (e.g., databases).
      - Client makes requests of the server.
 **** How does this work for audio?
-     - *Brain:* The client (SC language) sends messages to the server. \\
+     - *Brain:* The client (SC language) sends messages to the server.\\
        /Open Sound Control/ (\gls{OSC}) protocol.
        - "Here's a /synthesis definition/ (\clss{SynthDef})."
        - "Use that definition to make noise."
@@ -158,7 +158,7 @@ if(0.25.coin) {
 
 *** Why server/client?
 **** Efficiency
-     - Synthesis definitions are /reusable/. \\
+     - Synthesis definitions are /reusable/.\\
        Optimizing a \clss{SynthDef} is relatively slow. Doing this
        once for thousands of notes is more efficient than once for
        every note.
@@ -186,7 +186,7 @@ if(0.25.coin) {
 *** Code panel
 **** Run code: \ks{Ctrl-Return}
     - Runs a code block, selected code or the current line.
-    - /Code block/: \cd{(} at the beginning, \cd{)} at the end. \\
+    - /Code block/: \cd{(} at the beginning, \cd{)} at the end.\\
       Convenient to run several lines at once.
 #+name: codeblock
 #+Caption: A block of code, in parentheses.
@@ -214,10 +214,10 @@ if(0.25.coin) {
 * SC language: Beginning steps
 ** Making noise
 *** Let's make some noise!
-   1. Boot the audio server: \ks{Ctrl-B} \\
-      See also /Language/ menu and server status. \\
+   1. Boot the audio server: \ks{Ctrl-B}\\
+      See also /Language/ menu and server status.\\
       *Linux:* Start JACK before doing this.
-   2. Type and run some code. \\
+   2. Type and run some code.\\
       Just run the first line at first.
       @@latex:\glsadd{play}\glsadd{release}\glsadd{dup}\glsadd{SinOsc}@@
 #+name: sound1
@@ -372,7 +372,7 @@ f.value(3, 4);  // prints "5"
      #+end_center
 ***** \te{Declared} variables
      - Any function can \egls{declare} variable names.
-     - Declared variables exist only inside that function! \\
+     - Declared variables exist only inside that function!\\
        This is called \egls{local} scope.
 #+name: declarevars
 #+caption: A function that declares a variable.
@@ -450,10 +450,10 @@ x == y;  // prints false
       :END:
 ****** A \egls{class} is an \te{object type}.
        Classes define two things:
-       - Data :: Objects remember specific information. \\
+       - Data :: Objects remember specific information.\\
        	 E.g., a \cd{Point} knows its /x/ and /y/ coordinates.
-       - Actions :: Objects know how to do specific things. \\
-       	 E.g., You can add two \ci{Point}s together: \cd{point1 + point2}. \\
+       - Actions :: Objects know how to do specific things.\\
+       	 E.g., You can add two \ci{Point}s together: \cd{point1 + point2}.\\
        	 The \cd{Point} \te{class} declares how a Point should do \cd{+}.
 ***** O2							  :B_onlyenv:
       :PROPERTIES:
@@ -478,7 +478,7 @@ x == y;  // prints false
       It's like a function, but it has a name and belongs to a class.
       - \mth{ar} :: Makes an \te{audio rate} instance of \ugen{SinOsc}.
       - \mth{dup} :: Copies the mono signal from \ugen{SinOsc} into both left and right channels.
-      - \mth{play} :: Makes a \te{synth node} from the function. \\
+      - \mth{play} :: Makes a \te{synth node} from the function.\\
        	\mth{play} is one of the most important methods. Lots of things in SC know how to \ci{play}!
 
 *** Taking it apart: Arguments
@@ -520,8 +520,8 @@ In \cd{SinOsc.ar(440)}:
 **** Three ways to call methods in SC.
     - "Dot" style :: \cd{receiver.selector(arguments...)}
     - Function style :: \cd{selector(receiver, arguments...)}
-    - Infix style :: \cd{receiver selector: argument} \\
-      Infix style allows only one argument. \\
+    - Infix style :: \cd{receiver selector: argument}\\
+      Infix style allows only one argument.\\
       Binary operators (\cd{+}, \cd{-}, \cd{*}, \cd{/}, \cd{**}) are methods that use infix style.
       In \cd{1 + 2}: Receiver = 1, Selector = '+', Argument = 2
 #+Name: callstyles
@@ -697,7 +697,7 @@ sc3-plugins package.
 
 *** Pulse width
 **** \Gls{pulse wave}: Up and down times can differ
-    - If equal, the \egls{pulse width} is 0.5 (50%). \\
+    - If equal, the \egls{pulse width} is 0.5 (50%).\\
       This is a \egls{square wave}.
     - If unequal, the sound is brighter and thinner.
 #+latex: \glsadd{Pulse}\glsadd{VarSaw}
@@ -761,7 +761,7 @@ p.clear;
      - More about arrays later.
 
 **** An array of UGens represents multiple audio channels.
-     - Already seen: \cd{SinOsc.ar.dup} \to \cd{[ a SinOsc, a SinOsc ]}. \\
+     - Already seen: \cd{SinOsc.ar.dup} \to \cd{[ a SinOsc, a SinOsc ]}.\\
        The two-item array represents a stereo signal.
      - \ugen{Mix} adds several signals (in an array) together, /mixing/ them:\\
        Three \ci{Saw}s \to one mixed channel.
@@ -769,8 +769,8 @@ p.clear;
 *** Multichannel expansion
     \cd{Saw.ar(220 * [1, detun, detun.reciprocal], 0.1)}
     - Most UGens are monophonic: one channel in, one out.
-    - Here, we provide a control input multiplied by an array. \\
-      \cd{freq * [1, detun, detun.reciprocal]} \\ \to \cd{[freq * 1, freq * detun, freq * detun.reciprocal]}
+    - Here, we provide a control input multiplied by an array.\\
+      \cd{freq * [1, detun, detun.reciprocal]}\\ \to \cd{[freq * 1, freq * detun, freq * detun.reciprocal]}
 **** How does a monophonic UGen cope with three frequencies?
      It performs \egls{multichannel expansion}, and makes three \ci{Saw}s.
 #+name: mc-exp1
@@ -906,7 +906,7 @@ Close the old GUI window, and try different \ci{rq} values.
 **** \ugen{RLPF} and \ugen{RHPF} add \te{resonance}.
     - Resonance is a "bump" around the cutoff frequency.
     - At high cutoff frequencies, sounds like whistling.
-    - \te{Q} behaves as in \ugen{BPF}: \\
+    - \te{Q} behaves as in \ugen{BPF}:\\
       Low \ci{rq} $\longleftrightarrow$ High \te{Q} $\longleftrightarrow$ More resonance
 #+latex: \glsadd{RLPF}
 #+Name: rlpf
