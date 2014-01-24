@@ -217,8 +217,8 @@ if(0.25.coin) {
 * SC language: Beginning steps
 ** Making noise
 *** Let's make some noise!
-   1. Boot the audio server: \ks{Ctrl-B}\\
-      See also /Language/ menu and server status.\\
+   1. Boot the audio server: \ks{Ctrl-B}.\\<all>
+      See also /Language/ menu and server status.\\<all>
       *Linux:* Start JACK before doing this.
    2. Type and run some code.\\
       Just run the first line at first.
