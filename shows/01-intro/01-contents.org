@@ -5,8 +5,8 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL:
 
-# #+INCLUDE: "../slidehead.org"
-#+INCLUDE: "../printhead.org"
+#+INCLUDE: "../slidehead.org"
+# #+INCLUDE: "../printhead.org"
 
 #+include: "../glossary.org"
 
@@ -26,7 +26,8 @@
 #+call: ugengloss
 #+results: ugengloss
 
-* Workshop introduction
+* Workshop introduction						   :noexport:
+** Workshop introduction
 *** Who am I?
 **** Composer, programmer, nerd
      - Ph.D., music composition, Duke University (2001).
@@ -88,26 +89,60 @@ if(0.25.coin) {
      - The standard approach is more /efficient/ but less /playful/.
      - Later in the workshop, we will learn the standard way.
 
-*** Audio programming before SuperCollider, 1
-    Not a complete survey!
-**** *Music \emph{n}* languages
-     - Orchestra file to define synthesis.
-     - Score file (what to play, when).
-     - Modern incarnation: /csound/.
-**** Lisp: *Common Lisp Music*, *Nyquist*
-     - Music: Hierarchies of structure.
-     - Lisp: Data structures are hierarchical! Good for composition.
+** Brief, incomplete history of audio programming
+*** Music "n" languages
+    The *Music \emph{n}* languages (Music I, II etc.), by Max Mathews,
+    were the first successful audio programming languages.
+**** Structure
+     - An \te{orchestra file} defines synthesis "instruments."
+     - A \te{score file} lists musical events:\\
+       Onset time, instrument, parameters.
+     - \te{Compile} the two into an audio file.
+     - *Not interactive.*
+**** Modern incarnation: /csound/.
+     Current versions have some interactive features.
 
-*** Audio programming before SuperCollider, 2
-**** Dataflow: *Max/MSP*, *Pure Data*
-     Represent everything as signal flow.
-     - Good: Intuitive to wire up interfaces quickly.
-     - Bad:
-       - Relatively weak data structures (hard to represent musical information in an articulate way).
-       - Monophonic processes, easy; polyphonic, hard.
-       - Complexity barrier.
+*** Article: prehistory					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** We have it so much easier than they did.
+We can run some code on a laptop and to hear the result right now. This is because:
+- Your laptop can calculate audio faster than it will play. By
+  contrast, Music II took an hour to calculate one minute of
+  music.[fn:2]
+- You don't have to share computer time with other users. In the
+  1960s, there were only mainframes, no PCs. You had to prepare a job,
+  submit it for processing when there was enough computer time
+  available and wait for the result. If the result was wrong... wait
+  until the next day.
+- Your laptop has a built-in sound card. Max Mathews developed the
+  Music \emph{n} languages at Bell Labs in New Jersey. They had the
+  computer, but no DAC ("Digital-to-Analog Converter") to hear the
+  results. They had to wait to get the digital audio tapes from the
+  mainframe, and then physically drive them up to Columbia University
+  in New York City to listen---and all that, just to find out what
+  mistakes they made in the program!
 
-*** Version history
+*** Dataflow environments
+    Dataflow languages include *Max/MSP* and *Pure Data*. They
+    represent everything as a flow of signals between graphical
+    objects.
+    - Good: Intuitive to wire up interfaces quickly.
+    - Bad:
+      - Relatively weak data structures (hard to represent musical information in an articulate way).
+      - Monophonic processes, easy; polyphonic, hard.
+      - Complexity barrier.
+
+*** ChucK
+    /ChucK/ is a programming language for \egls{live coding},
+    developed by Ge Wang at Princeton University (2003-2008).
+    - Integrated timing: Audio and program control run under the same timing mechanism.
+    - The "ChucK operator" \ci{=>} for connecting synthesis units.\\
+      E.g., \ci{source => filter} rather than (in SC) \ci{Filter.ar(source)}.
+    - Graphical environments for live coding in groups.
+
+*** SuperCollider version history
 **** McCartney's work before SuperCollider
      - /Synth-O-Matic/ (1990).
      - /Pyrite/ (scripting language for Max).
@@ -120,6 +155,7 @@ if(0.25.coin) {
        - Audio processing is more efficient, by handling audio in a /server/ process.
 
 * SC architecture, usage
+** SC architecture
 *** SC is three applications
 **** Really? /Three/ applications?
      Yes. They work together:
@@ -139,11 +175,6 @@ if(0.25.coin) {
     #+attr_latex: :width 1.0\textwidth
     [[./img/sc-with-guis.pdf]]
     #+end_center
-
-*** Why separate the functions?					   :noexport:
-**** If one component crashes, the others keep working.
-     Especially important: The code window stays intact!
-**** They work together like one unit.
 
 *** Server/client design
 **** *Server/client* design
@@ -173,6 +204,39 @@ if(0.25.coin) {
      - In free software, /user choice/ is important. Prefer /open/
        designs, rather than closed.
 
+*** "Canonical" SC synthesis
+#+name: canonical
+#+caption: SuperCollider's "native" style of synthesis.
+#+begin_src {} -i
+(
+SynthDef(\varsaw, { |out = 0, freq = 440, width = 0.5,
+   amp = 0.1, gate = 1, pan = 0|
+   var sig = VarSaw.ar(freq, 0, width),
+   env = EnvGen.kr(Env.adsr, gate, doneAction: 2);
+   Out.ar(out, Pan2.ar(sig * env, pan));
+}).add;
+)
+
+// Object style
+a = Synth(\varsaw, [freq: exprand(200, 500),
+   width: rrand(0.2, 0.5)]);
+a.release;
+
+// Event style
+(instrument: \varsaw, freq: exprand(200, 500),
+width: rrand(0.2, 0.5), sustain: 2).play;
+#+end_src
+
+*** Explanation of "canonical" style
+**** All these commands send \egls{OSC} messages.
+     1. \mth{add} a \clss{SynthDef} into the server.\\<all>
+	\clss{SynthDef}: A /synthesis definition/.
+     2. Play it, using \clsspl{Synth} or \clsspl{Event}.
+**** Drawbacks for learning:
+     - \clsspl{SynthDef} usually include everything for one note.
+     - Bigger code blocks are harder to understand at the beginning.
+
+** Using the Integrated Development Environment
 *** Usage: IDE
 **** The IDE is your main interface.
      IDE elements:
@@ -214,7 +278,7 @@ if(0.25.coin) {
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps
+* SC language: Beginning steps					   :noexport:
 ** Making noise
 *** Let's make some noise!
    1. Boot the audio server: \ks{Ctrl-B}.\\<all>
@@ -558,7 +622,7 @@ In \cd{SinOsc.ar(440)}:
 *** Next: Synthesis techniques
     Now we know enough to start exploring standard synthesis techniques.
 
-* Note control
+* Note control							   :noexport:
 ** Playing notes by envelopes
 *** Playing separate notes
 **** What defines a "note"?
@@ -1022,7 +1086,7 @@ ffreq = 2300
      Very useful for sequencing: The start of a note can change pitch,
      amplitude, timbre controls all at once.
 
-* Sequencing
+* Sequencing							   :noexport:
 ** Overview: Routines and Tasks
 *** Sequencing: Basic requirements
 **** For sequencing, we need:
@@ -1336,7 +1400,7 @@ Tdef(\player, {
 **** Storage and GUI control with \clss{Tdef}
      - Also allows you to replace the function without breaking the flow.
 
-* Introducing Patterns
+* Introducing Patterns						   :noexport:
 ** Patterns and Streams
 *** Patterns describe Streams
 **** Streams (\clss{Routine}s) return sequences of values.
@@ -1619,7 +1683,7 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 ~player.clear;
 #+end_src
 
-* Glossary
+* Glossary							   :noexport:
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
@@ -1636,4 +1700,8 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 # [fn:1] Events with ProxySpace: [[Events with ProxySpace]].
 
 [fn:1] Online copy at [[http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_01_Introduction.html][doc.sccode.org]].
+
+[fn:2] "A Short History of Computer Music." Author
+unattributed. http://artsites.ucsc.edu/EMS/music/equipment/computers/history/history.html. Accessed
+24 January 2014.
 

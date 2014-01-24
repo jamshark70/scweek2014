@@ -17,6 +17,7 @@
 | clock                  |         | A scheduler. Functions or Routines scheduled on the clock will wake up at the given time, and they will reschedule if the return value is a number                                    |
 | collection             |         | An object that contains several other objects, and supports individual access (``at'') and/or iteration (``do'', ``collect'')                                                         |
 | control inputs         |         | Arguments of a synthesis function. The server exposes them as settable controls                                                                                                       |
+| declarative            |         | A style of programming that describes the desired result, and allows the software to handle the details. SC patterns are more like declarative code                                   |
 | declare                |         | Of a variable, to define its name and initial value using a ``var'' statement                                                                                                         |
 | degree                 |         | A property of an event, specifying a diatonic scale degree. Many scale patterns are available                                                                                         |
 | delta                  |         | How long to wait until the next event. SuperCollider terminology for Inter-Onset Interval (IOI)                                                                                       |
@@ -30,13 +31,16 @@
 | frequency response     |         | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                                        |
 | gate                   |         | Related to triggers. The gate is ``open'' when > 0, and closed when $\le$ 0. Used with sustaining envelopes such as ADSR                                                              |
 | global                 |         | Referring to a variable that is available everywhere in the system. Interpreter variables a--z are global                                                                             |
+| imperative             |         | A style of programming focusing on precise instructions---commands---that the computer should execute. Compare ``declarative'' programming                                            |
 | impulse                |         | In theory, an infinitely short burst of sound. In practice, a single non-zero sample (shortest possible digital sound) surrounded by silence                                          |
 | infinite loop          |         | A programming error in which a loop never stops. The loop will try to execute forever, blocking all other activities in sclang                                                        |
 | interpreter            |         | Referring to the single-letter variables a--z                                                                                                                                         |
 | IOI                    |         | ``Inter-Onset Interval'': The amount of time between successive note beginnings. SuperCollider Events refer to this as ``delta''                                                      |
 | iteration              |         | Performing the same operation several times, over items in a collection or a series of numbers                                                                                        |
+| JITLib                 |         | The "Just-In-Time" Library. A system of ``proxies'' that allow you to define a synthesis structure and fill in the details a piece at a time                                          |
 | LFO                    |         | Low-Frequency Oscillator, commonly used as a modulation source to control synthesis parameters                                                                                        |
 | linear                 |         | A unit of measurement that works by addition, like semitones or MIDI note numbers                                                                                                     |
+| live coding            |         | Performing digital music by writing the code in front of of the audience. The performance should reveal the relationship between code and sound                                       |
 | local                  |         | Referring to a variable that exists only within a class, method or function definition. The variable is completely unavailable outside that scope                                     |
 | loopNode               |         | In an envelope, the breakpoint to which the envelope generator will jump after reaching the releaseNode, while ``gate'' > 0                                                           |
 | method                 |         | An action which an object can perform. Very similar to a function, but it belongs to a class and has a name                                                                           |
@@ -49,6 +53,7 @@
 | OSC                    |         | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                                   |
 | oscillator             |         | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                                            |
 | pattern                |         | An object that describes a stream of values without requiring the programming logic to be repeated. The pattern object makes Streams that perform the calculations                    |
+| proxy                  | proxies | A placeholder that allows you to define connections between modules independent of each module's content                                                                              |
 | psSet                  |         | A NodeProxy ``modifier,'' telling the proxy to use the pattern to set controls in the proxies within a ProxySpace                                                                     |
 | pulse wave             |         | A waveform that jumps suddenly up and down and stays flat in between                                                                                                                  |
 | pulse width            |         | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                                              |
@@ -70,10 +75,6 @@
 | UGen                   |         | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                                |
 | unordered              |         | Of a collection, indicates that the collection may rearrange the items' order for faster lookup, e.g., Set, Dictionary                                                                |
 | variable               |         | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                                       |
-| imperative             |         | A style of programming focusing on precise instructions---commands---that the computer should execute. Compare ``declarative'' programming                                            |
-| declarative            |         | A style of programming that describes the desired result, and allows the software to handle the details. SC patterns are more like declarative code                                   |
-| JITLib                 |         | The "Just-In-Time" Library. A system of ``proxies'' that allow you to define a synthesis structure and fill in the details a piece at a time                                          |
-| proxy                  | proxies | A placeholder that allows you to define connections between modules independent of each module's content                                                                              |
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
 
@@ -127,10 +128,11 @@
 #+name: mth
 | Term          | Plural | Description                                                                                                                                                       |
 |---------------+--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| add           |        | For SynthDefs, add the definition into the server so that it can be played. For Collections, add a new item                                                       |
 | addSpec       |        | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
 | adsr          |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                      |
 | ar            |        | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
-| asr           |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                  |
+| asr           |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                       |
 | asStream      |        | Produce a Stream from another object (usually a Pattern)                                                                                                          |
 | clip          |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
 | cpsmidi       |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
