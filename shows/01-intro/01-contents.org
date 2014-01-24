@@ -5,8 +5,8 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL:
 
-#+INCLUDE: "../slidehead.org"
-# #+INCLUDE: "../printhead.org"
+# #+INCLUDE: "../slidehead.org"
+#+INCLUDE: "../printhead.org"
 
 #+include: "../glossary.org"
 
@@ -29,25 +29,25 @@
 * Workshop introduction
 *** Who am I?
 **** Composer, programmer, nerd
-     - Ph.D., music composition, Duke University (2001)
-     - Now: Associate Professor, Xinghai Conservatory, Guangzhou
-     - Subjects: Electronic music production, Film music
+     - Ph.D., music composition, Duke University (2001).
+     - Now: Associate Professor, Xinghai Conservatory, Guangzhou.
+     - Subjects: Electronic music production, Film music.
 **** Special interests:
-     - Danceclub music
-     - Real-time performance with computers
+     - Danceclub music.
+     - Real-time performance with computers.
 
 *** What is SuperCollider?
 **** /Programming language/ for audio and composition
-     - Created by James McCartney
-     - Conceptual basis: SmallTalk
-       - /Object-oriented/ like Java, but still fun (not like Java)
-     - Syntax: More like C
+     - Created by James McCartney.
+     - Conceptual basis: SmallTalk.
+       - /Object-oriented/ like Java, but still fun (not like Java).
+     - Syntax: More like C.
 **** Left							      :BMCOL:
     :PROPERTIES:
     :BEAMER_col: 0.5
     :END:
 #+name: smalltalk
-#+caption: 25% coin toss in SmallTalk
+#+caption: 25% coin toss in SmallTalk.
 #+begin_src {} -i
 (1 to: 100) atRandom <= 25
    ifTrue:
@@ -60,7 +60,7 @@
     :BEAMER_col: 0.5
     :END:
 #+name: sccoin
-#+caption: 25% coin toss in SuperCollider
+#+caption: 25% coin toss in SuperCollider.
 #+begin_src {} -i
 if(0.25.coin) {
    "heads".postln
@@ -71,13 +71,13 @@ if(0.25.coin) {
 
 *** Workshop goals
 **** Teach synthesis techniques by experimentation
-     - SC lets us take apart synthesizer components, and put them back together
-     - SC's /Just-In-Time library/ makes it easy to re-patch components interactively
+     - SC lets us take apart synthesizer components, and put them back together.
+     - SC's /Just-In-Time library/ makes it easy to re-patch components interactively.
 **** Teach techniques for live control and performance
-     - Control by graphic interfaces and external devices
-     - End goal: A group composition, to perform together
+     - Control by graphic interfaces and external devices.
+     - End goal: A group composition, to perform together.
 **** *Have fun programming!*
-     - Emphasis on /play/ over /correctness/
+     - Emphasis on /play/ over /correctness/.
 
 *** Start with a modular approach
 **** At first: \eGls{modular} synthesis using \egls{JITLib}.
@@ -91,47 +91,47 @@ if(0.25.coin) {
 *** Audio programming before SuperCollider, 1
     Not a complete survey!
 **** *Music \emph{n}* languages
-     - Orchestra file to define synthesis
-     - Score file (what to play, when)
-     - Modern incarnation: /csound/
+     - Orchestra file to define synthesis.
+     - Score file (what to play, when).
+     - Modern incarnation: /csound/.
 **** Lisp: *Common Lisp Music*, *Nyquist*
-     - Music: Hierarchies of structure
-     - Lisp: Data structures are hierarchical! Good for composition
+     - Music: Hierarchies of structure.
+     - Lisp: Data structures are hierarchical! Good for composition.
 
 *** Audio programming before SuperCollider, 2
 **** Dataflow: *Max/MSP*, *Pure Data*
-     Represent everything as signal flow
-     - Good: Intuitive to wire up interfaces quickly
+     Represent everything as signal flow.
+     - Good: Intuitive to wire up interfaces quickly.
      - Bad:
-       - Relatively weak data structures (hard to represent musical information in an articulate way)
-       - Monophonic processes, easy; polyphonic, hard
-       - Complexity barrier
+       - Relatively weak data structures (hard to represent musical information in an articulate way).
+       - Monophonic processes, easy; polyphonic, hard.
+       - Complexity barrier.
 
 *** Version history
 **** McCartney's work before SuperCollider
-     - /Synth-O-Matic/ (1990)
-     - /Pyrite/ (scripting language for Max)
+     - /Synth-O-Matic/ (1990).
+     - /Pyrite/ (scripting language for Max).
 **** SuperCollider
-     - SC1: Synth-O-Matic + Pyrite
-     - SC2: Influence from SmallTalk
-       - SC language is nearly complete
-       - Notable audio processing inefficiencies
-     - SC3 ("SC Server")
-       - Audio processing is more efficient, by handling audio in a /server/ process
+     - SC1: Synth-O-Matic + Pyrite.
+     - SC2: Influence from SmallTalk.
+       - SC language is nearly complete.
+       - One significant audio processing inefficiency.
+     - SC3 ("SC Server").
+       - Audio processing is more efficient, by handling audio in a /server/ process.
 
-* SC architecture, usage					   :noexport:
+* SC architecture, usage
 *** SC is three applications
 **** Really? /Three/ applications?
      Yes. They work together:
-     - \egls{scide}: SC Integrated Development Environment
-       - Code editor, display, documentation
-     - \egls{sclang}: SC language
-       - IDE sends code to sclang
-       - sclang runs the code, sends printed output back to IDE
-     - \egls{scsynth}: SC synthesis server
-       - sclang sends \gls{OSC} (Open Sound Control) messages to scsynth
-       - scsynth sends audio to the hardware
-       - May also reply to sclang
+     - \egls{scide}: SC Integrated Development Environment.
+       - Code editor, display, documentation.
+     - \egls{sclang}: SC language.
+       - IDE sends code to sclang.
+       - sclang runs the code, sends printed output back to IDE.
+     - \egls{scsynth}: SC synthesis server.
+       - sclang sends \gls{OSC} (Open Sound Control) messages to scsynth.
+       - scsynth sends audio to the hardware.
+       - May also reply to sclang.
 
 *** SC appearance
     Linux, here.
@@ -147,11 +147,11 @@ if(0.25.coin) {
 
 *** Server/client design
 **** *Server/client* design
-     - Server does heavier work (e.g., databases)
-     - Client makes requests of the server
+     - Server does heavier work (e.g., databases).
+     - Client makes requests of the server.
 **** How does this work for audio?
      - *Brain:* The client (SC language) sends messages to the server. \\
-       /Open Sound Control/ (\gls{OSC}) protocol
+       /Open Sound Control/ (\gls{OSC}) protocol.
        - "Here's a /synthesis definition/ (\clss{SynthDef})."
        - "Use that definition to make noise."
      - *Brawn:* The server calculates the audio and sends to the hardware.
@@ -163,7 +163,7 @@ if(0.25.coin) {
        once for thousands of notes is more efficient than once for
        every note.
 **** Networked applications
-     - Many clients can use the same server
+     - Many clients can use the same server.
 **** Not limited to SC language
      - Any language that supports OSC can use SC audio!
      - Python, Clojure, Scala, Haskell, Scheme...
@@ -180,13 +180,13 @@ if(0.25.coin) {
        - /Help browser/: Look up just about anything.
      - *Tool panel*: Find/replace, command line, etc.
      - *Status bar*
-       - Language and server status
-       - Server control (click on the server status)
+       - Language and server status.
+       - Server control (click on the server status).
 
 *** Code panel
 **** Run code: \ks{Ctrl-Return}
-    - Runs a code block, selected code or the current line
-    - /Code block/: \cd{(} at the beginning, \cd{)} at the end \\
+    - Runs a code block, selected code or the current line.
+    - /Code block/: \cd{(} at the beginning, \cd{)} at the end. \\
       Convenient to run several lines at once.
 #+name: codeblock
 #+Caption: A block of code, in parentheses.
@@ -211,7 +211,7 @@ if(0.25.coin) {
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps					   :noexport:
+* SC language: Beginning steps
 ** Making noise
 *** Let's make some noise!
    1. Boot the audio server: \ks{Ctrl-B} \\
@@ -555,7 +555,7 @@ In \cd{SinOsc.ar(440)}:
 *** Next: Synthesis techniques
     Now we know enough to start exploring standard synthesis techniques.
 
-* Subtractive synthesis						   :noexport:
+* Subtractive synthesis
 ** Overview
 *** Subtractive synthesis
 **** One of the most basic techniques
@@ -929,7 +929,7 @@ Close the old GUI window, and try different \ci{rq} values.
      - Q is a standard measure. SC uses \ci{rq} = $\frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
 
-* Note control							   :noexport:
+* Note control
 ** Playing notes by envelopes
 *** Playing separate notes
 **** What defines a "note"?
@@ -1393,7 +1393,7 @@ ffreq = 2300
      Very useful for sequencing: The start of a note can change pitch,
      amplitude, timbre controls all at once.
 
-* Sequencing							   :noexport:
+* Sequencing
 ** Overview: Routines and Tasks
 *** Sequencing: Basic requirements
 **** For sequencing, we need:
@@ -1993,7 +1993,7 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 * Effects common in subtractive synthesis			   :noexport:
 ** Chorus
 ** Distortion
-* Glossary							   :noexport:
+* Glossary
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
