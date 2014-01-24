@@ -259,7 +259,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps
+* SC language: Beginning steps					   :noexport:
 ** Making noise
 *** Before making noise: Set up audio
 **** OSX
@@ -682,8 +682,55 @@ SinOsc.ar + 1;
 *** Next: Synthesis techniques					   :noexport:
     Now we know enough to start exploring standard synthesis techniques.
 
-* Note control							   :noexport:
-** Playing notes by envelopes
+* Modular synthesis with JITLib
+** What is modular synthesis?
+*** Simple components, complex behavior
+**** \Gls{modular} synthesis builds complex sounds from simple units.
+     - Early hardware synthesizers were modular.
+     - Lots of boxes: \eGlspl{oscillator}, \eglspl{filter}, \eglspl{envelope generator} etc.
+     - Patch them together using physical cables.
+#+begin_center
+#+name: catmod
+#+caption: A small (!) modular synthesizer, with cat. Image credit: Stephen Drake, http://commons.wikimedia.org/wiki/File:Cat_modular_synthesizer.jpg.
+#+attr_latex: :height 1.2in
+[[./img/800px-Cat_modular_synthesizer.jpg]]
+#+end_center
+
+*** Modular synthesis for teaching
+**** Code complexity is a teaching problem.
+     - Too much code at once, too hard to understand.
+**** In a \gls{modular} approach:
+     - Code blocks will be very small: 5--6 lines at most (at first).
+     - Make lots of small modules (\clsspl{NodeProxy}).
+     - Connect them to get complex results.
+**** Flexible patching
+     Because they're separate modules, it's easy to reconnect them anytime.
+
+*** Example
+
+*** "Just-In-Time" Library (JITLib)
+**** JITLib is a system of \eglspl{proxy}.
+     - Write the /connections/ between signals (and other data) based on the proxies.
+     - You can change whatever is in the proxies at any time.
+     - This does not change the connections!
+     - Proxies can be very small and simple: easy to read and understand.
+**** JITLib lets us play with signals.
+     No need to worry about structure too soon, because you can change
+     the structure and content independently.
+
+*** Proxies: Cats and signals
+    - A proxy is like a magic box.
+    - If I give you a cat, you have the cat.
+    - If I give you the magic box, you have whatever cat is inside the box.
+    - You can reach into the box any time, and you know you'll pet a cat.
+    - But the /specific cat/ can change.
+**** Proxies and signals
+     - Tell a filter to operate on whatever signal is in the box.
+     - Change the signal in the box at any time.
+     - The filter is still looking in the box!
+
+
+** Playing notes by envelopes					   :noexport:
 *** Playing separate notes
 **** What defines a "note"?
      Mainly, it has a beginning and end!
@@ -934,7 +981,7 @@ p.gui;
 # }.plot;
 # #+End_src
 
-** Timed and sustaining envelopes
+** Timed and sustaining envelopes				   :noexport:
 *** Standard envelope shapes: Timed
     - \mth{linen} :: Linear attack and decay, flat sustain.
     - \mth{perc} :: Curved attack and decay, no sustain.
@@ -1010,7 +1057,7 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
 ~eg.set(\gt, 0);  // release
 #+end_src
 
-** Events and envelope gates
+** Events and envelope gates					   :noexport:
 *** More convenience for gates: Events
 **** Sequencing: inconvenient to close gates by hand.
      Introducing \clss{Event}.
@@ -1051,7 +1098,7 @@ p.setEvent((degree: rrand(-14, 0), gt: 1,
 #+end_src
      We are now /centimeters/ away from sequencing!
 
-** Another envelope use: Articulation
+** Another envelope use: Articulation				   :noexport:
 *** Envelopes for articulation
 **** Envelopes can control any parameter.
      /Very/ common: control the filter frequency, for articulation.
@@ -1793,34 +1840,6 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
      - \clsspl{SynthDef} usually include everything for one note.
      - Bigger code blocks are harder to understand at the beginning.
      - Then people complain, "SuperCollider is too hard."
-
-*** Modular approach
-**** Instead, we'll start with a \egls{modular} approach.
-     - Code blocks will be very small: 5--6 lines at most (at first).
-     - Instead of one big \clss{SynthDef}, we will:
-       - Make lots of small modules (\clsspl{NodeProxy});
-       - Connect them to get complex results.
-
-*** "Just-In-Time" Library (JITLib)
-**** JITLib is a system of \eglspl{proxy}.
-     - Write the /connections/ between signals (and other data) based on the proxies.
-     - You can change whatever is in the proxies at any time.
-     - This does not change the connections!
-     - Proxies can be very small and simple: easy to read and understand.
-**** JITLib lets us play with signals.
-     No need to worry about structure too soon, because you can change
-     the structure and content independently.
-
-*** Proxies: Cats and signals
-    - A proxy is like a magic box.
-    - If I give you a cat, you have the cat.
-    - If I give you the magic box, you have whatever cat is inside the box.
-    - You can reach into the box any time, and you know you'll pet a cat.
-    - But the /specific cat/ can change.
-**** Proxies and signals
-     - Tell a filter to operate on whatever signal is in the box.
-     - Change the signal in the box at any time.
-     - The filter is still looking in the box!
 
 *** Syntax
 **** \te{Syntax}: Rules defining "legal" expressions.
