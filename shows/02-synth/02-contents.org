@@ -678,6 +678,101 @@ item, use \mth{drop}:
        - Internal: Low Frequency Oscillators (LFOs)
        - External: GUI and device input
 
-* Effects common in subtractive synthesis			   :noexport:
+** Another envelope use: Articulation
+*** Envelopes for articulation
+**** Envelopes can control any parameter.
+     /Very/ common: control the filter frequency, for articulation.
+     - Create a new \ugen{EnvGen}, as a multiplier for \ci{ffreq}.
+     - Use it in the \ci{\textasciitilde filter} module.
+#+latex: \glsadd{clip}
+#+name: filterEg
+#+caption: Apply an envelope to the filter frequency.
+#+begin_src {} -i
+~feg = { |gt = 0|
+   EnvGen.kr(Env([1, 4, 1], [0.01, 0.15], -4), gt)
+};
+
+~filter = { |ffreq = 2000, rq = 0.2|
+   RLPF.ar(~oscil.ar,
+      clip(ffreq * ~feg, 20, 20000),
+      rq
+   )
+};
+
+p.setEvent((freq: exprand(100, 400), gt: 1,
+   sustain: rrand(0.2, 0.8))).play;
+#+end_src
+
+*** Notes on that example
+**** Filter envelope as a multiplier.
+     - The envelope /modulates/ the set filter frequency. You get
+       articulation /and/ independent timbre control.
+     - \cd{ffreq * \textasciitilde feg} may go outside the valid
+       frequency range. \mth{clip} it for safety.
+       - \mth{clip} moves out-of-range values to the nearest boundary.
+       - Filters tend to blow up if the frequency goes out of range.
+**** \cd{p.setEvent} treats the control inputs globally.
+     - \cd{gt: 1} in the event sets \ci{gt} in both envelope modules
+       simultaneously.
+
+*** Articulation: Noise oscillator with envelope
+**** With envelopes, we can use a noise generator.
+     - A classic analog synthesizer trick for a "chff" in the attack.
+     - Add a short, percussive (\cd{Env.perc}) burst of noise.
+     - Usually use a \clss{BPF} to color the noise.
+**** Typical noise generators
+     - \ugen{WhiteNoise} :: Very bright, harsh noise.
+     - \ugen{PinkNoise} :: Still bright, but more pleasant than white noise.
+     - \ugen{BrownNoise} :: Darker sound. Named after \egls{Brownian motion}, not the color.
+
+*** Add a noise attack to the previous example
+    Based on Listing [[filterEg]].
+#+name: noiseAtk
+#+caption: Create a noise generator, and an envelope and filter for it.
+#+begin_src {} -i
+~noiseEg = { |gt, noiseDur = 0.08|
+   EnvGen.kr(Env.perc(0.01, noiseDur), gt)
+};
+~noise = { |noiseAmp = 0.8|
+   PinkNoise.ar(noiseAmp * ~noiseEg)
+};
+~noiseFilt = { |ffreq = 11000, rq = 0.34|
+   BPF.ar(~noise.ar, ffreq, rq).dup
+};
+~noiseFilt.play;
+
+p.setEvent((freq: exprand(100, 400), gt: 1,
+   sustain: rrand(0.2, 0.8))).play;
+#+end_src
+**** You can also add an envelope to the \ugen{BPF} frequency.
+     Exercise for you.
+**** Settings for a BPF frequency envelope			   :noexport:
+ffreq = 2300
+~noiseFeg = { |gt|
+   EnvGen.kr(Env.perc(0.01, 0.2), gt)
+   .linexp(0, 1, 1, 4)
+};
+
+*** Note control summary: Envelopes
+**** \eGls{breakpoint} \eglspl{envelope}
+     - Idea: Start level, list of segments
+     - Written in \clss{Env} using three arrays: \ci{levels}, \ci{times}, \ci{curve}
+**** \eGls{envelope generator}
+     - Renders the segments into a signal.
+     - Responds to \eglspl{trigger} and \eglspl{gate}.
+**** Triggers and gates: signal > 0
+     - A \te{trigger} is instantaneous, when the signal becomes > 0.
+     - A \te{gate} is open when > 0, closed otherwise.
+
+*** Note control summary: Gates and Events
+**** \eGlspl{gate} must be opened and closed.
+     - By hand, using \cd{\textasciitilde something.set(\textbackslash gt, 1)} or \cd{0}.
+     - An \clss{Event} can close the gate for you, after a given \ci{sustain} time.
+       - \ci{sustain} can be given directly, or you can provide \ci{dur} and \ci{legato}.
+**** Events can set many parameters at once.
+     Very useful for sequencing: The start of a note can change pitch,
+     amplitude, timbre controls all at once.
+
+* Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
 ** Distortion
