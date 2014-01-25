@@ -5,8 +5,8 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL:
 
-#+INCLUDE: "../slidehead.org"
-# #+INCLUDE: "../printhead.org"
+# #+INCLUDE: "../slidehead.org"
+#+INCLUDE: "../printhead.org"
 
 #+include: "../glossary.org"
 
@@ -26,7 +26,7 @@
 #+call: ugengloss
 #+results: ugengloss
 
-* Workshop introduction						   :noexport:
+* Workshop introduction
 ** Workshop introduction
 *** Who am I?
 **** Composer, programmer, nerd
@@ -135,10 +135,10 @@ We can run some code on a laptop and to hear the result right now. This is becau
       - Complexity barrier.
 
 *** ChucK
-    /ChucK/ is a programming language for \egls{live coding},
+    *ChucK* is a programming language for \egls{live coding},
     developed by Ge Wang at Princeton University (2003-2008).
     - Integrated timing: Audio and program control run under the same timing mechanism.
-    - The "ChucK operator" \ci{=>} for connecting synthesis units.\\
+    - The "ChucK operator" \ci{=>} for connecting synthesis units.\\<all>
       E.g., \ci{source => filter} rather than (in SC) \ci{Filter.ar(source)}.
     - Graphical environments for live coding in groups.
 
@@ -149,12 +149,12 @@ We can run some code on a laptop and to hear the result right now. This is becau
 **** SuperCollider
      - SC1: Synth-O-Matic + Pyrite.
      - SC2: Influence from SmallTalk.
-       - SC language is nearly complete.
+       - SC language is nearly complete in SC2.
        - One significant audio processing inefficiency.
      - SC3 ("SC Server").
        - Audio processing is more efficient, by handling audio in a /server/ process.
 
-* SC architecture, usage					   :noexport:
+* SC architecture, usage
 ** SC architecture
 *** SC is three applications
 **** Really? /Three/ applications?
@@ -259,7 +259,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps					   :noexport:
+* SC language: Beginning steps
 ** Making noise
 *** Before making noise: Set up audio
 **** OSX
@@ -338,9 +338,9 @@ width: rrand(0.2, 0.5), sustain: 2).play;
      - Not good for experimenting with signal flow.
      - Not ideal for learning: Too many details to learn before you
        can use \clsspl{SynthDef} comfortably.
-**** Typical workflow
+**** My typical composition workflow
      - Begin with loosely-structured code. Play freely with it.
-     - When you find sounds and sequences you like, "freeze" them into more stable structures.
+     - When I find sounds and sequences I like, I "freeze" them into more stable structures.
 
 *** \{\}.play shortcut
 **** This shortcut makes it faster to experiment.
@@ -465,8 +465,8 @@ f.value(b: 5);  // prints "5.830..."; a is still 3
       - You must put an object in a variable if you want to address it later.
       - We need to \mth{release} the synth. So, save the \clss{Synth} object in a variable.
 ***** Access a variable's value by referring to its name.
-#+latex: \glsadd{assignment}
       After \te{assigning} the Synth to \ci{a}, a reference to \ci{a} gets the Synth.
+#+latex: \glsadd{assignment}
       - So \cd{a.release} acts on precisely that Synth.
 
 *** Taking it apart: Variables
@@ -569,11 +569,12 @@ x == y;  // prints false
       :BEAMER_act: 2
       :END:
 ****** \ugen{SinOsc} is a \egls{UGen} (Unit Generator) class.
-       - Unit generators are audio-processing operations in the server.
-       - UGen classes in SC language:
-	 - /Name/ the audio processors.
-	 - /Connect/ UGens together.
-
+       - Unit generators process signals in the server.
+       - UGens /name/ signal processors and /connect/ them.
+****** \glspl{UGen} are created by \egls{rate} methods:
+       - \mth{ar} :: \Gls{audio rate}; can play to the speakers.
+       - \mth{kr} :: \Gls{control rate}; slower rate for control signals.
+       - \ci{ir} :: \Gls{initial rate}; once at the synth's start.
 *** Taking it apart: Methods
 **** {1\textwidth}{3in}					      :B_overlayarea:
      :PROPERTIES:
@@ -612,7 +613,7 @@ x == y;  // prints false
      (Except variable \egls{assignment}: \cd{x = 1}.)
      - Function calls? \mth{value} method.
      - Math? \cd{+}, \cd{-} are methods.
-     - Flow-of-control mechanisms? \ci{do}, \ci{while}, \ci{if} etc. are methods.
+     - Flow-of-control mechanisms? \mth{do}, \mth{while}, \mth{if} etc. are methods.
 **** If you understand how to use methods, you understand almost all of SC syntax.
      The hard part: Learning which methods do what!
 
@@ -679,6 +680,60 @@ SinOsc.ar + 1;
      - \gls{receiver} :: The object that will answer the method call.
      - \gls{polymorphism} :: Allows objects to respond to requests in appropriate ways.
 
+
+** Exercises: Math expressions
+*** Binary math operators
+#     :PROPERTIES:
+#     :BEAMER_act: presentation
+#     :END:
+#+name: binops
+#+caption: Binary operators: a op: b.
+#+attr_latex: :align |p{0.45\textwidth}|p{0.45\textwidth}| :placement [h]
+| \ci{+} Addition                           | \ci{-} Subtraction               |
+| \ci{*} Multiplication                     | \ci{/} Division                  |
+| \ci{**} Power-of                          | \ci{\%} Remainder                |
+| \ci{min} Lower input                      | \ci{max} Higher input            |
+| \ci{round} Round $a$ to $b$               | \ci{absdif} Like \ci{abs(a - b)  |
+| \ci{trunc} Truncate $a$ to $b$ resolution | \ci{roundUp} Round $a$ up to $b$ |
+| \ci{rrand} $a \le$ random $\le b$         |                                  |
+
+*** Unary math operators
+#     :PROPERTIES:
+#     :BEAMER_act: presentation
+#     :END:
+#+name: unops
+#+caption: Unary operators: a.op or op(a).
+#+attr_latex: :align |p{0.45\textwidth}|p{0.45\textwidth}| :placement [h]
+| \ci{neg} Negative              | \ci{reciprocal} $1 \div a$        |
+| \ci{midicps} Hz of MIDI note   | \ci{cpsmidi} MIDI note of Hz      |
+| \ci{abs} Absolute value        | \ci{sign} -1 or 1 from $a$'s sign |
+| \ci{squared} $a^2$             | \ci{sqrt} $\sqrt{a}$              |
+| \ci{exp} $e^a$                 | \ci{log} $\ln a$                  |
+| \ci{sin} Sine of $a$           | \ci{cos} Cosine of $a$            |
+| \ci{rand} 0 $\le$ random < $a$ | \ci{rand2} $-a$ < random < $a$    |
+
+*** Math operators and grouping
+**** *IMPORTANT:* Binary math operators go left-to-right!
+     - Most languages do them in this order:
+       1. Any unary operators.
+       2. \ci{**} (exponentiation)
+       3. \ci{*} and \ci{/} (multiplication, division)
+       4. \ci{+} and \ci{-} (addition, subtraction)
+     - SC does them this way:
+       1. Unary operators.
+       2. Binary operators.
+#+name: opPrecedence
+#+caption: The difference between traditional operator grouping and SC's left-to-right precedence.
+#+begin_src {} -i
+a = 10;
+5 + a * 2;  // 30; most languages, 25
+(5 + a) * 2;  // 30
+5 + (a * 2);  // 25
+#+end_src
+
+*** Exercises
+**** Write functions (with arguments) for these:
+
 *** Next: Synthesis techniques					   :noexport:
     Now we know enough to start exploring standard synthesis techniques.
 
@@ -715,6 +770,7 @@ SinOsc.ar + 1;
      - It's not connected to to the output---\mth{play} does that.
      - \ci{gui} makes a control panel, to adjust inputs.
      - \mth{stop} to disconnect (but the module is still there).
+#+latex: \glsadd{ProxySpace}\glsadd{Saw}
 #+name: mod1
 #+caption: Within a ProxySpace, create an oscillator module.
 #+begin_src {} -i
@@ -735,6 +791,7 @@ p.gui;
      - The filter needs an audio input.
      - Provide this by referring to the oscillator: \cd{\textasciitilde oscil.ar}.
      - Now the filter is the desired output, so \mth{play} and \mth{stop} that.
+#+latex: \glsadd{LPF}\glsadd{addSpec}
 #+name: mod2
 #+caption: Within a ProxySpace, create a filter module.
 #+begin_src {} -i
@@ -747,26 +804,6 @@ p.gui;
 
 ~filter.stop;
 #+end_src
-
-**** EnvGen, not used yet					   :noexport:
-#+begin_example
-~eg = { |gt|
-	EnvGen.kr(
-		envelope: Env.adsr(0.01, 0.1, 0.4, 0.25),
-		gate: gt
-	)
-};
-
-~out = { ~filter.ar * ~eg };
-~out.play;
-
-~eg.set(\gt, 1);
-~eg.set(\gt, 0);
-
-p.setEvent((freq: exprand(200, 600), gt: 1, sustain: 2)).play;
-
-~out.stop;  // We'll use these proxies some more
-#+end_example
 
 *** Common "analog-style" structure
 **** This design is a classic.
@@ -798,6 +835,7 @@ p.setEvent((freq: exprand(200, 600), gt: 1, sustain: 2)).play;
 *** Repatching the oscillator
 **** To change the oscillator, assign a new function.
      No change to the relationship between oscillator and filter.
+#+latex: \glsadd{Saw}\glsadd{Mix}\glsadd{Pulse}\glsadd{fadeTime}
 #+name: mod3
 #+caption: Switch between different oscillators.
 #+begin_src {} -i
@@ -830,14 +868,21 @@ p.setEvent((freq: exprand(200, 600), gt: 1, sustain: 2)).play;
 **** Right							      :BMCOL:
      :PROPERTIES:
      :BEAMER_col: 0.3
-     :BEAMER_act: presentation
      :END:
-     [[./img/visualize-proxy-network-no-eg.pdf]]
+***** Image, suppress for article				  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: presentation
+      :END:
+      #+begin_center
+      [[./img/visualize-proxy-network-no-eg.pdf]]
+      #+end_center
 **** Like a magic box with a cat inside.
      - The magic box changes the cat sometimes.
      - Reach into the box any time, and you know you'll pet a cat.
      - But it may be a /different cat/.
 
+*** TODO Exercises: Try other UGens
 * Note control
 ** Playing notes by envelopes
 *** Playing separate notes
@@ -948,6 +993,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
      - Common trigger UGens:
        - \ugen{Impulse} :: Impulses at a constant frequency.
        - \ugen{Dust} :: Impulses at random durations, according to an average density.
+     - Exercise for you: Try \clss{Dust}.
 #+Begin_center
 #+attr_latex: :height 1in
 [[./img/trigger-and-envgen.png]]
@@ -958,7 +1004,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
 #+Begin_src {} -i
 ~out = { (~filter.ar * ~eg).dup }; ~out.play;
 #+End_src
-     Amplitude envelope is usually last in the chain.
+     The envelope's amplifier is usually last in the chain.
      - Here, it's in an \cd{\textasciitilde out} proxy.
      - \cd{\textasciitilde out} is the one that gets played.
 #+begin_center
@@ -1012,7 +1058,7 @@ p.gui;
        :PROPERTIES:
        :BEAMER_col: 0.5
        :END:
-       #+attr_latex: :width 0.4\paperwidth
+       #+attr_latex: :height 1.5in
        [[./img/eg-normal-d0.6-f1.png]]
 ***** O2							  :B_onlyenv:
       :PROPERTIES:
@@ -1030,7 +1076,7 @@ p.gui;
        :PROPERTIES:
        :BEAMER_col: 0.5
        :END:
-       #+attr_latex: :width 0.4\paperwidth
+       #+attr_latex: :height 1.5in
        [[./img/eg-d0.6-f30.png]]
 ***** O3 							  :B_onlyenv:
       :PROPERTIES:
@@ -1050,7 +1096,7 @@ p.gui;
        :PROPERTIES:
        :BEAMER_col: 0.5
        :END:
-       #+attr_latex: :width 0.4\paperwidth
+       #+attr_latex: :height 1.5in
        [[./img/eg-d0.05-f30.png]]
 ***** O4							  :B_onlyenv:
       :PROPERTIES:
@@ -1068,7 +1114,7 @@ p.gui;
        :PROPERTIES:
        :BEAMER_col: 0.5
        :END:
-       #+attr_latex: :width 0.4\paperwidth
+       #+attr_latex: :height 1.5in
        [[./img/eg-d1.12-f3.png]]
 
 # #+Name: ampenv2
@@ -1142,7 +1188,7 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
 
 *** Sustaining envelope in ProxySpace
 **** Replace the timed envelope with a sustaining envelope.
-     - No longer a trigger, so change \ci{t\textunderscore trig} to \ci{gt}.
+     - Now we need a control input for the gate: \ci{gt}.
        - Normally a \clss{SynthDef} calls the gate input \ci{gate},
          but that's reserved for another use in \clss{ProxySpace}.
      - Use \mth{set} to open and close the gate.
@@ -1284,7 +1330,7 @@ r.next;
      - \cd{inf.do...} will hang SC language. *Don't do that.*
        - \Gls{infinite loop} :: A loop with no end. Locks up the
             interpreter until you force-quit.
-**** Use the /Language/ menu $\to$ /Quit interpreter/ to regain control. :B_alertblock:
+**** Use /Language/ menu $\to$ /Quit interpreter/ to regain control. :B_alertblock:
      :PROPERTIES:
      :BEAMER_env: alertblock
      :END:
@@ -1404,7 +1450,7 @@ TempoClock.sched(1, {
 **** A \clss{Routine}'s return value is \mth{yield}ed.
      - So, \mth{yield} the \gls{delta} time.
      - You can also write \mth{wait}.
-**** Because it's a Routine, you can \mth{stop} it.
+     - You can \mth{stop} a Routine without \ks{Ctrl-.}.
 #+name: resched2
 #+caption: Automatic rescheduling of a Routine with ``wait.''
 #+begin_src {} -i
@@ -1417,12 +1463,24 @@ r = Routine {
       0.5.wait;
    }
 };
-
 TempoClock.sched(1, r);
 )
 
 r.stop;
 #+end_src
+
+*** Routines: Any kind of rhythm
+    The key point from the last example is:
+**** You can do /anything/ before the \mth{wait}!
+     - Calculation
+     - Audio sequencing
+     - Graphics updates
+**** Structure for timed activities in Routines
+     - \clss{Routine}
+       - Initialization (optional)
+       - \mth{loop} (or \mth{do} or \mth{while})
+         - Action
+         - \cd{time.wait}
 
 ** Sequencing of notes
 *** Note sequencing
@@ -1609,6 +1667,7 @@ r.next;
 **** You can get interesting results using just these.
      For more patterns, see the /Practical Guide to Patterns/ help file series.[fn:1]
 
+*** TODO Exercises: Value patterns
 ** Patterns and Events
 *** Patterns make Events very easily
 **** An \clss{Event} is a set of named values.
@@ -1706,7 +1765,7 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
      - Listing [[noteseq1]] said: "Do this, then that."
        - Set the trigger and the frequency.
        - Wait 0.5 beats.
-**** \eGlspl{pattern} are more like \egls{declarative}-style.
+**** \eGlspl{pattern} are more like \egls{declarative} programming.
      - Listing [[rVsPbind]] says:
        - I want \ci{\textbackslash freq} to be like this.
        - I want \ci{\textbackslash dur} to be like that.
@@ -1738,6 +1797,7 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
      - We are beginning with a \egls{modular} approach, for reasons noted earlier.
      - This approach needs a different event type.
 
+*** TODO Exercises: Different pitch and rhythm patterns
 ** Special event keys: Pitch and Time
 *** Pitch and time in events
 **** Many levels to write pitch and time.
@@ -1803,7 +1863,7 @@ p.clear;  // or p = ProxySpace.new; p.push;
 ~player.clear;
 #+end_src
 
-* Glossary							   :noexport:
+* Glossary
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
@@ -1873,6 +1933,26 @@ p.clear;  // or p = ProxySpace.new; p.push;
 
 
 UGens are created by the \ci{ar} and \ci{kr} methods; here is where you write the input signals.
+
+*** EnvGen, not used yet					   :noexport:
+#+begin_example
+~eg = { |gt|
+	EnvGen.kr(
+		envelope: Env.adsr(0.01, 0.1, 0.4, 0.25),
+		gate: gt
+	)
+};
+
+~out = { ~filter.ar * ~eg };
+~out.play;
+
+~eg.set(\gt, 1);
+~eg.set(\gt, 0);
+
+p.setEvent((freq: exprand(200, 600), gt: 1, sustain: 2)).play;
+
+~out.stop;  // We'll use these proxies some more
+#+end_example
 
 * Footnotes
 

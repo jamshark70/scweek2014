@@ -148,13 +148,15 @@
 | cpsmidi       |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
 | curvelin      |        | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
 | differentiate |        | Returns an array $y$ where $y_0 = x_0 - 0$, $y_1 = x_1 - x_0$ and so on                                                                                           |
-| do            |        | A flow-of-control structure that runs a Function several times. Many types of objects can \ci{do}: usually numbers or collections                                 |
+| do            |        | A looping structure that runs a Function several times. Many types of objects can \ci{do}: usually numbers or collections                                         |
 | drop          |        | On an array, remove $n$ items. If $n > 0$, remove the first $n$; if $n < 0$, remove the last $n$                                                                  |
 | dup           |        | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(3)'' becomes ``[1, 1, 1]'' and so on                                                                   |
 | explin        |        | Convert an exponential input range (inMin, inMax) to a linear output range (outMin, outMax)                                                                       |
 | exprand       |        | \cd{exprand(low, high)}: Generate a random number $x$ where $low \le x \le high$, with an exponential distribution                                                |
 | exprange      |        | Converts a UGen's range into a different exponential range                                                                                                        |
+| fadeTime      |        | Controls the time it takes to crossfade between sources in a \ci{NodeProxy}. When used on a \ci{ProxySpace}, it applies to all proxies in that space              |
 | fold          |        | Constrain a number within a range. The boundaries are like mirrors: A value above the maximum gets reflected back into the range                                  |
+| if            |        | A branching structure common in many programming languages. If the condition is true, do the ``true'' branch; otherwise, the ``false'' branch                     |
 | integrate     |        | Given an array, return a new array where each item is the sum of all the previous original items                                                                  |
 | kr            |        | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
 | lincurve      |        | Convert a linear input range (inMin, inMax) to a curved output range (outMin, outMax) with a user-specified curve factor                                          |
@@ -185,8 +187,10 @@
 | stop          |        | Stop a process that was previously started by \ci{play}                                                                                                           |
 | value         |        | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
 | wait          |        | In a Routine, same as \ci{yield}, but works only for numbers. Used for deltas (wait times).                                                                       |
+| while         |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                         |
 | wrap          |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                             |
 | yield         |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                              |
+
 
 * UGens								   :noexport:
 #+name: ugens
