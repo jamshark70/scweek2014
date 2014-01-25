@@ -5,8 +5,8 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL:
 
-# #+INCLUDE: "../slidehead.org"
-#+INCLUDE: "../printhead.org"
+#+INCLUDE: "../slidehead.org"
+# #+INCLUDE: "../printhead.org"
 
 #+include: "../glossary.org"
 
@@ -26,7 +26,7 @@
 #+call: ugengloss
 #+results: ugengloss
 
-* Workshop introduction
+* Workshop introduction						   :noexport:
 ** Workshop introduction
 *** Who am I?
 **** Composer, programmer, nerd
@@ -154,7 +154,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - SC3 ("SC Server").
        - Audio processing is more efficient, by handling audio in a /server/ process.
 
-* SC architecture, usage
+* SC architecture, usage					   :noexport:
 ** SC architecture
 *** SC is three applications
 **** Really? /Three/ applications?
@@ -259,7 +259,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps
+* SC language: Beginning steps					   :noexport:
 ** Making noise
 *** Before making noise: Set up audio
 **** OSX
@@ -720,8 +720,8 @@ SinOsc.ar + 1;
 #+begin_src {} -i
 p = ProxySpace.new; p.push;
 
-~oscil = { |freq = 220, detun = 1.003, amp = 0.1|
-   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], amp)).dup
+~oscil = { |freq = 261.625, amp = 0.1|
+   Saw.ar(freq, amp).dup
 };
 
 ~oscil.play;
@@ -773,34 +773,72 @@ p.setEvent((freq: exprand(200, 600), gt: 1, sustain: 2)).play;
      - \Gls{oscillator} $\to$ \gls{filter}.
      - Tomorrow, more types of oscillators and filters.
 #+begin_center
+#+name: analog1
+#+caption: Standard analog-style (subtractive) synthesis.
 #+attr_latex: :height 1in
 [[./img/visualize-proxy-network-no-eg.pdf]]
 #+end_center
-**** This is enough for today's topics.
+**** This is enough for today's topics.				   :noexport:
      - Controlling notes with envelopes.
      - Automatically triggering notes by sequences.
 
+** JITLib patching
 *** "Just-In-Time" Library (JITLib)
 **** JITLib is a system of \eglspl{proxy}.
+     - Proxy :: An object that represents another object. A
+                \clss{NodeProxy} represents a signal in the server.
+**** JITLib lets us play with signals.
+     No need to worry about structure too soon, because you can change
+     the structure and content independently.
      - Write the /connections/ between signals (and other data) based on the proxies.
      - You can change whatever is in the proxies at any time.
      - This does not change the connections!
      - Proxies can be very small and simple: easy to read and understand.
-**** JITLib lets us play with signals.
-     No need to worry about structure too soon, because you can change
-     the structure and content independently.
 
-*** Proxies: Cats and signals
-    - A proxy is like a magic box.
-    - If I give you a cat, you have the cat.
-    - If I give you the magic box, you have whatever cat is inside the box.
-    - You can reach into the box any time, and you know you'll pet a cat.
-    - But the /specific cat/ can change.
-**** Proxies and signals
-     - Tell a filter to operate on whatever signal is in the box.
-     - Change the signal in the box at any time.
-     - The filter is still looking in the box!
+*** Repatching the oscillator
+**** To change the oscillator, assign a new function.
+     No change to the relationship between oscillator and filter.
+#+name: mod3
+#+caption: Switch between different oscillators.
+#+begin_src {} -i
+~filter.play;
 
+// Thicker sound
+~oscil = { |freq = 220, detun = 1.003, amp = 0.1|
+   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], amp)).dup
+};
+
+// Different wave shape
+~oscil = { |freq = 220, detun = 1.003, amp = 0.1|
+   Mix(Pulse.ar(freq * [1, detun, detun.reciprocal], 0.5, amp)).dup
+};
+
+// Back to the sawtooth, with a longer fade
+~oscil.fadeTime = 2;
+~oscil = { |freq = 220, detun = 1.003, amp = 0.1|
+   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], amp)).dup
+};
+#+end_src
+
+*** Connect proxies, not signals
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.65
+     :END:
+     - In Figure [[analog1]], the filter connects back to the \ci{\textasciitilde oscil} \egls{proxy}.
+     - Put a new signal in the proxy, and the filter gets the new signal.
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.3
+     :BEAMER_act: presentation
+     :END:
+     [[./img/visualize-proxy-network-no-eg.pdf]]
+**** Like a magic box with a cat inside.
+     - The magic box changes the cat sometimes.
+     - Reach into the box any time, and you know you'll pet a cat.
+     - But it may be a /different cat/.
+
+* Note control
 ** Playing notes by envelopes
 *** Playing separate notes
 **** What defines a "note"?
@@ -872,8 +910,6 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
 #+Name: ampenv1
 #+Caption: Apply an evenly-triggered amplitude envelope.
 #+Begin_src {} -i
-p = ProxySpace.new; p.push;
-
 ~eg = { EnvGen.kr(
    envelope: Env([0, 1, 0], [0.01, 0.6], -4),
    gate: Impulse.kr(1)
@@ -881,7 +917,7 @@ p = ProxySpace.new; p.push;
 
 ~out = { (~filter.ar * ~eg).dup }; ~out.play;
 
-~out.stop;  // We'll use these proxies some more
+~out.stop;
 #+End_src
 
 *** Envelope generator UGen
@@ -1095,7 +1131,7 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
     trig = Trig1.kr(trig, TRand.kr(3/12, 3/4, trig));
     [trig, EnvGen.kr(Env.adsr(0.01, 0.1, 0.5, 0.2), trig)]
 }.plot(2);
-**** That signal is a \egls{gate}.
+**** The attack/release signal is a \egls{gate}.
      - A gate is > 0 when open, and $\le$ 0 when closed.
      - \ugen{EnvGen} triggers when a gate opens, and releases when it closes.
      Note the effect of the different open/close times.
@@ -1126,13 +1162,15 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
 
 ** Events and envelope gates
 *** More convenience for gates: Events
-**** Sequencing: inconvenient to close gates by hand.
+**** Sequencing: Inconvenient to close gates by hand.
      Introducing \clss{Event}.
+     - We saw an \clss{Event} briefly, in the "canonical" example (Listing [[canonical]]).
+     - It both played and released a Synth.
      - We will learn more about events as we go.
-     - Events have lots of pryoperties, including timing.
-       - \ci{dur} :: Number of beats until the next event.
-       - \ci{sustain} :: Number of beats to keep a gate open. (May
-                         also be calculated from \cd{dur * legato}.)
+**** Events have lots of properties, including timing.
+     - \ci{dur} :: Number of beats until the next event.
+     - \ci{sustain} :: Number of beats to keep a gate open. (May
+		       also be calculated from \cd{dur * legato}.)
 
 *** Events with ProxySpace
     - In \clss{ProxySpace}, a special event type can set parameters globally in the entire space.
@@ -1165,101 +1203,6 @@ p.setEvent((degree: rrand(-14, 0), gt: 1,
 #+end_src
      We are now /centimeters/ away from sequencing!
 
-** Another envelope use: Articulation
-*** Envelopes for articulation
-**** Envelopes can control any parameter.
-     /Very/ common: control the filter frequency, for articulation.
-     - Create a new \ugen{EnvGen}, as a multiplier for \ci{ffreq}.
-     - Use it in the \ci{\textasciitilde filter} module.
-#+latex: \glsadd{clip}
-#+name: filterEg
-#+caption: Apply an envelope to the filter frequency.
-#+begin_src {} -i
-~feg = { |gt = 0|
-   EnvGen.kr(Env([1, 4, 1], [0.01, 0.15], -4), gt)
-};
-
-~filter = { |ffreq = 2000, rq = 0.2|
-   RLPF.ar(~oscil.ar,
-      clip(ffreq * ~feg, 20, 20000),
-      rq
-   )
-};
-
-p.setEvent((freq: exprand(100, 400), gt: 1,
-   sustain: rrand(0.2, 0.8))).play;
-#+end_src
-
-*** Notes on that example
-**** Filter envelope as a multiplier.
-     - The envelope /modulates/ the set filter frequency. You get
-       articulation /and/ independent timbre control.
-     - \cd{ffreq * \textasciitilde feg} may go outside the valid
-       frequency range. \mth{clip} it for safety.
-       - \mth{clip} moves out-of-range values to the nearest boundary.
-       - Filters tend to blow up if the frequency goes out of range.
-**** \cd{p.setEvent} treats the control inputs globally.
-     - \cd{gt: 1} in the event sets \ci{gt} in both envelope modules
-       simultaneously.
-
-*** Articulation: Noise oscillator with envelope
-**** With envelopes, we can use a noise generator.
-     - A classic analog synthesizer trick for a "chff" in the attack.
-     - Add a short, percussive (\cd{Env.perc}) burst of noise.
-     - Usually use a \clss{BPF} to color the noise.
-**** Typical noise generators
-     - \ugen{WhiteNoise} :: Very bright, harsh noise.
-     - \ugen{PinkNoise} :: Still bright, but more pleasant than white noise.
-     - \ugen{BrownNoise} :: Darker sound. Named after \egls{Brownian motion}, not the color.
-
-*** Add a noise attack to the previous example
-    Based on Listing [[filterEg]].
-#+name: noiseAtk
-#+caption: Create a noise generator, and an envelope and filter for it.
-#+begin_src {} -i
-~noiseEg = { |gt, noiseDur = 0.08|
-   EnvGen.kr(Env.perc(0.01, noiseDur), gt)
-};
-~noise = { |noiseAmp = 0.8|
-   PinkNoise.ar(noiseAmp * ~noiseEg)
-};
-~noiseFilt = { |ffreq = 11000, rq = 0.34|
-   BPF.ar(~noise.ar, ffreq, rq).dup
-};
-~noiseFilt.play;
-
-p.setEvent((freq: exprand(100, 400), gt: 1,
-   sustain: rrand(0.2, 0.8))).play;
-#+end_src
-**** You can also add an envelope to the \ugen{BPF} frequency.
-     Exercise for you.
-**** Settings for a BPF frequency envelope			   :noexport:
-ffreq = 2300
-~noiseFeg = { |gt|
-   EnvGen.kr(Env.perc(0.01, 0.2), gt)
-   .linexp(0, 1, 1, 4)
-};
-
-*** Note control summary: Envelopes
-**** \eGls{breakpoint} \eglspl{envelope}
-     - Idea: Start level, list of segments
-     - Written in \clss{Env} using three arrays: \ci{levels}, \ci{times}, \ci{curve}
-**** \eGls{envelope generator}
-     - Renders the segments into a signal.
-     - Responds to \eglspl{trigger} and \eglspl{gate}.
-**** Triggers and gates: signal > 0
-     - A \te{trigger} is instantaneous, when the signal becomes > 0.
-     - A \te{gate} is open when > 0, closed otherwise.
-
-*** Note control summary: Gates and Events
-**** \eGlspl{gate} must be opened and closed.
-     - By hand, using \cd{\textasciitilde something.set(\textbackslash gt, 1)} or \cd{0}.
-     - An \clss{Event} can close the gate for you, after a given \ci{sustain} time.
-       - \ci{sustain} can be given directly, or you can provide \ci{dur} and \ci{legato}.
-**** Events can set many parameters at once.
-     Very useful for sequencing: The start of a note can change pitch,
-     amplitude, timbre controls all at once.
-
 * Sequencing
 ** Overview: Routines and Tasks
 *** Sequencing: Basic requirements
@@ -1280,11 +1223,13 @@ ffreq = 2300
 #+name: routine1
 #+caption: A simple routine. Run r.next four times. How would you explain the results?
 #+begin_src {} -i
+(
 r = Routine {
    1.yield;
    3.yield;
    5.yield;
 };
+)
 
 r.next;
 #+end_src
@@ -1487,7 +1432,7 @@ r.stop;
 #+name: noteseq1
 #+caption: Note sequencing in a Routine.
 #+begin_src {} -i
-p = ProxySpace.new; p.push;
+p.clear;  // or p = ProxySpace.new; p.push;
 
 ~out = { |freq = 440, t_trig = 1|
    var eg = EnvGen.kr(Env.perc(0.01, 0.5), t_trig);
@@ -1813,10 +1758,11 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
      - \cd{sustain = dur * stretch * legato}
 
 *** Example: Articulation using \textbackslash legato
-    First a synth.
+    First a synth. Further explanation tomorrow.
 #+name: legato1
 #+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
 #+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
 ~oscil = { |freq = 440|
    Mix(Pulse.ar(
       Lag.kr(freq, 0.08) * { exprand(1/1.005, 1.005) }.dup(5),
@@ -1857,7 +1803,7 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 ~player.clear;
 #+end_src
 
-* Glossary
+* Glossary							   :noexport:
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
@@ -1883,8 +1829,8 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
      - For synthesis, it means you can play with the different pieces independently.
      - For example, replace the \ci{\textasciitilde freq} module.
      - It changes immediately to a changing frequency.
-#+name: ps2
-#+caption: Modularity in ProxySpace.
+# #+name: ps2
+# #+caption: Modularity in ProxySpace.
 #+begin_src {} -i
 ~freq = 110;
 ~width = 0.5;

@@ -8,6 +8,7 @@
 | arguments              |           | Inputs to a function or method, provided at the time of calling it                                                                                                                    |
 | array                  |           | One type of collection, consisting of an ordered list of items, enclosed in square brackets \cd{[ ]}                                                                                  |
 | assignment             |           | To replace a variable's current value with a new object. Written ``name = value''                                                                                                     |
+| audio rate             |           | The UGen rate that produces one output value for every sample going to the audio hardware. Use for audio signals                                                                      |
 | band-limited           |           | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                                            |
 | beat                   |           | The unit of time in a TempoClock. A beat's duration depends on the clock's tempo, given in beats per second. If the tempo is 2 bps, 1 beat == 0.5 seconds                             |
 | breakpoint             |           | The endpoint of a line segment in an envelope                                                                                                                                         |
@@ -17,6 +18,7 @@
 | clock                  |           | A scheduler. Functions or Routines scheduled on the clock will wake up at the given time, and they will reschedule if the return value is a number                                    |
 | collection             |           | An object that contains several other objects, and supports individual access (``at'') and/or iteration (``do'', ``collect'')                                                         |
 | control inputs         |           | Arguments of a synthesis function. The server exposes them as settable controls                                                                                                       |
+| control rate           |           | The UGen rate that produces one output value per calculation cycle (by default, 64 audio samples). Use for slower-moving control signals                                              |
 | declarative            |           | A style of programming that describes the desired result, and allows the software to handle the details. SC patterns are more like declarative code                                   |
 | declare                |           | Of a variable, to define its name and initial value using a ``var'' statement                                                                                                         |
 | default                |           | A value that will be used unless you specify another value. E.g., the default frequency for \cd{SinOsc.ar} is 440 Hz                                                                  |
@@ -35,6 +37,7 @@
 | imperative             |           | A style of programming focusing on precise instructions---commands---that the computer should execute. Compare ``declarative'' programming                                            |
 | impulse                |           | In theory, an infinitely short burst of sound. In practice, a single non-zero sample (shortest possible digital sound) surrounded by silence                                          |
 | infinite loop          |           | A programming error in which a loop never stops. The loop will try to execute forever, blocking all other activities in sclang                                                        |
+| initial rate           |           | The UGen rate that calculates one output value at the beginning of the synth, and holds it as a constant                                                                              |
 | interpreter            |           | Referring to the single-letter variables a--z                                                                                                                                         |
 | IOI                    |           | ``Inter-Onset Interval'': The amount of time between successive note beginnings. SuperCollider Events refer to this as ``delta''                                                      |
 | iteration              |           | Performing the same operation several times, over items in a collection or a series of numbers                                                                                        |
@@ -63,6 +66,7 @@
 | pulse width            |           | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                                              |
 | Q                      |           | Short for a filter's ``quality''                                                                                                                                                      |
 | quality                |           | The ``precision'' of a filter. High Q produces sharp slopes in the frequency response, narrower bandwidth and higher resonance. Mathematically, $\frac{f_c}{\Delta f}$                |
+| rate                   |           | Of a UGen, its calculation rate: audio rate, control rate or initial rate                                                                                                             |
 | receiver               |           | In a method call, the object that determines which method definition is used                                                                                                          |
 | releaseNode            |           | In an envelope, the breakpoint where the envelope generator will pause (or loop back) as long as ``gate'' > 0                                                                         |
 | sample-and-hold        |           | A standard synthesizer trick for random-number generation: \emph{sample} a value from a waveform and \emph{hold} it until the next sample                                             |
