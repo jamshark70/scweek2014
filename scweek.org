@@ -82,6 +82,26 @@
 *** DONE Index entries
 *** DONE Glossary
 *** DONE Why do subsections become frames in beamerarticle?
+*** TODO Detecting beamer vs. article document class
+Actually, I was wrong. `:latex-class' will contain the name given by the
+user to its Beamer configuration. It may be totally unrelated to
+"beamer".
+
+You need to use a regexp to find out what class is used:
+
+  (let ((beamer-class-p
+         (and (stringp header)
+              (org-string-match-p
+               "^[ \t]*\\\\documentclass\\(?:\\[.*\\]\\)?{beamer}[ \t]*$"
+               (nth 1 (assoc (plist-get info :latex-class) org-latex-classes)))))))
+
+> +       (if (string= (plist-get info :latex-class) "beamer")
+> +        (format "\\begin{frame}%s\\end{frame}" titlecmd)
+> +      titlecmd))
+
+You need to check if TITLECMD is nil before wrapping it within a frame.
+Ideally before defining BEAMER-CLASS-P.
+
 * Content
 ** TODO Exercises
 ***
