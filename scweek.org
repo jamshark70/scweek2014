@@ -84,7 +84,7 @@
 *** DONE Why do subsections become frames in beamerarticle?
 * Content
 ** TODO Exercises
-*** 
+***
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?
@@ -146,13 +146,24 @@
    - Related
      - Formant synthesis (Formlet)
      - Banded waveguides (feedback delays)
-* Glossary decisions [0/3]
+* Glossary decisions [0/14]
   - [ ] range
   - [ ] Nyquist
   - [ ] interpolation [0/3]
     - [ ] linear
     - [ ] cubic
     - [ ] quadratic
+  - [ ] absdif
+  - [ ] trunc
+  - [ ] roundUp
+  - [ ] abs
+  - [ ] sign
+  - [ ] squared
+  - [ ] sqrt
+  - [ ] exp
+  - [ ] log
+  - [ ] sin
+  - [ ] cos
 * Overview (MD export)
   :PROPERTIES:
   :EXPORT_TITLE: Synthesis and Performance with SuperCollider
