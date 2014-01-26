@@ -1,4 +1,5 @@
 #+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
+#+bind: org-beamer-outline-frame-title "Outline"
 
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t

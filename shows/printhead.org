@@ -1,4 +1,5 @@
 #+bind: org-latex-title-command "\\maketitle"
+#+bind: org-beamer-outline-frame-title ""
 #+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
 
 #+LANGUAGE:  en
@@ -62,6 +63,13 @@
 #+LATEX_HEADER: \let\olditemize\itemize
 #+LATEX_HEADER: \renewcommand{\itemize}{
 #+LATEX_HEADER:   \olditemize
+#+LATEX_HEADER:   \setlength{\itemsep}{1pt}
+#+LATEX_HEADER:   \setlength{\parskip}{0pt}
+#+LATEX_HEADER:   \setlength{\parsep}{0pt}
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \let\oldenumerate\enumerate
+#+LATEX_HEADER: \renewcommand{\enumerate}{
+#+LATEX_HEADER:   \oldenumerate
 #+LATEX_HEADER:   \setlength{\itemsep}{1pt}
 #+LATEX_HEADER:   \setlength{\parskip}{0pt}
 #+LATEX_HEADER:   \setlength{\parsep}{0pt}
