@@ -110,12 +110,15 @@
 | List               |                      | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                                                         |
 | NodeProxy          | NodeProxies          | A hot-swappable placeholder for a Synth on the server                                                                                                              |
 | Pbind              |                      | An Event Pattern that collects values from child patterns under their names                                                                                        |
+| Pdef               |                      | Global storage for pattern proxies, where the patterns produce sequencing events                                                                                   |
+| Pdefn              |                      | Global storage for pattern proxies, where the patterns produce simple values                                                                                       |
 | Pexprand           |                      | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
 | Pgeom              |                      | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
 | Prand              |                      | A Pattern to choose values randomly from an array                                                                                                                  |
 | ProxySpace         |                      | An environment that automatically makes a NodeProxy from any item in it                                                                                            |
 | Pseq               |                      | A Pattern to return values from an array, one by one                                                                                                               |
 | Pseries            | Pseries              | A Pattern yielding an arithmetic series. Each value is the previous value plus a given step size                                                                   |
+| Pshuf              |                      | Read items from a list in random order, using all items before repeating---i.e., ``shuffle'' the items                                                             |
 | Pwhite             |                      | A Pattern that generates random numbers between low and high boundaries, with a linear distribution                                                                |
 | Pwrand             |                      | A Pattern to choose values randomly from an array, with a different probability for each item                                                                      |
 | Pxrand             |                      | A Pattern to choose values randomly from an array, without repeating the same one twice in a row                                                                   |
@@ -145,6 +148,7 @@
 | ar            |        | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
 | asr           |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                       |
 | asStream      |        | Produce a Stream from another object (usually a Pattern)                                                                                                          |
+| at            |        | Retrieve an item from an indexed collection (e.g. Array or Dictionary) by its index. Shortcut syntax: \cd{collection[index]}                                      |
 | clip          |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
 | cpsmidi       |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
 | curvelin      |        | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
@@ -175,6 +179,7 @@
 | play          |        | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
 | postln        |        | Print an object as a string into the post window                                                                                                                  |
 | push          |        | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
+| put           |        | Put an object into a slot in an indexed collection (e.g. Array or Dictionary). Shortcut syntax: \cd{collection[index] = item}                                     |
 | rand          |        | \cd{num.rand}: Generate a random number $x$ where $0 \le x < num$                                                                                                 |
 | rand2         |        | \cd{num.rand}: Generate a random number $x$ where $-num \le x < num$                                                                                              |
 | range         |        | Converts a UGen's range into a different linear range                                                                                                             |

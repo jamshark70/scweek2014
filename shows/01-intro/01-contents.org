@@ -1533,9 +1533,9 @@ r.stop;
 #+begin_src {} -i
 p.clear;  // or p = ProxySpace.new; p.push;
 
-~out = { |freq = 440, t_trig = 1|
+~out = { |freq = 440, width = 0.5, t_trig = 1|
    var eg = EnvGen.kr(Env.perc(0.01, 0.5), t_trig);
-   (VarSaw.ar(freq) * eg * 0.1).dup
+   (VarSaw.ar(freq, 0, width) * eg * 0.1).dup
 };
 ~out.play;
 
@@ -1585,7 +1585,7 @@ Tdef(\player, {
 });
 #+end_src
 
-*** Using ProxySpace-set Events
+*** Using ProxySpace-set Events					   :noexport:
 **** Remember the \clss{Event} type from "Events with ProxySpace"?
      - You can use \cd{p.setEvent((...))} in a \clss{Task} as well.
      - This is much easier than setting the controls individually on
@@ -1601,6 +1601,210 @@ Tdef(\player, {
 });
 #+end_src
 **** There is another really good reason to use Events: \eGlspl{pattern}.
+     Details tomorrow.
+*** Non-random sequences
+**** Random sequences are easy.
+     Just write the randomized math expression for each parameter.
+**** Non-random melodies take a little more care.
+     - Store the note data: \clss{Array}.
+     - Retrieve them one by one: \mth{at} method.
+
+*** Non-random example: One array
+    In very simple cases, this is pretty easy.
+    - Use the \ci{\textasciitilde out} synth in Listing [[noteseq1]].
+    - Remember, \mth{do} over the \clss{Array} reads out the array's items one by one.
+#+name: noteseq2
+#+caption: Get a deterministic sequence of pitches from an array.
+#+begin_src {} -i
+(
+var midi = [59, 61, 66, 68, 69, 61, 59, 68, 66, 61, 69, 68];
+
+Tdef(\reich, {
+   loop {
+      midi.do { |note|
+         ~out.set(\t_trig, 1, \freq, note.midicps);
+         0.15.wait;
+      }
+   }
+}).play;
+)
+
+Tdef(\reich).stop;  // if you want
+#+end_src
+
+*** More arrays?
+    A bit inconvenient with more arrays.
+    - We can't \mth{do} over both arrays at once.
+    - Instead, like before, \cd{midi.do} passes the note numbers into the function.
+    - It also passes the array index (second argument): \cd{|note, i|}.
+    - We can use the index to get the corresponding item from the other array(s).
+
+*** Non-random example: Two arrays
+#+name: noteseq3
+#+caption: Get deterministic sequences of note information from multiple arrays.
+#+begin_src {} -i
+(
+var midi = [59, 61, 66, 68, 69, 61, 59, 68, 66, 61, 69, 68],
+sawWidth = [0.1, 0.5, 0.2, 0.5, 0.5, 0.5,
+   0.1, 0.5, 0.5, 0.1, 0.5, 0.5];
+
+Tdef(\reich, {
+   loop {
+      midi.do { |note, i|
+         ~out.set(
+            \t_trig, 1,
+            \freq, note.midicps,
+            \width, sawWidth[i]
+         );
+         0.15.wait;
+      }
+   }
+}).play;
+)
+
+Tdef(\reich).stop;  // if you want
+#+end_src
+
+*** That's... a bit painful
+**** Not only painful, but also limiting.
+     Here are some ideas that are hard to express in arrays.
+     - Partially random sequences:
+       - 10 sequenced notes
+       - 5 or 6 random notes
+     - Phrase structures: Choose one phrase, then another.
+# *** Non-random sequences with memory
+**** \clsspl{Stream} handle these.
+     - Streams have memory.
+     - You need memory to keep track of your place in a more complex structure.
+
+** Data streams for note information
+*** From Array to Stream
+**** Turning an array into a stream
+     - Wrap a \mth{do} loop in a \clss{Routine}.
+     - If you want the array to repeat, wrap that in a \mth{loop}.
+**** Inconvenient to rewrite for every array
+     - Write a function that converts it for you.
+     - *Very common strategy:* Make a function for code you need to reuse.
+#+name: seqfunc
+#+caption: A function that converts an array into a stream.
+#+begin_src {} -i
+f = { |array|
+   Routine {
+      loop {
+         array.do { |item| item.yield };
+      };
+   };
+};
+#+end_src
+
+*** Piano Phase, with streams
+    - No longer necessary to deal with array indexing.
+    - The \clss{Tdef} function is a lot simpler.
+#+name: noteseq4
+#+caption: Use the array-stream function in the sequence.
+#+begin_src {} -i
+(
+var midi = f.value([59, 61, 66, 68, 69, 61,
+   59, 68, 66, 61, 69, 68]),
+sawWidth = f.value([0.1, 0.5, 0.2, 0.5, 0.5, 0.5,
+   0.1, 0.5, 0.5, 0.1, 0.5, 0.5]);
+
+Tdef(\reich, {
+   loop {
+      ~out.set(
+         \t_trig, 1,
+         \freq, midi.next.midicps,
+         \width, sawWidth.next
+      );
+      0.15.wait;
+   }
+}).play;
+)
+#+end_src
+
+*** But isn't there an easier way?
+**** There is: \eGlspl{pattern}.
+     - Patterns make up a large library of predefined streaming behaviors.
+     - The entire function from Listing [[seqfunc]] can be written /in one line/ using patterns:\\<all>
+       \cd{Pseq(array, inf).asStream}
+**** We will look at some basic patterns next.			   :noexport:
+     These should help you with today's final exercises.
+
+*** Patterns for existing data
+**** For more details, look up the pattern's help file.
+     - \clss{Pseq}\cd{(list, repeats)}: Read out a list in order.
+     - Read out a list in random order:
+       - \clss{Pshuf}\cd{(list, repeats)}: "Shuffle" (use all items exactly once).
+       - \clss{Prand}\cd{(list, repeats)}: Choose an item randomly each time, allowing repeats.
+       - \clss{Pxrand}\cd{(list, repeats)}: Like \clss{Prand}, but will not repeat the same item twice in a row.
+       - \clss{Pwrand}\cd{(list, weights, repeats)}: Weighted random choice. Each item has a different probability.
+
+*** Patterns to generate data
+    - \clss{Pwhite}\cd{(lo, hi, length)}: Generate random numbers between low and high boundaries, with a linear distribution.
+    - \clss{Pexprand}\cd{(lo, hi, length)}: Generate random numbers with an exponential distribution.
+    - \clss{Pseries}\cd{(start, step, length)}: Yield an arithmetic series. Each value is the previous value plus a given step size.
+    - \clss{Pgeom}\cd{(start, grow, length)}: Yield a geometric series. Each value is the previous value times a given growth factor.
+**** You can do math on patterns.
+     E.g., \cd{Pwhite(1, 50, inf) * 2} will make /even/ random numbers between 2 and 100.
+
+*** Piano Phase, with patterns
+    - Not much different from Listing [[noteseq4]].
+    - But, \clss{Pseq} is more descriptive than \cd{f.value}.
+#+name: noteseq5
+#+caption: Use patterns to make the streams in the sequence.
+#+begin_src {} -i
+(
+var midi = Pseq([59, 61, 66, 68, 69, 61,
+   59, 68, 66, 61, 69, 68], inf).asStream,
+sawWidth = Pseq([0.1, 0.5, 0.2, 0.5, 0.5, 0.5,
+   0.1, 0.5, 0.5, 0.1, 0.5, 0.5], inf).asStream;
+
+Tdef(\reich, {
+   loop {
+      ~out.set(
+         \t_trig, 1,
+         \freq, midi.next.midicps,
+         \width, sawWidth.next
+      );
+      0.15.wait;
+   }
+}).play;
+)
+#+end_src
+
+*** Pattern proxies
+    - We used \clsspl{NodeProxy} as a fixed reference point for synthesis, while changing the content.
+    - \clss{Tdef} does this for Tasks.
+    - Pattern proxies do the same for patterns.
+**** We'll use \clss{Pdefn} for the exercises.
+     - \clss{Pdef} is a \clss{Tdef} for /event patterns/ (tomorrow...).
+     - \clss{Pdefn} is for number patterns, like we're using.
+
+*** Piano Phase, with pattern proxies
+**** You can change the notes/widths by changing the \clsspl{Pdefn}!
+#+name: noteseq6
+#+caption: Use pattern proxies to make the streams in the sequence.
+#+begin_src {} -i
+(
+Pdefn(\midi, Pseq([59, 61, 66, 68, 69, 61,
+   59, 68, 66, 61, 69, 68], inf));
+Pdefn(\sawWidth, Pseq([0.1, 0.5, 0.2, 0.5, 0.5, 0.5,
+   0.1, 0.5, 0.5, 0.1, 0.5, 0.5], inf));
+
+Tdef(\reich, {
+   var midi = Pdefn(\midi).asStream,
+   sawWidth = Pdefn(\sawWidth).asStream;
+   loop {
+      ~out.set(
+         \t_trig, 1,
+         \freq, midi.next.midicps,
+         \width, sawWidth.next
+      );
+      0.15.wait;
+   }
+}).play;
+)
+#+end_src
 
 *** Routine summary
 **** \clss{Routine}, \clss{Task}: Pausable operations
@@ -1618,291 +1822,27 @@ Tdef(\player, {
 **** Storage and GUI control with \clss{Tdef}
      - Also allows you to replace the function without breaking the flow.
 
-* Introducing Patterns
-** Patterns and Streams
-*** Patterns describe Streams
-**** Streams (\clss{Routine}s) return sequences of values.
-     - *Plus:* They remember what they were doing before  pausing, and resume at exactly that point.
-     - *Minus:* You have to write all the calculation logic.\\
-       Some sequencing operations are complicated, and frequently needed.
-**** \eGlspl{pattern} "describe" sequencing behaviors that you can reuse.
-     No need to rewrite the logic---just use the pattern.
+*** Pattern summary
+**** \eGlspl{pattern} are useful shortcuts for common types of streams.
+     - List patterns for arrays (original or random order).
+     - Generator patterns for math.
+**** \mth{asStream} to turn a pattern into a stream.
+     - Use anywhere you could use a \clss{Routine}.
+**** Pattern proxies for free experimentation.
+     - For now, \clss{Pdefn} handles value patterns.
+     - Tomorrow, we'll look at event patterns and \clss{Pdef}.
 
-*** Example: A counter
-**** Compare a \clss{Routine} and a Pattern to count upward from 0.
-     Why 0?
-     - Most programming languages start counting with 0... get used to it.
-       (E.g., the index of the first item in an \clss{Array} is 0.)
-#+latex: \glsadd{Pseries}
-#+name: patt1
-#+caption: Two counters: a Routine and a Pattern. r and p have the same result.
-#+begin_src {} -i
-r = Routine {
-   var x = 0;
-   loop {
-      x.yield;
-      x = x + 1;
-   };
-};
-
-p = Pseries(0, 1, inf).asStream;
-
-// Run this several times
-[r.next, p.next];
-#+end_src
-
-*** Compare the two
-**** The \clss{Routine} shows a lot of detail.
-     - *Good:* You can see everything that's going on.
-     - *Bad:* You /have to/ see everything...
-       - 6 lines for a simple counter. (Could be 4 by using \cd{inf.do}.)
-       - Hard to see at a glance what all the details mean.
-       - Easy to make a mistake while rewriting the counter logic.
-**** The \clss{Pseries} is more compact and convenient.
-     - *Good:* It shows the /purpose/, not the implementation.
-     - *Bad:* Sometimes you need to know the implementation details.
-**** For me, the good /far/ outweighs the bad.
-
-*** asStream
-**** \Glspl{pattern} by themselves don't calculate anything.
-     - They only /specify/ what should happen.
-     - To do it, you need a \gls{Stream}.
-     - The \mth{asStream} method produces a stream from a pattern.
-**** Like making a building:
-     - The pattern is the /blueprint/.
-     - The stream is the construction crew. They follow the blueprint to make the building.
-     - Similarly, a SC stream follows the pattern's blueprint to produce the output values.
-**** Multiple, independent streams from the same pattern.
-     - Just like you can build many houses from one blueprint.
-
-*** asStream example
-#+name: asStream1
-#+caption: An illustration of why we need asStream for patterns.
-#+begin_src {} -i
-p = Pseries(0, 1, inf);
-
-// 'next' on a Pattern returns the pattern itself
-p.next;  // "a Pseries"
-
-q = p.asStream;  // a Routine
-q.next;  // run a few times
-
-r = p.asStream;
-r.next;
-#+end_src
-**** \ci{q} and \ci{r}: Same pattern, independent behavior
-     It doesn't matter how many values you pull from \ci{q}. \ci{r}
-     will count on its own, as if \ci{q} didn't exist.
-
-*** Basic list patterns
-    - \clss{Pseq} :: Return values from an array, one by one.
-    - \clss{Prand} :: Choose values randomly from an array.
-    - \clss{Pxrand} :: Choose values randomly from an array, without repeating the same one twice in a row.
-    - \clss{Pwrand} :: Choose values randomly from an array, with a different probability for each item.
-
-*** Basic math generator patterns
-    - \clss{Pwhite} :: Generate random numbers between low and high boundaries, with a linear distribution.
-    - \clss{Pexprand} :: Generate random numbers with an exponential distribution.
-    - \clss{Pseries} :: Yield an arithmetic series. Each value is the previous value plus a given step size.
-    - \clss{Pgeom} :: Yield a geometric series. Each value is the previous value times a given growth factor.
-**** You can get interesting results using just these.
-     For more patterns, see the /Practical Guide to Patterns/ help file series.[fn:1]
-
-*** TODO Exercises: Value patterns
-** Patterns and Events
-*** Patterns make Events very easily
-**** An \clss{Event} is a set of named values.
-     - Each value's name says how the value will be used for synthesis.
-     - To use the values, call \mth{play} on the event.
-**** A pattern called \clss{Pbind} is a list of /named patterns/.
-     - Every \mth{next} value collects one value from each child pattern.
-     - \mth{next} needs an empty \clss{Event} as a container for the new values.
-#+name: pbind1
-#+caption: Pbind collects child patterns' return values under given names.
-#+begin_src {} -i
-p = Pbind(
-   \freq, Pexprand(100, 400, inf),
-   \dur, Pwhite(1, 4, inf) * 0.125
-).asStream;
-
-p.next(Event.new);
-#+end_src
-
-*** What does Pbind actually do?
-#+begin_src {} -i
-p = Pbind(
-   \freq, Pexprand(100, 400, inf),
-   \dur, Pwhite(1, 4, inf) * 0.125
-).asStream;
-#+end_src
-    1. Associate names with patterns:
-       - \ci{\textbackslash freq} will be random between 100 and 400.
-       - \ci{\textbackslash dur} will be a random multiple of 0.125.
-    2. Automatically make streams from those patterns.
-    3. Go through the pairs /in order/:
-       - Get a value from that name's stream.
-       - Add the value into the input \clss{Event}.
-
-*** DebugPbind: Watch the event get filled
-**** In Listing [[pbind1]], change \clss{Pbind} to \clss{DebugPbind}.
-     Now you can read exactly what's going on.
-     1. Start with an empty event.
-     2. \ci{\textbackslash freq} gets the value 133.25.
-     3. The empty event becomes \cd{(freq: 133.25)}.
-     4. \ci{\textbackslash dur} gets 0.125.
-     5. The final event has both values, with the right names.
-#+begin_src {} -i
-Source event: (  )
-stream ID: freq
-Event going in: (  )
-streamout: 133.24577125341
-stream ID: dur
-Event going in: ( 'freq': 133.24577125341 )
-streamout: 0.125
-Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
-#+end_src
-
-*** Events and timing
-**** In a \clss{Routine}/\clss{Task}, you could \mth{wait} until the next event.
-     This happens automatically in an Event Pattern.
-     - Events can calculate a \gls{delta} time.
-     - Then, we just need something that will play the event and wait
-       the right amount of time.
-**** This is \clss{EventStreamPlayer}.
-     - If you call \mth{play} on a pattern, it makes an \clss{EventStreamPlayer}.
-     - This plays the events and waits for the event's delta.
-     - The \egls{delta} may be given directly, or calculated from \cd{\textasciitilde dur}.
-       - \cd{delta = \textasciitilde dur * \textasciitilde stretch}
-
-*** Event patterns: One-stop shopping
-    Let's be clear about the implications:
-**** Event patterns handle everything for sequencing
-     - Parameter setting
-       - New parameter values are saved in the event
-     - Timing
-       - Every event has a \egls{delta}
-
-*** Compare: Pattern vs. Routine to play notes
-    - We've seen a \clss{Routine} that plays notes, using \mth{set}.
-    - Let's see how the same is done with a \egls{pattern}.
-#+name: rVsPbind
-#+caption: A Pbind, expressing the same as the earlier Routine.
-#+begin_src {} -i
-~player = \psSet -> Pbind(
-   \t_trig, 1,
-   \freq, Pexprand(110, 440, inf),
-   \dur, 0.5
-);
-
-~player.clear;
-#+end_src
-
-**** \mth{psSet}						   :noexport:
-     This modifier tells the pattern's events to operate on existing
-     \clsspl{NodeProxy} within the \clss{ProxySpace}.
-
-*** Patterns: "Declarative" programming
-**** \eGlspl{Routine} are \egls{imperative}-style programming.
-     - Listing [[noteseq1]] said: "Do this, then that."
-       - Set the trigger and the frequency.
-       - Wait 0.5 beats.
-**** \eGlspl{pattern} are more like \egls{declarative} programming.
-     - Listing [[rVsPbind]] says:
-       - I want \ci{\textbackslash freq} to be like this.
-       - I want \ci{\textbackslash dur} to be like that.
-       - Go do it.
-**** The two examples /do/ the same thing, but write it differently.
-
-*** What is \textbackslash psSet?
-**** \ci{\textbackslash psSet} says how the pattern's events should be used.
-     - \clss{Pbind} doesn't say /what to do/.\\
-       It only says what information to use.
-     - The \clss{Event} interprets the data and takes action, based on the \egls{event type}.
-**** \ci{\textbackslash psSet} is an event type.
-     - It tells the pattern's events to operate on existing \clsspl{NodeProxy} within the \clss{ProxySpace}.
-     - Actually a bit more: It connects the events to the current \clss{ProxySpace}.
-
-*** Event types
-**** Common \glspl{event type}:
-     - \ci{\textbackslash note} :: Play a new \clss{Synth}.
-     - \ci{\textbackslash set} :: Set controls in an existing \clss{Synth}.
-     - \ci{\textbackslash off} :: Release an existing \clss{Synth}.
-     - \ci{\textbackslash midi} :: Send note or control data to a hardware MIDI device.
-**** Event types let you change the action without changing the data.
-     - You can write a \ci{\textbackslash note} pattern, and hear the notes in scsynth.
-     - Or, change to the \ci{\textbackslash midi} type and hear the notes from a hardware synth.
-
-*** Why not use \textbackslash note?
-**** If \ci{\textbackslash note} is the normal \gls{event type}, why not use it?
-     - We will, later.
-     - We are beginning with a \egls{modular} approach, for reasons noted earlier.
-     - This approach needs a different event type.
-
-*** TODO Exercises: Different pitch and rhythm patterns
-** Special event keys: Pitch and Time
-*** Pitch and time in events
-**** Many levels to write pitch and time.
-     You can organize pitch and time in different ways, appropriate to different musical ideas.
-**** "Physical" level
-     Ultimately, SC uses specific event keys for the final result. These can be calculated from higher levels.
-     - Time :: \ci{delta} and \ci{sustain}
-     - Pitch :: \ci{freq}
-
-*** Time model
-**** Physical level: \ci{delta} and \ci{sustain}.
-     - \ci{delta} :: How many beats until the next event.
-     - \ci{sustain} :: How many beats before releasing the envelope.
-**** Higher level: \ci{dur}, \ci{legato}, \ci{stretch}
-     - Larger \ci{stretch} makes things go slower.
-     - Smaller \ci{legato} makes the notes shorter.
-     - \cd{delta = dur * stretch}
-     - \cd{sustain = dur * stretch * legato}
-
-*** Example: Articulation using \textbackslash legato
-    First a synth. Further explanation tomorrow.
-#+name: legato1
-#+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
-#+begin_src {} -i
-p.clear;  // or p = ProxySpace.new; p.push;
-~oscil = { |freq = 440|
-   Mix(Pulse.ar(
-      Lag.kr(freq, 0.08) * { exprand(1/1.005, 1.005) }.dup(5),
-      { rrand(0.4, 0.5) }.dup(5)
-   ))
-};
-~ampEg = { |gt|
-   EnvGen.kr(Env.adsr(0.01, 0.1, 0.6, 0.15), gt)
-};
-~feg = { |gt, width = 3|
-   EnvGen.kr(Env.perc(0.01, 0.14, width), gt) + 1
-};
-~filter = { |ffreq = 1800, rq = 0.2, amp = 0.05|
-   (RLPF.ar(~oscil.ar, clip(ffreq * ~feg, 20, 20000), rq)
-      * amp * ~ampEg).dup
-};
-~filter.play;
-#+end_src
-
-*** The \textbackslash legato pattern
-    Play it with a \mth{psSet} pattern.
-    - Two possible \ci{\textbackslash legato} values:
-      - 0.5: Half the note's duration---staccato
-      - 1.05: Longer than the note's duration---legato\\
-        This makes a sliding pitch, like a classic mono synth.
-    - \ci{\textbackslash legato} is easier than calculating
-      \ci{sustain} by hand.
-#+name: legato2
-#+caption: A pattern, to play the previous synth like a mono synth with fingered glides.
-#+begin_src {} -i
-~player = \psSet -> Pbind(
-   \freq, Pwhite(36, 48, inf),
-   \dur, Pwhite(1, 3, inf) * 0.125,
-   \legato, Prand(#[0.5, 1.05], inf),
-   \gt, 1
-);
-
-~player.clear;
-#+end_src
+*** Sequencing exercises
+    1. Edit Listing [[noteseq6]]:
+       - Add another \clss{Pdefn} for \ci{\textbackslash dur}.\\
+	 For a constant value, it's enough to write \cd{Pdefn(\textbackslash dur, value)}.
+       - In the \clss{Tdef}, make another variable for its stream and use it to control the wait time.
+    2. Plug the basic pattern types into the three \clsspl{Pdefn}.
+       - What is the effect of each one?
+    3. Experiment, and compose a sequence that you like.
+       - The sequence may involve randomness.
+**** Be careful with \ci{\textbackslash dur}.
+     Make sure it's always > 0. Otherwise, you might lock up the interpreter.
 
 * Glossary							   :noexport:
 # #+LaTeX: \glsaddall
