@@ -453,6 +453,20 @@ f.value(5);     // prints "6.403..."; b is still 4
 f.value(b: 5);  // prints "5.830..."; a is still 3
 #+end_src
 
+*** Alternate argument syntax
+    These are equivalent:
+    - \cd{arg a = 3, b = 4;}
+    - \cd{|a = 3, b = 4|}
+**** Why two ways?
+     - \cd{arg...} is traditional from SC2.
+     - \cd{|...|} came later, to make looping structures prettier.
+#+begin_src {} -i
+10.do { arg i; i.postln };
+
+// or
+
+10.do { |i| i.postln };
+#+end_src
 *** Taking it apart: Variables
 **** {1\textwidth}{3in}					      :B_overlayarea:
      :PROPERTIES:
@@ -680,7 +694,6 @@ SinOsc.ar + 1;
      - \gls{receiver} :: The object that will answer the method call.
      - \gls{polymorphism} :: Allows objects to respond to requests in appropriate ways.
 
-
 ** Exercises: Math operations
 *** Binary math operators
 #     :PROPERTIES:
@@ -691,7 +704,7 @@ SinOsc.ar + 1;
 #+attr_latex: :align |p{0.45\textwidth}|p{0.45\textwidth}| :float nil
 | \ci{+} Addition                           | \ci{-} Subtraction               |
 | \ci{*} Multiplication                     | \ci{/} Division                  |
-| \ci{**} Power-of                          | \ci{\%} Remainder                |
+| \ci{**} Power-of: \cd{a ** b} = $a^b$     | \ci{\%} Remainder                |
 | \ci{min} Lower input                      | \ci{max} Higher input            |
 | \ci{round} Round $a$ to $b$               | \ci{absdif} Like \ci{abs(a - b)} |
 | \ci{trunc} Truncate $a$ to $b$ resolution | \ci{roundUp} Round $a$ up to $b$ |
@@ -1491,7 +1504,7 @@ TempoClock.sched(1, {
 **** A \clss{Routine}'s return value is \mth{yield}ed.
      - So, \mth{yield} the \gls{delta} time.
      - You can also write \mth{wait}.
-     - You can \mth{stop} a Routine without \ks{Ctrl-.}.
+     - You can \mth{stop} a Routine without \ks{Ctrl-.}: \cd{r.stop}.
 #+name: resched2
 #+caption: Automatic rescheduling of a Routine with ``wait.''
 #+begin_src {} -i
@@ -1590,8 +1603,8 @@ Tdef(\player, {
      - You can use \cd{p.setEvent((...))} in a \clss{Task} as well.
      - This is much easier than setting the controls individually on
        specific \clss{NodeProxy} objects.
-#+name: tdefEvent
-#+caption: Replace out.set with Events.
+# #+name: tdefEvent
+# #+caption: Replace out.set with Events.
 #+begin_src {} -i
 Tdef(\player, {
    loop {
