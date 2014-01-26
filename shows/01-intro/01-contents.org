@@ -911,7 +911,19 @@ p.gui;
      - Reach into the box any time, and you know you'll pet a cat.
      - But it may be a /different cat/.
 
-*** TODO Exercises: Try other UGens
+*** Exercises: Try other UGens
+**** As in Listing [[mod3]], substitute the following oscillators.
+     - Find their parameters in the help system.
+     - Experiment with different parameter values.\\<all>
+       *Be careful with \ci{mul}.* Keep it between 0 and 1.
+**** Dummy, switch list style				    :B_ignoreheading:
+     :PROPERTIES:
+     :BEAMER_env: ignoreheading
+     :END:
+     1. Done before: \ugen{SinOsc}, \ugen{Saw}, \ugen{Pulse}
+     2. New: \ugen{VarSaw}, \ugen{Blip}, \ugen{Formant}\\<all>
+	Keep \ci{mul} pretty low for \ugen{Blip}. Bad for your ears.
+
 * Note control
 ** Playing notes by envelopes
 *** Playing separate notes
