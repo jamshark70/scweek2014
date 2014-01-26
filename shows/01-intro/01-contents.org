@@ -5,8 +5,8 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL:
 
-# #+INCLUDE: "../slidehead.org"
-#+INCLUDE: "../printhead.org"
+#+INCLUDE: "../slidehead.org"
+# #+INCLUDE: "../printhead.org"
 
 #+include: "../glossary.org"
 
@@ -1904,7 +1904,7 @@ p.clear;  // or p = ProxySpace.new; p.push;
 ~player.clear;
 #+end_src
 
-* Glossary
+* Glossary							   :noexport:
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}

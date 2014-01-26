@@ -10,6 +10,202 @@
 
 #+include: "../glossary.org"
 
+* Sequencing with Event Patterns
+** Patterns and Events
+*** Patterns make Events very easily
+**** An \clss{Event} is a set of named values.
+     - Each value's name says how the value will be used for synthesis.
+     - To use the values, call \mth{play} on the event.
+**** A pattern called \clss{Pbind} is a list of /named patterns/.
+     - Every \mth{next} value collects one value from each child pattern.
+     - \mth{next} needs an empty \clss{Event} as a container for the new values.
+#+name: pbind1
+#+caption: Pbind collects child patterns' return values under given names.
+#+begin_src {} -i
+p = Pbind(
+   \freq, Pexprand(100, 400, inf),
+   \dur, Pwhite(1, 4, inf) * 0.125
+).asStream;
+
+p.next(Event.new);
+#+end_src
+
+*** What does Pbind actually do?
+#+begin_src {} -i
+p = Pbind(
+   \freq, Pexprand(100, 400, inf),
+   \dur, Pwhite(1, 4, inf) * 0.125
+).asStream;
+#+end_src
+    1. Associate names with patterns:
+       - \ci{\textbackslash freq} will be random between 100 and 400.
+       - \ci{\textbackslash dur} will be a random multiple of 0.125.
+    2. Automatically make streams from those patterns.
+    3. Go through the pairs /in order/:
+       - Get a value from that name's stream.
+       - Add the value into the input \clss{Event}.
+
+*** DebugPbind: Watch the event get filled
+**** In Listing [[pbind1]], change \clss{Pbind} to \clss{DebugPbind}.
+     Now you can read exactly what's going on.
+     1. Start with an empty event.
+     2. \ci{\textbackslash freq} gets the value 133.25.
+     3. The empty event becomes \cd{(freq: 133.25)}.
+     4. \ci{\textbackslash dur} gets 0.125.
+     5. The final event has both values, with the right names.
+#+begin_src {} -i
+Source event: (  )
+stream ID: freq
+Event going in: (  )
+streamout: 133.24577125341
+stream ID: dur
+Event going in: ( 'freq': 133.24577125341 )
+streamout: 0.125
+Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
+#+end_src
+
+*** Events and timing
+**** In a \clss{Routine}/\clss{Task}, you could \mth{wait} until the next event.
+     This happens automatically in an Event Pattern.
+     - Events can calculate a \gls{delta} time.
+     - Then, we just need something that will play the event and wait
+       the right amount of time.
+**** This is \clss{EventStreamPlayer}.
+     - If you call \mth{play} on a pattern, it makes an \clss{EventStreamPlayer}.
+     - This plays the events and waits for the event's delta.
+     - The \egls{delta} may be given directly, or calculated from \cd{\textasciitilde dur}.
+       - \cd{delta = \textasciitilde dur * \textasciitilde stretch}
+
+*** Event patterns: One-stop shopping
+    Let's be clear about the implications:
+**** Event patterns handle everything for sequencing
+     - Parameter setting
+       - New parameter values are saved in the event
+     - Timing
+       - Every event has a \egls{delta}
+
+*** Compare: Pattern vs. Routine to play notes
+    - We've seen a \clss{Routine} that plays notes, using \mth{set}.
+    - Let's see how the same is done with a \egls{pattern}.
+#+name: rVsPbind
+#+caption: A Pbind, expressing the same as the earlier Routine.
+#+begin_src {} -i
+~player = \psSet -> Pbind(
+   \t_trig, 1,
+   \freq, Pexprand(110, 440, inf),
+   \dur, 0.5
+);
+
+~player.clear;
+#+end_src
+
+**** \mth{psSet}						   :noexport:
+     This modifier tells the pattern's events to operate on existing
+     \clsspl{NodeProxy} within the \clss{ProxySpace}.
+
+*** Patterns: "Declarative" programming
+**** \eGlspl{Routine} are \egls{imperative}-style programming.
+     - Listing [[noteseq1]] said: "Do this, then that."
+       - Set the trigger and the frequency.
+       - Wait 0.5 beats.
+**** \eGlspl{pattern} are more like \egls{declarative} programming.
+     - Listing [[rVsPbind]] says:
+       - I want \ci{\textbackslash freq} to be like this.
+       - I want \ci{\textbackslash dur} to be like that.
+       - Go do it.
+**** The two examples /do/ the same thing, but write it differently.
+
+*** What is \textbackslash psSet?
+**** \ci{\textbackslash psSet} says how the pattern's events should be used.
+     - \clss{Pbind} doesn't say /what to do/.\\
+       It only says what information to use.
+     - The \clss{Event} interprets the data and takes action, based on the \egls{event type}.
+**** \ci{\textbackslash psSet} is an event type.
+     - It tells the pattern's events to operate on existing \clsspl{NodeProxy} within the \clss{ProxySpace}.
+     - Actually a bit more: It connects the events to the current \clss{ProxySpace}.
+
+*** Event types
+**** Common \glspl{event type}:
+     - \ci{\textbackslash note} :: Play a new \clss{Synth}.
+     - \ci{\textbackslash set} :: Set controls in an existing \clss{Synth}.
+     - \ci{\textbackslash off} :: Release an existing \clss{Synth}.
+     - \ci{\textbackslash midi} :: Send note or control data to a hardware MIDI device.
+**** Event types let you change the action without changing the data.
+     - You can write a \ci{\textbackslash note} pattern, and hear the notes in scsynth.
+     - Or, change to the \ci{\textbackslash midi} type and hear the notes from a hardware synth.
+
+*** Why not use \textbackslash note?
+**** If \ci{\textbackslash note} is the normal \gls{event type}, why not use it?
+     - We will, later.
+     - We are beginning with a \egls{modular} approach, for reasons noted earlier.
+     - This approach needs a different event type.
+
+*** TODO Exercises: Different pitch and rhythm patterns
+** Special event keys: Pitch and Time
+*** Pitch and time in events
+**** Many levels to write pitch and time.
+     You can organize pitch and time in different ways, appropriate to different musical ideas.
+**** "Physical" level
+     Ultimately, SC uses specific event keys for the final result. These can be calculated from higher levels.
+     - Time :: \ci{delta} and \ci{sustain}
+     - Pitch :: \ci{freq}
+
+*** Time model
+**** Physical level: \ci{delta} and \ci{sustain}.
+     - \ci{delta} :: How many beats until the next event.
+     - \ci{sustain} :: How many beats before releasing the envelope.
+**** Higher level: \ci{dur}, \ci{legato}, \ci{stretch}
+     - Larger \ci{stretch} makes things go slower.
+     - Smaller \ci{legato} makes the notes shorter.
+     - \cd{delta = dur * stretch}
+     - \cd{sustain = dur * stretch * legato}
+
+*** Example: Articulation using \textbackslash legato
+    First a synth. Further explanation tomorrow.
+#+name: legato1
+#+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
+#+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+~oscil = { |freq = 440|
+   Mix(Pulse.ar(
+      Lag.kr(freq, 0.08) * { exprand(1/1.005, 1.005) }.dup(5),
+      { rrand(0.4, 0.5) }.dup(5)
+   ))
+};
+~ampEg = { |gt|
+   EnvGen.kr(Env.adsr(0.01, 0.1, 0.6, 0.15), gt)
+};
+~feg = { |gt, width = 3|
+   EnvGen.kr(Env.perc(0.01, 0.14, width), gt) + 1
+};
+~filter = { |ffreq = 1800, rq = 0.2, amp = 0.05|
+   (RLPF.ar(~oscil.ar, clip(ffreq * ~feg, 20, 20000), rq)
+      * amp * ~ampEg).dup
+};
+~filter.play;
+#+end_src
+
+*** The \textbackslash legato pattern
+    Play it with a \mth{psSet} pattern.
+    - Two possible \ci{\textbackslash legato} values:
+      - 0.5: Half the note's duration---staccato
+      - 1.05: Longer than the note's duration---legato\\
+        This makes a sliding pitch, like a classic mono synth.
+    - \ci{\textbackslash legato} is easier than calculating
+      \ci{sustain} by hand.
+#+name: legato2
+#+caption: A pattern, to play the previous synth like a mono synth with fingered glides.
+#+begin_src {} -i
+~player = \psSet -> Pbind(
+   \freq, Pwhite(36, 48, inf),
+   \dur, Pwhite(1, 3, inf) * 0.125,
+   \legato, Prand(#[0.5, 1.05], inf),
+   \gt, 1
+);
+
+~player.clear;
+#+end_src
+
 * Subtractive synthesis
 ** Overview
 *** Subtractive synthesis
