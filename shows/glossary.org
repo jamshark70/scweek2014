@@ -240,7 +240,7 @@
 * src blocks 							   :noexport:
 
 #+name: makegloss
-#+begin_src emacs-lisp :var tbl=gloss glosstype='nil :exports results :results value latex
+#+begin_src emacs-lisp :var tbl=gloss glosstype='nil :exports none :results value latex
   (let ((str "")
         (gltype (if glosstype (format "type=%s," glosstype) "")))
     (pop tbl)
@@ -262,7 +262,7 @@
 #+end_src
 
 #+name: ugengloss
-#+begin_src emacs-lisp :var tbl=ugens :exports results :results value latex
+#+begin_src emacs-lisp :var tbl=ugens :exports none :results value latex
 (let ((str ""))
   (pop tbl)
   (pop tbl)
