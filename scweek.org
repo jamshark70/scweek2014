@@ -26,9 +26,11 @@
 *** DONE Changing number doesn't update proxy's source
 *** INPROG Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
-*** TODO Reference to frame ID "undefined"
+*** TODO [#A] Relative paths to graphics
+*** TODO [#A] Section numbering in full article
+*** TODO [#C] Reference to frame ID "undefined"
 *** POSTPONED Filter to remove non-frame text
-*** TODO Listings numbering problem with onlyenv
+*** TODO [#C] Listings numbering problem with onlyenv
 *** DONE Extract code examples
 #+begin_src emacs-lisp :exports none
 (defun hjh-get-string-from-nested-thing (thing)
@@ -82,7 +84,7 @@
 *** DONE Index entries
 *** DONE Glossary
 *** DONE Why do subsections become frames in beamerarticle?
-*** TODO Detecting beamer vs. article document class
+*** POSTPONED Detecting beamer vs. article document class
 Actually, I was wrong. `:latex-class' will contain the name given by the
 user to its Beamer configuration. It may be totally unrelated to
 "beamer".
@@ -104,7 +106,6 @@ Ideally before defining BEAMER-CLASS-P.
 
 * Content
 ** TODO Exercises
-***
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?
