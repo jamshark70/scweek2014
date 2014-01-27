@@ -11,8 +11,8 @@
 #+AUTHOR: H. James Harkins
 #+EMAIL:
 
-#+INCLUDE: "printhead2.org"
-#+include: "glossary.org"
+#+INCLUDE: "../printhead2.org"
+#+include: "../glossary.org"
 
 # note, it does not work to use B_ignoreheading--need Suvayu's hack
 # note, you must always have a top-level heading for each #+latex: \part{}
@@ -36,11 +36,11 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "none" "results") :results value latex
 #+results: ugengloss_art
 
-#+include: "./01-intro/01-contents.org" :minlevel 1
+#+include: "../01-intro/01-contents.org" :minlevel 1
 
 * Part 2						      :ignoreheading:
 #+latex: \part{Sequencing with Patterns, Synthesis Techniques}
-#+include: "./02-synth/02-contents.org" :minlevel 1
+#+include: "../02-synth/02-contents.org" :minlevel 1
 
 * Glossary
 # #+LaTeX: \glsaddall
