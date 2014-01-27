@@ -1,0 +1,18 @@
+#+name: set-slide-flag
+#+begin_src emacs-lisp :exports results :results value latex
+(setq hjh-exporting-slides 't)
+""
+#+end_src
+
+#+startup: beamer
+
+#+TITLE: SuperCollider Week, Day 1 \\ Introductory SC, Synthesis and Sequencing
+#+DATE: \today
+#+AUTHOR: H. James Harkins
+#+EMAIL:
+
+#+INCLUDE: "../slidehead.org"
+#+include: "../glossary.org"
+
+#+include: "./01-contents.org" :minlevel 1
+

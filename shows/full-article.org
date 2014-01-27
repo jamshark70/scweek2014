@@ -1,0 +1,56 @@
+#+name: set-slide-flag
+#+begin_src emacs-lisp :exports results :results value latex
+(setq hjh-exporting-slides nil)
+""
+#+end_src
+
+#+startup: beamer
+
+#+TITLE: SuperCollider Week
+#+DATE: \today
+#+AUTHOR: H. James Harkins
+#+EMAIL:
+
+#+INCLUDE: "printhead2.org"
+#+include: "glossary.org"
+
+# note, it does not work to use B_ignoreheading--need Suvayu's hack
+# note, you must always have a top-level heading for each #+latex: \part{}
+
+* Dummy, to force processing of below content		      :ignoreheading:
+#+latex: \part{Introductory SC, Synthesis and Sequencing}
+
+#+name: makegloss_art
+#+call: makegloss :exports (if hjh-exporting-slides "none" "results") :results value latex
+#+results: makegloss_art
+
+#+name: classgloss_art
+#+call: makegloss(tbl=class,glosstype="class") :exports (if hjh-exporting-slides "none" "results") :results value latex
+#+results: classgloss_art
+
+#+name: mthgloss_art
+#+call: makegloss(tbl=mth,glosstype="mth") :exports (if hjh-exporting-slides "none" "results") :results value latex
+#+results: mthgloss_art
+
+#+name: ugengloss_art
+#+call: ugengloss :exports (if hjh-exporting-slides "none" "results") :results value latex
+#+results: ugengloss_art
+
+#+include: "./01-intro/01-contents.org" :minlevel 1
+
+* Part 2						      :ignoreheading:
+#+latex: \part{Sequencing with Patterns, Synthesis Techniques}
+#+include: "./02-synth/02-contents.org" :minlevel 1
+
+* Glossary
+# #+LaTeX: \glsaddall
+# http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
+#+LaTeX: \renewcommand{\glossarysection}[2][]{}
+** Concepts
+#+LaTeX: \printglossary[type=main]
+** UGens
+#+LaTeX: \printglossary[type=ugen]
+** Other classes
+#+LaTeX: \printglossary[type=class]
+** Methods
+#+LaTeX: \printglossary[type=mth]
