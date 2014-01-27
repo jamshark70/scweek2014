@@ -1,18 +1,9 @@
 #+startup: beamer
 
-# #+TITLE: SuperCollider Week, Day 2 \\ Synthesis Techniques
-# #+DATE: \today
-# #+AUTHOR: H. James Harkins
-# #+EMAIL: 
-
-# #+INCLUDE: "../slidehead.org"
-# #+INCLUDE: "../printhead.org"
-
-# #+include: "../glossary.org"
-
 * Test
 ** Test
 *** Test
+#+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss
 
@@ -24,9 +15,9 @@
 #+call: makegloss(tbl=mth,glosstype="mth") :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: mthgloss
 
+#+name: ugengloss
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
-
 
 * Sequencing with Event Patterns
 ** Patterns and Events

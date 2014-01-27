@@ -1,17 +1,5 @@
 #+startup: beamer
 
-# #+TITLE: SuperCollider Week, Day 1 \\ Introductory SC, Synthesis and Sequencing
-# #+DATE: \today
-# #+AUTHOR: H. James Harkins
-# #+EMAIL:
-
-# #+INCLUDE: "../slidehead.org"
-# #+INCLUDE: "../printhead.org"
-
-# #+include: "../glossary.org"
-
-# * Temp, just to put it in a frame
-# *** Temp, just to put it in a frame
 * Workshop introduction
 ** Workshop introduction
 *** Who am I?
@@ -1857,18 +1845,6 @@ Tdef(\reich, {
 **** Be careful with \ci{\textbackslash dur}.
      Make sure it's always > 0. Otherwise, you might lock up the interpreter.
 
-* Glossary							   :noexport:
-# #+LaTeX: \glsaddall
-# http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
-#+LaTeX: \renewcommand{\glossarysection}[2][]{}
-** Concepts
-#+LaTeX: \printglossary[type=main]
-** UGens
-#+LaTeX: \printglossary[type=ugen]
-** Other classes
-#+LaTeX: \printglossary[type=class]
-** Methods
-#+LaTeX: \printglossary[type=mth]
 * Removed (always noexport!!) 					   :noexport:
 *** Canonical explanation
 #      1. \mth{add} a \clss{SynthDef} into the server.\\<all>
