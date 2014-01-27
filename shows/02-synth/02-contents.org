@@ -350,7 +350,7 @@ p.clear;
 #+latex: \glsadd{pulse wave}\glsadd{triangle wave}
    #+begin_center
    #+attr_latex: :height 2in
-   [[./img/three-waves2.png]]
+   [[../02-synth/img/three-waves2.png]]
    #+end_center
 \\ *Note:* Band-limited triangle oscillators may be found in the
 sc3-plugins package.
@@ -541,7 +541,7 @@ s.freqscope;
 #+name: linearcurves
 #+Caption: Frequency responses of different filter implementations. Image credit: Alessio Damato, http://commons.wikimedia.org/wiki/File:Electronic_linear_filters.svg.
 #+attr_latex: :height 2.2in
-[[./img/750px-Electronic_linear_filters.svg.png]]
+[[../02-synth/img/750px-Electronic_linear_filters.svg.png]]
 #+End_center
 
 *** BPF: Bandwidth

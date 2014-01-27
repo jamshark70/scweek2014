@@ -161,7 +161,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
     Linux, here.
     #+begin_center
     #+attr_latex: :width 1.0\textwidth
-    [[./img/sc-with-guis.pdf]]
+    [[../01-intro/img/sc-with-guis.pdf]]
     #+end_center
 
 *** Server/client design
@@ -317,7 +317,7 @@ width: rrand(0.2, 0.5), sustain: 2).play;
 *** "Canonical" objects and messages
 **** All these commands send \egls{OSC} messages.
 #+begin_center
-[[./img/server-msg-diagram.pdf]]
+[[../01-intro/img/server-msg-diagram.pdf]]
 #+end_center
 
 *** When to use "canonical" style
@@ -394,7 +394,7 @@ p.push;
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-02-function.pdf]]
+     [[../01-intro/img/take-apart-02-function.pdf]]
      #+end_center
 ***** A \clss{Function} is a block of code in curly braces.
      - Functions can take information in through \egls{arguments}.
@@ -461,7 +461,7 @@ f.value(b: 5);  // prints "5.830..."; a is still 3
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-01-variable.pdf]]
+     [[../01-intro/img/take-apart-01-variable.pdf]]
      #+end_center
 ***** A \egls{variable} holds an object.
       - You must put an object in a variable if you want to address it later.
@@ -477,7 +477,7 @@ f.value(b: 5);  // prints "5.830..."; a is still 3
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-01-variable.pdf]]
+     [[../01-intro/img/take-apart-01-variable.pdf]]
      #+end_center
 ***** \te{Declared} variables
      - Any function can \egls{declare} variable names.
@@ -499,7 +499,7 @@ f = {
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-01-variable.pdf]]
+     [[../01-intro/img/take-apart-01-variable.pdf]]
      #+end_center
 ***** \eGls{interpreter} variables
       - Single letters \cd{a}--\cd{z}.
@@ -511,7 +511,7 @@ f = {
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-01-variable.pdf]]
+     [[../01-intro/img/take-apart-01-variable.pdf]]
      #+end_center
 ***** \eGls{environment} variables
       - Start with \cd{\textasciitilde}, e.g. \cd{\textasciitilde environmentVar}.
@@ -526,7 +526,7 @@ f = {
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-01-variable.pdf]]
+     [[../01-intro/img/take-apart-01-variable.pdf]]
      #+end_center
 **** The \egls{assignment} operator (\ci{=}) puts an object into a variable.
      Assignment is /not/ the same as $=$ in a math equation.
@@ -551,7 +551,7 @@ x == y;  // prints false
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-03-class.pdf]]
+     [[../01-intro/img/take-apart-03-class.pdf]]
      #+end_center
 ***** O1							  :B_onlyenv:
       :PROPERTIES:
@@ -583,7 +583,7 @@ x == y;  // prints false
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-04-methods.pdf]]
+     [[../01-intro/img/take-apart-04-methods.pdf]]
      #+end_center
 ***** A \egls{method} defines an action that an object can perform.
       It's like a function, but it has a name and belongs to a class.
@@ -598,7 +598,7 @@ x == y;  // prints false
      :BEAMER_env: overlayarea
      :END:
      #+begin_center
-     [[./img/take-apart-05-args.pdf]]
+     [[../01-intro/img/take-apart-05-args.pdf]]
      #+end_center
 ***** \eGls{arguments} pass information into a method or function.
       - In general, UGens take numbers or signals as inputs.
@@ -778,7 +778,7 @@ a = 10;
 #+name: catmod
 #+caption: A small (!) modular synthesizer, with cat. Image credit: Stephen Drake, http://commons.wikimedia.org/wiki/File:Cat_modular_synthesizer.jpg.
 #+attr_latex: :height 1.2in
-[[./img/800px-Cat_modular_synthesizer.jpg]]
+[[../01-intro/img/800px-Cat_modular_synthesizer.jpg]]
 #+end_center
 
 *** Modular synthesis for teaching
@@ -843,7 +843,7 @@ p.gui;
 #+name: analog1
 #+caption: Standard analog-style (subtractive) synthesis.
 #+attr_latex: :height 1in
-[[./img/visualize-proxy-network-no-eg.pdf]]
+[[../01-intro/img/visualize-proxy-network-no-eg.pdf]]
 #+end_center
 **** This is enough for today's topics.				   :noexport:
      - Controlling notes with envelopes.
@@ -905,7 +905,7 @@ p.gui;
       :BEAMER_act: presentation
       :END:
       #+begin_center
-      [[./img/visualize-proxy-network-no-eg.pdf]]
+      [[../01-intro/img/visualize-proxy-network-no-eg.pdf]]
       #+end_center
 **** Like a magic box with a cat inside.
      - The magic box changes the cat sometimes.
@@ -956,7 +956,7 @@ Env(
 # #+name: env1png
 # #+caption:
 #+attr_latex: :width 0.4\paperwidth
-[[./img/breakpoint-env.png]]
+[[../01-intro/img/breakpoint-env.png]]
 **** Graphic comes from						   :noexport:
 w = Window("env", Rect(800, 200, 400, 300)).front;
 x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
@@ -1038,7 +1038,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
      - Exercise for you: Try \clss{Dust}.
 #+Begin_center
 #+attr_latex: :height 1in
-[[./img/trigger-and-envgen.png]]
+[[../01-intro/img/trigger-and-envgen.png]]
 #+End_center
 
 *** Envelope generator as amplifier
@@ -1051,7 +1051,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
      - \cd{\textasciitilde out} is the one that gets played.
 #+begin_center
 #+attr_latex: :height 1.5in
-[[./img/visualize-proxy-network.pdf]]
+[[../01-intro/img/visualize-proxy-network.pdf]]
 #+end_center
 
 *** Explore envelope behavior
@@ -1101,7 +1101,7 @@ p.gui;
        :BEAMER_col: 0.5
        :END:
        #+attr_latex: :height 1.5in
-       [[./img/eg-normal-d0.6-f1.png]]
+       [[../01-intro/img/eg-normal-d0.6-f1.png]]
 ***** O2							  :B_onlyenv:
       :PROPERTIES:
       :BEAMER_env: onlyenv
@@ -1119,7 +1119,7 @@ p.gui;
        :BEAMER_col: 0.5
        :END:
        #+attr_latex: :height 1.5in
-       [[./img/eg-d0.6-f30.png]]
+       [[../01-intro/img/eg-d0.6-f30.png]]
 ***** O3 							  :B_onlyenv:
       :PROPERTIES:
       :BEAMER_env: onlyenv
@@ -1139,7 +1139,7 @@ p.gui;
        :BEAMER_col: 0.5
        :END:
        #+attr_latex: :height 1.5in
-       [[./img/eg-d0.05-f30.png]]
+       [[../01-intro/img/eg-d0.05-f30.png]]
 ***** O4							  :B_onlyenv:
       :PROPERTIES:
       :BEAMER_env: onlyenv
@@ -1157,7 +1157,7 @@ p.gui;
        :BEAMER_col: 0.5
        :END:
        #+attr_latex: :height 1.5in
-       [[./img/eg-d1.12-f3.png]]
+       [[../01-intro/img/eg-d1.12-f3.png]]
 
 # #+Name: ampenv2
 # #+Caption: Add parameters to the envelope generator.
@@ -1225,7 +1225,7 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
      Note the effect of the different open/close times.
 #+Begin_center
 #+attr_latex: :height 1.5in
-[[./img/gates-and-env.png]]
+[[../01-intro/img/gates-and-env.png]]
 #+End_center
 
 *** Sustaining envelope in ProxySpace
