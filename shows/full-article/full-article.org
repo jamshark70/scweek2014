@@ -39,7 +39,7 @@
 #+include: "../01-intro/01-contents.org" :minlevel 1
 
 * Part 2						      :ignoreheading:
-#+latex: \part{Sequencing with Patterns, Synthesis Techniques}
+#+latex: \part{Sequencing with Patterns; Synthesis Techniques}
 #+include: "../02-synth/02-contents.org" :minlevel 1
 
 * Glossary
