@@ -37,7 +37,7 @@
     :END:
 #+name: smalltalk
 #+caption: 25% coin toss in SmallTalk.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 (1 to: 100) atRandom <= 25
    ifTrue:
       [Transcript show: "heads"]
@@ -50,7 +50,7 @@
     :END:
 #+name: sccoin
 #+caption: 25% coin toss in SuperCollider.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 if(0.25.coin) {
    "heads".postln
 } {
@@ -226,7 +226,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
       Convenient to run several lines at once.
 #+name: codeblock
 #+Caption: A block of code, in parentheses.
-#+Begin_src {} -i
+#+Begin_src {} -i :extract=t
 (
 (1..10).do { |i|
    i.postln;
@@ -292,7 +292,7 @@ s.options.device = "Device Name";
 *** "Canonical" SC synthesis
 #+name: canonical
 #+caption: SuperCollider's "native" style of synthesis.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 // A synthesis definition
 (
 SynthDef(\varsaw, { |out = 0, freq = 440, width = 0.5,
@@ -448,7 +448,7 @@ f.value(b: 5);  // prints "5.830..."; a is still 3
 **** Why two ways?
      - \cd{arg...} is traditional from SC2.
      - \cd{|...|} came later, to make looping structures prettier.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 10.do { arg i; i.postln };
 
 // or
@@ -486,7 +486,7 @@ f.value(b: 5);  // prints "5.830..."; a is still 3
      - \eGls{arguments} are variables, but get values from outside.
 #+name: declarevars
 #+caption: A function that declares a variable.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 f = {
    var random;
    random = 10.rand;
@@ -536,7 +536,7 @@ f = {
      - To test equality, use \ci{==}.
 #+name: varassg1
 #+caption: Variable assignment.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 x = 0;
 y = x;
 x == y;  // prints true
@@ -640,7 +640,7 @@ In \cd{SinOsc.ar(440)}:
       In \cd{1 + 2}: Receiver = 1, Selector = '+', Argument = 2
 #+Name: callstyles
 #+Caption: Three styles of method calls. They all answer with the same result, because the receiver, selector and argument are the same.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 [2.pow(3), pow(2, 3), 2 pow: 3]
 // answers: [ 8, 8, 8 ]
 #+end_src
@@ -655,7 +655,7 @@ In \cd{SinOsc.ar(440)}:
 **** In all cases, the \egls{receiver} chooses the method definition that's right for the object.
 #+name: polymath
 #+caption: Polymorphism with math operators. Try these one by one.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 1 + 2;
 Point(3, 4) + 2;
 [1, 2, 3, 4, 5] + 10;
@@ -726,7 +726,7 @@ SinOsc.ar + 1;
        2. Binary operators.
 #+name: opPrecedence
 #+caption: The difference between traditional operator grouping and SC's left-to-right precedence.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 a = 10;
 5 + a * 2;  // 30; most languages, 25
 (5 + a) * 2;  // 30
@@ -942,7 +942,7 @@ p.gui;
      :END:
 #+Name: env1
 #+Caption: Plotting a breakpoint envelope.
-#+Begin_src {} -i
+#+Begin_src {} -i :extract=t
 Env(
    levels: [0, 1, 0.2, 0.6, 0],
    times: [0.1, 0.3, 0.8, 0.25],
@@ -1062,7 +1062,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
      - Long decay > 1, medium trigger rate $\approx$ 3.5.
 #+Name: ampenv2
 #+Caption: Add parameters to the envelope generator.
-#+Begin_src {} -i
+#+Begin_src {} -i :extract=t
 ~eg = { |tfreq = 1, decay = 0.6|
    EnvGen.kr(
       Env([0, 1, 0], [0.01, decay], -4),
@@ -1310,7 +1310,7 @@ p.setEvent((degree: rrand(-14, 0), gt: 1,
      - The next \mth{next} call will advance from there.
 #+name: routine1
 #+caption: A simple routine. Run r.next four times. How would you explain the results?
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 (
 r = Routine {
    1.yield;
@@ -1451,7 +1451,7 @@ r.next;
      which one went into the scheduler first.
 #+name: sched1
 #+caption: Scheduling simple actions. Run the blocks and watch the post window.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 (
 "Right now".postln;
 TempoClock.sched(1, { "one".postln });
@@ -1477,7 +1477,7 @@ TempoClock.sched(1, { "one".postln });
        last expression.
 #+name: resched1
 #+caption: Automatic rescheduling. You'll have to use ctrl-. to stop it.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 (
 var x = 0;
 TempoClock.sched(1, {
@@ -1495,7 +1495,7 @@ TempoClock.sched(1, {
      - You can \mth{stop} a Routine without \ks{Ctrl-.}: \cd{r.stop}.
 #+name: resched2
 #+caption: Automatic rescheduling of a Routine with ``wait.''
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 (
 r = Routine {
    var x = 0;
@@ -1616,7 +1616,7 @@ Tdef(\player, {
     - Remember, \mth{do} over the \clss{Array} reads out the array's items one by one.
 #+name: noteseq2
 #+caption: Get a deterministic sequence of pitches from an array.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 (
 var midi = [59, 61, 66, 68, 69, 61, 59, 68, 66, 61, 69, 68];
 
@@ -1643,7 +1643,7 @@ Tdef(\reich).stop;  // if you want
 *** Non-random example: Two arrays
 #+name: noteseq3
 #+caption: Get deterministic sequences of note information from multiple arrays.
-#+begin_src {} -i
+#+begin_src {} -i :extract=t
 (
 var midi = [59, 61, 66, 68, 69, 61, 59, 68, 66, 61, 69, 68],
 sawWidth = [0.1, 0.5, 0.2, 0.5, 0.5, 0.5,
