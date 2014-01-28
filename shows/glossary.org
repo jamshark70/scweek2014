@@ -186,7 +186,7 @@
 | reciprocal    |        | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
 | release       |        | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
 | reset         |        | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                         |
-| round         |        | Round a number to the nearest division--- by default, 1 (integers) but it may also be fractional                                                                  |
+| round         |        | Round a number to the nearest division---by default, 1 (integers) but it may also be fractional                                                                   |
 | rrand         |        | \cd{rrand(low, high)}: Generate a random number $x$ where $low \le x \le high$                                                                                    |
 | sched         |        | Schedule an activity to happen a certain number of beats/seconds in the future (i.e., later than now)                                                             |
 | schedAbs      |        | Schedule an activity to happen at a specific (``absolute'') time                                                                                                  |
