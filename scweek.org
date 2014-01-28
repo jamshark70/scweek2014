@@ -31,7 +31,7 @@
 *** TODO [#C] Reference to frame ID "undefined"
 *** POSTPONED Filter to remove non-frame text
 *** TODO [#C] Listings numbering problem with onlyenv
-*** DONE Extract code examples
+*** DONE Extract code examples					    :getcode:
 #+begin_src emacs-lisp :exports none
 (defun hjh-get-string-from-nested-thing (thing)
   "Peel off 'car's from a nested list until the car is a string."
@@ -40,33 +40,39 @@
   thing
 )
 
-(defun hjh-src-blocks-to-string (counter)
+(defun hjh-src-blocks-to-string (counter get-some)
   "Iterate src blocks from org-element and add them to a string."
-  (interactive "nStarting listing number: ")
+  (interactive "nStarting listing number: \nP")
   (when (not counter) (setq counter 1))
   (let ((tree (org-element-parse-buffer))
-	(string ""))
+	(string "")
+	(get-all (not get-some)))
     (org-element-map tree 'src-block
       (lambda (element)
 	(setq element (car (cdr element)))
 	(let ((caption (hjh-get-string-from-nested-thing (plist-get element :caption)))
 	      (source (hjh-get-string-from-nested-thing (plist-get element :value))))
 	  (when caption
-	    (setq string (concat string (format "/**************
+	    (when (or get-all 
+		      (let ((parms
+			     (hjh-get-string-from-nested-thing (plist-get element :parameters))))
+			(and (stringp parms) (string-match-p "extract" parms))))
+	      (setq string (concat string (format "/**************
  Listing %d. %s
  **************/
 
 %s\n\n"
 					  counter
 					  (substring-no-properties caption)
-					  (substring-no-properties source))))
+					  (substring-no-properties source)))))
+	    ; always increment if there was a caption
 	    (setq counter (1+ counter))))))
     string))
 
-(defun hjh-src-blocks-to-buffer (counter)
+(defun hjh-src-blocks-to-buffer (counter get-some)
   "Put all the captioned source blocks from a buffer into another buffer."
-  (interactive "nStarting listing number: ")
-  (let* ((contents (hjh-src-blocks-to-string counter))
+  (interactive "nStarting listing number: \nP")
+  (let* ((contents (hjh-src-blocks-to-string counter get-some))
 	 (bufpath (buffer-file-name))
 	 (newname (concat (file-name-sans-extension bufpath) ".scd"))
 	 (bufname (file-name-nondirectory newname))
