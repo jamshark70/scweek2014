@@ -20,6 +20,49 @@
 #+results: ugengloss
 
 * Sequencing with Event Patterns
+** Events and envelope gates
+*** More convenience for gates: Events
+**** Sequencing: Inconvenient to close gates by hand.
+     Introducing \clss{Event}.
+     - We saw an \clss{Event} briefly, in the "canonical" example (Listing [[canonical]]).
+     - It both played and released a Synth.
+     - We will learn more about events as we go.
+**** Events have lots of properties, including timing.
+     - \ci{dur} :: Number of beats until the next event.
+     - \ci{sustain} :: Number of beats to keep a gate open. (May
+		       also be calculated from \cd{dur * legato}.)
+
+*** Events with ProxySpace
+    - In \clss{ProxySpace}, a special event type can set parameters globally in the entire space.
+      - \mth{setEvent}
+    - This event type handles \ci{gt} specially.
+      - It automatically closes the gate if you provide a \ci{sustain} time.
+      - So, for this usage pattern, get used to using \ci{gt} for gates.
+#+name: gateEvent
+#+caption: Hold a gate open for a given amount of time using an Event.
+#+begin_src {} -i
+p.setEvent((gt: 1, sustain: 0.5)).play;
+p.setEvent((gt: 1, sustain: 3)).play;
+#+end_src
+
+*** Coordinated changes with Events
+**** An \clss{Event} can set lots of controls at once.
+     - Just list them in the same \cd{name: value} syntax.
+     - If the name exists anywhere in the \clss{ProxySpace}, the event will find it and set it.
+     - \mth{exprand}: random frequency according to an \egls{exponential} scale.
+     - \mth{degree}: interprets \mth{rrand} number as a diatonic scale degree.
+# nb: \mth{degree} is actually listed in the main glossary
+#+name: multiSetEvent
+#+caption: Set both frequency and gate.
+#+begin_src {} -i
+p.setEvent((freq: exprand(100, 400), gt: 1,
+   sustain: rrand(0.2, 0.8))).play;
+
+p.setEvent((degree: rrand(-14, 0), gt: 1,
+   sustain: rrand(0.2, 0.8))).play;
+#+end_src
+     We are now /centimeters/ away from sequencing!
+
 ** Patterns and Events
 *** Patterns make Events very easily
 **** An \clss{Event} is a set of named values.
@@ -170,7 +213,7 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
      - \cd{sustain = dur * stretch * legato}
 
 *** Example: Articulation using \textbackslash legato
-    First a synth. Further explanation tomorrow.
+    First a synth. Further explanation later today.
 #+name: legato1
 #+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
 #+begin_src {} -i
@@ -246,21 +289,11 @@ p.push;
 
 p.clear;
 #+End_src
-**** New UGens
+**** New UGens							   :noexport:
      - \ugen{Saw} :: A \egls{band-limited} sawtooth oscillator
      - \ugen{LPF} :: A Low-Pass Filter
 
-*** Syntax alert! Arguments
-**** Function \gls{arguments} using vertical pipe characters
-     \cd{|ffreq = 2000|} means the same as \cd{arg ffreq = 2000;}.
-     - ffreq :: The argument name.
-     - 2000 :: The argument's default value.
-**** Arguments are magical in synthesis functions.
-     - They automatically become \gls{control inputs}.
-     - You can set the value from outside, and it changes the sound inside.
-     - One synthesis function can make many frequencies, amplitudes, filtering behaviors etc.
-
-*** Syntax alert: Argument /ranges/
+*** addSpec and argument /ranges/
 **** *Important idea:* UGen inputs have /meaningful ranges/.
      - For frequency, 20--20000 Hz.
      - For amplitude, 0.0--1.0 (corresponds to $-\infty$--0 dB).
@@ -384,12 +417,16 @@ p.clear;
      We like small imperfections: Human players are never exactly in tune.
 **** Do the same in a synth.
 #+name: detune
-#+caption: Detuning the oscillator.
+#+caption: Detuning: Make several oscillators and mix (add) them.
 #+begin_src {} -i
 p = ProxySpace.new; p.push;
 
 ~oscil = { |freq = 220, detun = 1.003|
-   Mix(Saw.ar(freq * [1, detun, detun.reciprocal], 0.1))
+   0.1 * (
+      Saw.ar(freq)
+      + Saw.ar(freq * detun)
+      + Saw.ar(freq / detun)
+   ).dup
 };
 ~filter = { |ffreq = 2000| LPF.ar(~oscil.ar, ffreq).dup };
 ~filter.play;

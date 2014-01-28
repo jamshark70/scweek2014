@@ -806,7 +806,7 @@ a = 10;
 #+begin_src {} -i
 p = ProxySpace.new; p.push;
 
-~oscil = { |freq = 261.625, amp = 0.1|
+~oscil = { |freq = 440, amp = 0.1|
    Saw.ar(freq, amp).dup
 };
 
@@ -815,6 +815,18 @@ p.gui;
 
 ~oscil.stop;
 #+end_src
+
+*** Arguments in synthesis functions
+**** Listing [[mod1]] declares two arguments.
+     - freq :: Frequency, with a default 261.625 (middle C).
+     - amp :: Amplitude (volume), with a default 0.1 (-20 dB).
+**** Arguments are magical in synthesis functions.
+     - They automatically become \gls{control inputs}.
+     - You can set the value from outside, and it changes the sound inside.
+     - Try it: \cd{\textasciitilde oscil.set(\textbackslash freq, 261.6)}.
+**** Control inputs make it possible to do musical sequencing.
+     - The function defines the /structure/ of synthesis.
+     - The controls produce specific pitches, volumes, filtering effects etc.
 
 *** Modular example: Add a filter
 **** Add a filter, for a brightness control.
@@ -1248,48 +1260,28 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
 ~eg.set(\gt, 0);  // release
 #+end_src
 
-** Events and envelope gates
-*** More convenience for gates: Events
-**** Sequencing: Inconvenient to close gates by hand.
-     Introducing \clss{Event}.
-     - We saw an \clss{Event} briefly, in the "canonical" example (Listing [[canonical]]).
-     - It both played and released a Synth.
-     - We will learn more about events as we go.
-**** Events have lots of properties, including timing.
-     - \ci{dur} :: Number of beats until the next event.
-     - \ci{sustain} :: Number of beats to keep a gate open. (May
-		       also be calculated from \cd{dur * legato}.)
+*** Summary: Envelopes
+**** \Glspl{envelope} consist of a start value and \eglspl{segment}.
+     - Segment: Target level, duration, curve.
+     - Written \cd{Env(levels, times, curve)}.\\
+       May optionally include a \egls{releaseNode} and \egls{loopNode}.
+     - Levels array: \cd{[start, level$_0$, level$_1$, level$_2$...]}.
+     - Times array: \cd{[time$_0$, time$_1$, time$_2$...]}.
+     - Curve array: \cd{[curve$_0$, curve$_1$, curve$_2$...]}.\\<all>
+       \ci{curve} may be a single value, for all segments.
+**** Amplitude envelope applies to a signal by multiplying \ci{*}.
+     - Usually last in the chain: \cd{finalSignal * ampEg}.
 
-*** Events with ProxySpace
-    - In \clss{ProxySpace}, a special event type can set parameters globally in the entire space.
-      - \mth{setEvent}
-    - This event type handles \ci{gt} specially.
-      - It automatically closes the gate if you provide a \ci{sustain} time.
-      - So, for this usage pattern, get used to using \ci{gt} for gates.
-#+name: gateEvent
-#+caption: Hold a gate open for a given amount of time using an Event.
-#+begin_src {} -i
-p.setEvent((gt: 1, sustain: 0.5)).play;
-p.setEvent((gt: 1, sustain: 3)).play;
-#+end_src
-
-*** Coordinated changes with Events
-**** An \clss{Event} can set lots of controls at once.
-     - Just list them in the same \cd{name: value} syntax.
-     - If the name exists anywhere in the \clss{ProxySpace}, the event will find it and set it.
-     - \mth{exprand}: random frequency according to an \egls{exponential} scale.
-     - \mth{degree}: interprets \mth{rrand} number as a diatonic scale degree.
-# nb: \mth{degree} is actually listed in the main glossary
-#+name: multiSetEvent
-#+caption: Set both frequency and gate.
-#+begin_src {} -i
-p.setEvent((freq: exprand(100, 400), gt: 1,
-   sustain: rrand(0.2, 0.8))).play;
-
-p.setEvent((degree: rrand(-14, 0), gt: 1,
-   sustain: rrand(0.2, 0.8))).play;
-#+end_src
-     We are now /centimeters/ away from sequencing!
+*** Summary: Envelope types
+**** \clss{EnvGen} makes a signal from an envelope definition.
+     Its \ci{gate} input is especially important. It controls the envelope's start and release.
+**** Two main types of envelopes:
+     - Timed :: No \gls{releaseNode}.
+       - When triggered, it runs according to its own timing.
+       - Only needs a momentary \egls{trigger}.
+     - Sustaining :: With releaseNode.
+       - Holds at the releaseNode as long as the gate is open.
+       - A \egls{gate} is open when > 0, closed when $\le$ 0.
 
 * Sequencing
 ** Overview: Routines and Tasks
@@ -1673,8 +1665,7 @@ Tdef(\reich).stop;  // if you want
        - 10 sequenced notes
        - 5 or 6 random notes
      - Phrase structures: Choose one phrase, then another.
-# *** Non-random sequences with memory
-**** \clsspl{Stream} handle these.
+**** \clsspl{Stream}---\clsspl{Routine}--handle these.
      - Streams have memory.
      - You need memory to keep track of your place in a more complex structure.
 
@@ -1838,11 +1829,14 @@ Tdef(\reich, {
        - Add another \clss{Pdefn} for \ci{\textbackslash dur}.\\
 	 For a constant value, it's enough to write \cd{Pdefn(\textbackslash dur, value)}.
        - In the \clss{Tdef}, make another variable for its stream and use it to control the wait time.
-    2. Plug the basic pattern types into the three \clsspl{Pdefn}.
+    2. Try each of the basic pattern types in the three \clsspl{Pdefn}.
        - What is the effect of each one?
     3. Experiment, and compose a sequence that you like.
        - The sequence may involve randomness.
-**** Be careful with \ci{\textbackslash dur}.
+**** Be careful with \ci{\textbackslash dur}.		       :B_alertblock:
+     :PROPERTIES:
+     :BEAMER_env: alertblock
+     :END:
      Make sure it's always > 0. Otherwise, you might lock up the interpreter.
 
 * Removed (always noexport!!) 					   :noexport:
