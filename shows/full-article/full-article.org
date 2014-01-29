@@ -17,7 +17,7 @@
 # note, it does not work to use B_ignoreheading--need Suvayu's hack
 # note, you must always have a top-level heading for each #+latex: \part{}
 
-* Dummy, to force processing of below content		      :ignoreheading:
+* Part 1 						      :ignoreheading:
 #+latex: \part{Introductory SC, Synthesis and Sequencing}
 
 #+name: makegloss_art
