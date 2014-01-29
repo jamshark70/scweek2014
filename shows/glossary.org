@@ -123,7 +123,7 @@
 | Pwrand             |                      | A Pattern to choose values randomly from an array, with a different probability for each item                                                                      |
 | Pxrand             |                      | A Pattern to choose values randomly from an array, without repeating the same one twice in a row                                                                   |
 | Routine            |                      | Executes a Function. The function may \ci{yield} a value, and the next call into the routine will resume just after the yield                                      |
-| Scale              |                      | A repository of scale and mode patterns. \cd{Scale.ionian} gives you a major scale, [0, 2, 4, 5, 7, 9, 11]                                                         | 
+| Scale              |                      | A repository of scale and mode patterns. \cd{Scale.ionian} gives you a major scale, [0, 2, 4, 5, 7, 9, 11]                                                         |
 | ServerOptions      |                      | Configuration options for scsynth, including soundcard, are variables in this class. \cd{s.options} controls the bootup options for \ci{s}                         |
 | Set                |                      | An unordered collection of items, optimized for iteration and testing membership: \cd{set.do}, \cd{set.includes(item)}                                             |
 | SoundFile          |                      | Read and write audio files from the language (no server involvement). See \ci{Buffer} for reading and writing files in the server                                  |
@@ -137,7 +137,7 @@
 | Tdef               |                      | Global storage for Tasks. Give the task function a name, and Tdef will treat the function as a Task                                                                |
 | TdefAllGui         |                      | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
 | TempoClock         |                      | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
-  
+
 
 * Methods							   :noexport:
 #+name: mth
@@ -237,8 +237,8 @@
 | Osc   | WhiteNoise   | A noise generator containing all frequencies equally loudly. The sound is extremely bright                                                                 | mul, add                                                       |
 | Trig  | Dust         | Produces randomly timed triggers, averaging \emph{density} triggers per second                                                                             | density                                                        |
 | Trig  | Impulse      | Produces triggers at equal time intervals---single sample impulses, \emph{freq} times per second                                                           | freq, phase                                                    |
-| Buf   | PlayBuf      | Play back a sample audio in a server Buffer. The entire sample must be loaded in memory (no streaming). See also DiskIn, VDiskIn.                          | numChannels, bufnum, rate, trigger, startPos, loop, doneAction | 
-  
+| Buf   | PlayBuf      | Play back a sample audio in a server Buffer. The entire sample must be loaded in memory (no streaming). See also DiskIn, VDiskIn.                          | numChannels, bufnum, rate, trigger, startPos, loop, doneAction |
+
 * src blocks 							   :noexport:
 
 #+name: makegloss
