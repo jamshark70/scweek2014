@@ -1,10 +1,11 @@
 # Planning for SC week-long workshop
 
 * Technical
-** TODO Distributing extensions [0/4]
+** TODO Distributing extensions [0/5]
    - [ ] JIT extensions
    - [ ] ddwlib
    - [ ] crucial
+   - [ ] psSet
    - [ ] Write slides about this
 ** Patterns + ProxySpace
 *** Notes for documentation
@@ -19,7 +20,7 @@
     - 'key.argname'?
     - I think maybe even better to share control names across proxies
       Dictionary: argname -> Set of NodeProxies with that argname
-*** TODO Move psSet support into a proper file
+*** DONE Move psSet support into a proper file
 *** TODO Support multiple NP objects in psSet
 *** TODO Move ProxySpace:setEvent into a proper file
 ** Numbers in ProxySpace: DC or control?
