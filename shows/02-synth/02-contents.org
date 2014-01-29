@@ -19,55 +19,169 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Sequencing with Event Patterns
-** Events and envelope gates
-*** More convenience for gates: Events
-**** Sequencing: Inconvenient to close gates by hand.
-     Introducing \clss{Event}.
-     - We saw an \clss{Event} briefly, in the "canonical" example (Listing [[canonical]]).
-     - It both played and released a Synth.
-     - We will learn more about events as we go.
-**** Events have lots of properties, including timing.
-     - \ci{dur} :: Number of beats until the next event.
-     - \ci{sustain} :: Number of beats to keep a gate open. (May
-		       also be calculated from \cd{dur * legato}.)
+* Events and Sequencing
+** Events and synthesis control
+*** What are Events?
+**** \clsspl{Event} represent a pre-defined action.
+     Two main features:
+     - Storage :: Events hold information under names that you choose.
+     - Play-ability :: \mth{play} an \clss{Event} to fire the action.
+**** They make the musical /information/ more important.
+     - Yesterday's \clsspl{Task} combined /data/ and /action/ into one
+       code block.\\
+       If the \clss{Task} is written to play notes by \ci{set}-ting
+       controls, /it can do nothing else/ without rewriting.  Only one
+       way to play notes: \cd{something.set(...)}.
+     - With \clsspl{Event}, you can use the same event data for different things.
+#        - \Gls{event type} \ci{\textbackslash note} plays it in SC's audio server.
+#        - \ci{\textbackslash midi} sends MIDI to hardware or other software.
+#        - Two actions, same sequencing code.
 
-*** Events with ProxySpace
-    - In \clss{ProxySpace}, a special event type can set parameters globally in the entire space.
-      - \mth{setEvent}
-    - This event type handles \ci{gt} specially.
-      - It automatically closes the gate if you provide a \ci{sustain} time.
-      - So, for this usage pattern, get used to using \ci{gt} for gates.
+*** Playing events
+**** An "empty" event can \mth{play}.
+#+name: event1
+#+caption: The simplest possible event.
+#+begin_src {} -i
+().play;
+#+end_src
+
+**** But look what it prints out:
+# Note, this must be a block, to clear the previous name/caption
+
+#+begin_src {} -i
+( 'instrument': default, 'msgFunc': a Function, 'amp': 0.1,
+  'sustain': 0.8, 'server': localhost, 'isPlaying': true,
+  'freq': 261.6255653006, 'hasGate': true, 'id': [ 1000 ] )
+#+end_src
+
+**** Where did all that come from?
+
+*** The default event
+**** Playing the \clss{Event} uses a large set of \eglspl{default}.
+     - \Gls{event type} :: \ci{\textbackslash note}
+     - SynthDef :: \ci{\textbackslash instrument} = \ci{\textbackslash default}.\\<all>
+		   The default \clss{SynthDef} is defined for you.
+     - Pitch :: \ci{\textbackslash freq} = 440 Hz (calculated from other defaults).
+     - Length :: \ci{\textbackslash sustain} = 0.8 seconds (calculated).
+     - Volume :: \ci{\textbackslash amp} = 0.1 (calculated from -20 dB).
+     - Pan :: \ci{\textbackslash pan} = 0 (center).
+#+name: eventDefaults
+#+caption: Print a list of events of default values.
+#+begin_src {} -i
+Event.default.parent.postSorted; ""
+#+end_src
+A little trick: Add an empty string after printing a collection, for cleaner output.
+
+*** Writing your own events
+**** \clsspl{Event} are written as /key/value/ pairs.
+     - This comes from the parent class, \clss{Dictionary}.
+     - \clss{Event} has a short syntax: \cd{(key: value, ...)}.
+       - (Written differently in \clss{Dictionary}.)
+#+name: event2
+#+caption: Put your own values into events, and play them.
+#+begin_src {} -i
+(freq: 330, amp: 0.5, sustain: 2, pan: 0.5).play;
+#+end_src
+
+*** Automatic calculations in events: Time
+**** Time information lives at two levels:
+     - Basic level
+       - \mth{delta} :: Same as wait-time in a \clss{Task}.
+       - \ci{sustain} :: How long to hold an envelope's \gls{gate} open.
+     - Higher level
+       - \ci{dur} :: Wait time. \ci{dur = delta * stretch}.
+       - \ci{legato} :: Proportion of dur to hold the gate open. < 1 leaves space between notes (staccato); > 1 makes notes overlap.
+       - \ci{stretch} :: Multiplies all time values. Can make a sequence play faster or slower.
+#+name: event2
+#+caption: Sustain is calculated automatically from "dur" and "legato."
+#+begin_src {} -i
+(freq: 330, amp: 0.5, dur: 3, legato: 0.5).play;
+#+end_src
+
+*** Automatic calculations in events: Pitch
+**** Pitch information lives at /several/ levels:
+     The most important are:
+     - \ci{freq} :: Note frequency, in Hz.
+     - \ci{midinote} :: MIDI note number. 60 = middle C, about 261 Hz.
+     - \ci{degree} :: A diatonic scale degree. Depends on:
+       - \ci{scale}: The whole/half-step pattern for the scale. See the \clss{Scale} class.
+       - \ci{root}: The \egls{pitch class} of the tonic note. 0 = C.
+       - \ci{octave}: An octave number. 5 is the octave from middle C to the B above.
+#+name: event3
+#+caption: Different ways of writing pitch.
+#+begin_src {} -i
+(freq: [220, 275, 330]).play;
+(midinote: [57, 61, 64], sustain: 1.5).play;
+(degree: [0, 2, 4], root: 9, octave: 4, sustain: 1.5).play;
+
+(degree: [0, 2, 4], root: 9, octave: 4,
+   scale: Scale.minor, sustain: 1.5).play;
+#+end_src
+
+*** Details on Event parameters and calculations
+    See the following help files for documentation on \clss{Event} parameters.
+    - /Pattern Guide 07: Value Conversions/ \\<all>
+      [[http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_07_Value_Conversions.html][Web link]]
+    - /Pattern Guide 08: Event Types and Parameters/ \\<all>
+      [[http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters.html][Web link]]
+
+*** What are the example events actually doing?
+**** The default \ci{\textbackslash note} \gls{event type} plays and releases a synth.
+     1. Calculate time and pitch values.
+     2. Send messages to the server to create new synth nodes.
+     3. /If/ the \clss{SynthDef} has a \mth{gate} argument, schedule
+        release messages to be sent \ci{\textasciitilde sustain} beats
+        later.
+**** This event type is designed for "canonical" style.
+     - We are using \clss{ProxySpace} in a specific way, for modular synthesis.
+     - So we need another way.
+
+*** Event types
+**** Common \glspl{event type}:
+     - \ci{\textbackslash note} :: Play a new \clss{Synth}.
+     - \ci{\textbackslash set} :: Set controls in an existing \clss{Synth}.
+     - \ci{\textbackslash off} :: Release an existing \clss{Synth}.
+     - \ci{\textbackslash midi} :: Send note or control data to a hardware MIDI device.
+**** Event types let you change the action without changing the data.
+     - You can write a \ci{\textbackslash note} pattern, and hear the notes in scsynth.
+     - Or, change to the \ci{\textbackslash midi} type and hear the notes from a hardware synth.
+
+*** ProxySpace "setEvent" method
+    - Calling \mth{setEvent} on a \clss{ProxySpace} prepares an \clss{Event} to set controls within that ProxySpace.
+    - Provide an event as an argument, with the values you want to set.
+    - \ci{gt} arguments will be closed automatically after \ci{sustain} beats.
 #+name: gateEvent
 #+caption: Hold a gate open for a given amount of time using an Event.
 #+begin_src {} -i
-p.setEvent((gt: 1, sustain: 0.5)).play;
-p.setEvent((gt: 1, sustain: 3)).play;
+p = ProxySpace.new; p.push;
+
+~out = { |freq = 440, width = 0.5, gt|
+   var eg = EnvGen.kr(Env.adsr, gt);
+   (VarSaw.ar(freq, 0, width) * eg * 0.1).dup
+};
+~out.play;
+
+p.setEvent((freq: exprand(200, 400), sustain: 0.5)).play;
+p.setEvent((freq: exprand(200, 400), sustain: 3)).play;
 #+end_src
 
-*** Coordinated changes with Events
-**** An \clss{Event} can set lots of controls at once.
-     - Just list them in the same \cd{name: value} syntax.
-     - If the name exists anywhere in the \clss{ProxySpace}, the event will find it and set it.
-     - \mth{exprand}: random frequency according to an \egls{exponential} scale.
-     - \mth{degree}: interprets \mth{rrand} number as a diatonic scale degree.
-# nb: \mth{degree} is actually listed in the main glossary
-#+name: multiSetEvent
-#+caption: Set both frequency and gate.
-#+begin_src {} -i
-p.setEvent((freq: exprand(100, 400), gt: 1,
-   sustain: rrand(0.2, 0.8))).play;
-
-p.setEvent((degree: rrand(-14, 0), gt: 1,
-   sustain: rrand(0.2, 0.8))).play;
-#+end_src
-     We are now /centimeters/ away from sequencing!
+*** Event summary
+**** With \clsspl{Event}, we can:
+     - Write musical information without worrying about server details.
+     - Write pitches three ways:
+       - Frequency (Hz);
+       - MIDI note numbers (chromatic);
+       - Scale degrees (diatonic---major, minor etc.).
+     - Control gated envelopes with one command.
+**** What do we need for sequencing?
+     - An easy way to fill events from streams.
+     - Rhythm control directly from the events.
 
 ** Patterns and Events
 *** Patterns make Events very easily
 **** An \clss{Event} is a set of named values.
      - Each value's name says how the value will be used for synthesis.
-     - To use the values, call \mth{play} on the event.
+#      - To use the values, call \mth{play} on the event.
 **** A pattern called \clss{Pbind} is a list of /named patterns/.
      - Every \mth{next} value collects one value from each child pattern.
      - \mth{next} needs an empty \clss{Event} as a container for the new values.
@@ -101,7 +215,7 @@ p = Pbind(
 **** In Listing [[pbind1]], change \clss{Pbind} to \clss{DebugPbind}.
      Now you can read exactly what's going on.
      1. Start with an empty event.
-     2. \ci{\textbackslash freq} gets the value 133.25.
+     2. \ci{\textbackslash freq} gets the random value, e.g. 133.25.
      3. The empty event becomes \cd{(freq: 133.25)}.
      4. \ci{\textbackslash dur} gets 0.125.
      5. The final event has both values, with the right names.
@@ -117,33 +231,87 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 #+end_src
 
 *** Events and timing
-**** In a \clss{Routine}/\clss{Task}, you could \mth{wait} until the next event.
+**** In a \clss{Routine}/\clss{Task}, we \mth{wait} until the next event.
      This happens automatically in an Event Pattern.
      - Events can calculate a \gls{delta} time.
      - Then, we just need something that will play the event and wait
        the right amount of time.
 **** This is \clss{EventStreamPlayer}.
      - If you call \mth{play} on a pattern, it makes an \clss{EventStreamPlayer}.
-     - This plays the events and waits for the event's delta.
-     - The \egls{delta} may be given directly, or calculated from \cd{\textasciitilde dur}.
-       - \cd{delta = \textasciitilde dur * \textasciitilde stretch}
+     - Each event has a \egls{delta} time, given directly or
+       calculated from \cd{dur}.
+       - \cd{delta = dur * stretch}
+     - Each event is \mth{play}ed. Then the \clss{EventStreamPlayer}
+       waits, for the event's \egls{delta} time.
 
-*** Event patterns: One-stop shopping
-    Let's be clear about the implications:
-**** Event patterns handle everything for sequencing
-     - Parameter setting
-       - New parameter values are saved in the event
-     - Timing
-       - Every event has a \egls{delta}
+*** "Canonical" Pbind example
+**** Using \clss{Pbind} to play default synths, the "canonical" way.
+     Note what happens with \ci{legato}.
+     - Some notes are short.
+     - Other notes hold over, into the next note.
+#+name: pbind2
+#+caption: A "canonical" Pbind, playing notes in the default SynthDef.
+#+begin_src {} -i
+a = Pbind(
+   \degree, Pwhite(-7, 7, inf),
+   \dur, Pwhite(1, 4, inf) * 0.125,
+   \legato, Prand([0.5, 2], inf)
+).play;
 
-*** Compare: Pattern vs. Routine to play notes
-    - We've seen a \clss{Routine} that plays notes, using \mth{set}.
-    - Let's see how the same is done with a \egls{pattern}.
+a.stop;
+#+end_src
+
+*** Notes on previous example				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+This has a somewhat complex flow, wrapped up in a simple expression. It divides into these parts:
+
+- *\clss{EventStreamPlayer} control of rhythm and event-playing.* \\<all>
+  In a loop:
+  1. Get an \clss{Event} from the \clss{Pbind}'s stream.
+  2. Play the event.
+  3. Ask the event for its \mth{delta} time, and \mth{wait} for that duration.
+
+- *\clss{Pbind} evaluation of events.* \\<all>
+  Every time the \clss{EventStreamPlayer} asks for an event, loop through the key/pattern pairs:
+  1. Get a value from the child pattern's stream.
+  2. Put the value into the event, using the pattern's key.
+  At the end of this, the event will have a value for every key.
+
+- *The event's action, triggered by \mth{play}.* \\<all>
+  Takes action, according to the \egls{event type}.
+
+*** Patterns: "Declarative" programming
+**** \eGlspl{Routine} and \glspl{Task} are \egls{imperative}-style programming.
+     - They say: "Do this, then that."
+       - Set the trigger and the frequency.
+       - Wait 0.5 beats.
+**** \eGlspl{pattern} are more like \egls{declarative} programming.
+     - Listing [[pbind2]] says:
+       - I want \ci{\textbackslash degree} to be like this.
+       - I want \ci{\textbackslash dur} to be like that.
+       - Go do it.
+# **** The two examples /do/ the same thing, but write it differently.
+
+*** Pbind in ProxySpace
+**** We need something like \cd{p.setEvent} for patterns.
+     Some \clss{ProxySpace} tricks:
+     - You can use a \clss{Pbind} in \clss{ProxySpace}, just like a synthesis function.
+     - The pattern's synths will belong to the resulting \clss{NodeProxy}.
+     - You can change the way the \clss{NodeProxy} behaves with a modifier:\\
+       \cd{\textasciitilde name = \textbackslash modifier -> thing;}, where \cd{thing} is the function or pattern.
+     - The \cd{\textbackslash psSet} modifier makes every event from
+       the pattern act like \cd{p.setEvent}.
+
+*** \textbackslash psSet pattern example
+**** Main point: This is easy.
+     - There are a lot of concepts behind this example.
+     - But using it---playing notes automatically---is convenient.
 #+name: rVsPbind
-#+caption: A Pbind, expressing the same as the earlier Routine.
+#+caption: A Pbind, controlling NodeProxies in a ProxySpace.
 #+begin_src {} -i
 ~player = \psSet -> Pbind(
-   \t_trig, 1,
    \freq, Pexprand(110, 440, inf),
    \dur, 0.5
 );
@@ -151,114 +319,19 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
 ~player.clear;
 #+end_src
 
-**** \mth{psSet}						   :noexport:
-     This modifier tells the pattern's events to operate on existing
-     \clsspl{NodeProxy} within the \clss{ProxySpace}.
-
-*** Patterns: "Declarative" programming
-**** \eGlspl{Routine} are \egls{imperative}-style programming.
-     - Listing [[noteseq1]] said: "Do this, then that."
-       - Set the trigger and the frequency.
-       - Wait 0.5 beats.
-**** \eGlspl{pattern} are more like \egls{declarative} programming.
-     - Listing [[rVsPbind]] says:
-       - I want \ci{\textbackslash freq} to be like this.
-       - I want \ci{\textbackslash dur} to be like that.
-       - Go do it.
-**** The two examples /do/ the same thing, but write it differently.
-
-*** What is \textbackslash psSet?
-**** \ci{\textbackslash psSet} says how the pattern's events should be used.
-     - \clss{Pbind} doesn't say /what to do/.\\
-       It only says what information to use.
-     - The \clss{Event} interprets the data and takes action, based on the \egls{event type}.
-**** \ci{\textbackslash psSet} is an event type.
-     - It tells the pattern's events to operate on existing \clsspl{NodeProxy} within the \clss{ProxySpace}.
-     - Actually a bit more: It connects the events to the current \clss{ProxySpace}.
-
-*** Event types
-**** Common \glspl{event type}:
-     - \ci{\textbackslash note} :: Play a new \clss{Synth}.
-     - \ci{\textbackslash set} :: Set controls in an existing \clss{Synth}.
-     - \ci{\textbackslash off} :: Release an existing \clss{Synth}.
-     - \ci{\textbackslash midi} :: Send note or control data to a hardware MIDI device.
-**** Event types let you change the action without changing the data.
-     - You can write a \ci{\textbackslash note} pattern, and hear the notes in scsynth.
-     - Or, change to the \ci{\textbackslash midi} type and hear the notes from a hardware synth.
-
-*** Why not use \textbackslash note?
-**** If \ci{\textbackslash note} is the normal \gls{event type}, why not use it?
-     - We will, later.
-     - We are beginning with a \egls{modular} approach, for reasons noted earlier.
-     - This approach needs a different event type.
+*** Pbind summary
+**** \clss{Pbind} unifies everything you need for sequencing.
+     - Note data come from value \glspl{pattern}.
+     - The data go into an \clss{Event}.
+     - The event turns the data into action.
+     - The event also tells the \clss{EventStreamPlayer} how long to wait.
+**** To control modular synthesis by Pbind, use the \cd{\textbackslash psSet} modifier.
+     - Within a \clss{ProxySpace}: \\<all>
+       \cd{\textasciitilde name = \textbackslash psSet -> Pbind(...);}.
+**** Now we can run lots of notes while playing with synthesis techniques.
 
 *** TODO Exercises: Different pitch and rhythm patterns
-** Special event keys: Pitch and Time
-*** Pitch and time in events
-**** Many levels to write pitch and time.
-     You can organize pitch and time in different ways, appropriate to different musical ideas.
-**** "Physical" level
-     Ultimately, SC uses specific event keys for the final result. These can be calculated from higher levels.
-     - Time :: \ci{delta} and \ci{sustain}
-     - Pitch :: \ci{freq}
-
-*** Time model
-**** Physical level: \ci{delta} and \ci{sustain}.
-     - \ci{delta} :: How many beats until the next event.
-     - \ci{sustain} :: How many beats before releasing the envelope.
-**** Higher level: \ci{dur}, \ci{legato}, \ci{stretch}
-     - Larger \ci{stretch} makes things go slower.
-     - Smaller \ci{legato} makes the notes shorter.
-     - \cd{delta = dur * stretch}
-     - \cd{sustain = dur * stretch * legato}
-
-*** Example: Articulation using \textbackslash legato
-    First a synth. Further explanation later today.
-#+name: legato1
-#+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
-#+begin_src {} -i
-p.clear;  // or p = ProxySpace.new; p.push;
-~oscil = { |freq = 440|
-   Mix(Pulse.ar(
-      Lag.kr(freq, 0.08) * { exprand(1/1.005, 1.005) }.dup(5),
-      { rrand(0.4, 0.5) }.dup(5)
-   ))
-};
-~ampEg = { |gt|
-   EnvGen.kr(Env.adsr(0.01, 0.1, 0.6, 0.15), gt)
-};
-~feg = { |gt, width = 3|
-   EnvGen.kr(Env.perc(0.01, 0.14, width), gt) + 1
-};
-~filter = { |ffreq = 1800, rq = 0.2, amp = 0.05|
-   (RLPF.ar(~oscil.ar, clip(ffreq * ~feg, 20, 20000), rq)
-      * amp * ~ampEg).dup
-};
-~filter.play;
-#+end_src
-
-*** The \textbackslash legato pattern
-    Play it with a \mth{psSet} pattern.
-    - Two possible \ci{\textbackslash legato} values:
-      - 0.5: Half the note's duration---staccato
-      - 1.05: Longer than the note's duration---legato\\
-        This makes a sliding pitch, like a classic mono synth.
-    - \ci{\textbackslash legato} is easier than calculating
-      \ci{sustain} by hand.
-#+name: legato2
-#+caption: A pattern, to play the previous synth like a mono synth with fingered glides.
-#+begin_src {} -i
-~player = \psSet -> Pbind(
-   \freq, Pwhite(36, 48, inf),
-   \dur, Pwhite(1, 3, inf) * 0.125,
-   \legato, Prand(#[0.5, 1.05], inf),
-   \gt, 1
-);
-
-~player.clear;
-#+end_src
-
-* Subtractive synthesis
+* Subtractive synthesis						   :noexport:
 ** Overview
 *** Subtractive synthesis
 **** One of the most basic techniques
@@ -438,18 +511,37 @@ p.gui;
 p.clear;
 #+end_src
 
-*** New language elements
-#+Latex: \glsadd{BinaryOpUGen}\glsadd{UnaryOpUGen}
-    - \ugen{Mix} :: Mix a group of signals together (addition).
-    - \clss{Array} :: An ordered collection of items.
-    - \mth{midiratio} :: Convert a number of semitones into a frequency factor.
-    - \mth{reciprocal} :: Equivalent to \cd{1 / number}, but slightly faster.
+*** Detuning, explained
+#+begin_src {} -i
+      Saw.ar(freq)
+      + Saw.ar(freq * detun)
+      + Saw.ar(freq / detun)
+#+end_src
+**** Detuning involves several oscillators, out of tune.
+     We have three:
+     - Original frequency;
+     - /Up/ by a small interval (assuming \cd{detun > 1});
+     - /Down/ by the same small interval.
+**** Add the oscillators to make a combined signal.
+     The almost-exact frequencies create shifts in the spectrum.
 
-*** Math on UGens
-**** UGens respond to math operators!
-     - \cd{aUGen * bUGen} \to \cd{BinaryOpUGen('*', aUGen, bUGen)}
-     - \cd{detun.reciprocal} \to \cd{UnaryOpUGen('reciprocal', detun)}
-     - Transparent to the user. In SC, there is no \cd{*\textasciitilde}: just use regular math operators.
+*** An easier way
+**** What if you want more oscillators?
+     - Inconvenient to write \ci{+} for every one.
+**** Solution: \ugen{Mix} with an array.
+     - Write the oscillators into an array.
+     - \ugen{Mix} will find the most efficient way to add them.
+#+name: detune2
+#+caption: Mix an array of oscillators, instead of explicitly adding them.
+#+begin_src {} -i
+~oscil = { |freq = 220, detun = 1.003|
+   (0.1 * Mix([
+      Saw.ar(freq),
+      Saw.ar(freq * detun),
+      Saw.ar(freq / detun)
+   ])).dup
+};
+#+end_src
 
 *** Arrays of signals
 **** \clss{Array}: A \gls{collection} (grouping of objects), in the order given.
@@ -463,52 +555,68 @@ p.clear;
      - \ugen{Mix} adds several signals (in an array) together, /mixing/ them:\\
        Three \ci{Saw}s \to one mixed channel.
 
-*** Multichannel expansion
-    \cd{Saw.ar(220 * [1, detun, detun.reciprocal], 0.1)}
-    - Most UGens are monophonic: one channel in, one out.
-    - Here, we provide a control input multiplied by an array.\\
-      \cd{freq * [1, detun, detun.reciprocal]}\\ \to \cd{[freq * 1, freq * detun, freq * detun.reciprocal]}
-**** How does a monophonic UGen cope with three frequencies?
-     It performs \egls{multichannel expansion}, and makes three \ci{Saw}s.
+*** That's not easy enough
+**** \eGls{multichannel expansion} can make it easier.
+     - Most UGens are monophonic: one channel in, one out.
+     - Here, we provide an array of three frequencies.
+**** How can a monophonic UGen do that?
+     - It performs \egls{multichannel expansion}, and makes three \ugen{Saw}s.
+     - The \ugen{Saw}s are in an array, which we can give to \ugen{Mix}.
 #+name: mc-exp1
-#+caption: Multichannel expansion.
+#+caption: Multichannel expansion: An array of frequencies turns into an array of oscillators.
 #+begin_src {} -i
-Saw.ar([1, 2, 3])
+Saw.ar([1, 2, 3]);  // prints: [ a Saw, a Saw, a Saw ]
 
-// prints: [ a Saw, a Saw, a Saw ]
+~oscil = { |freq = 220, detun = 1.003|
+   (0.1 * Mix(
+      Saw.ar([freq, freq * detun, freq / detun])
+   )).dup
+};
 #+end_src
 
-*** Unpacking multichannel expansion
-**** All three of these expressions are identical
+*** One further step
+    - It isn't even necessary to write \ci{freq} every time.
+    - You can multiply \ci{freq} by an array of factors.
+    - Small problem: If the operator is \ci{*}, how to do \ci{/}? \\<all>
+      Get the \mth{reciprocal} of \ci{detun}.
+#+name: detune4
+#+caption: Mix an array of oscillators, instead of explicitly adding them.
 #+begin_src {} -i
-// Compact form
-Mix(Saw.ar(220 * [1, detun, detun.reciprocal], 0.1))
-
-// Expanding *
-Mix(Saw.ar([
-   220 * 1,
-   220 * detun,
-   220 * detun.reciprocal
-], 0.1))
-
-// Fully expanded
-Saw.ar(220 * 1, 0.1),
-   + Saw.ar(220 * detun, 0.1),
-   + Saw.ar(220 * detun.reciprocal, 0.1)
+~oscil = { |freq = 220, detun = 1.003|
+   (0.1 * Mix(
+      Saw.ar(freq * [1, detun, detun.reciprocal])
+   )).dup
+};
 #+end_src
 
-*** Multichannel expansion is super cool
-**** Parallel processing of multiple channels is very common.
-     Multichannel expansion makes it easy (in the basic cases): Just
-     write the processing as if for one channel, and SC automatically
-     duplicates it for all channels.
+*** Notes on MC expansion				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Multichannel expansion is super cool.
+Parallel processing of multiple channels is very common. For example,
+if you're playing a one-channel sound file, you would need
+\ugen{PlayBuf} $\to$ amplifier \ci{*} $\to$ output. For a stereo file,
+you need /two/ channels from \ugen{PlayBuf} and two amplifiers.
 
-     Max/MSP is effectively limited to only the third, most redundant,
-     form. You have to copy the whole signal-processing chain for each
-     channel /by hand/.
+In Max/MSP, you would have to create each of the 
+\cd{[*\textasciitilde ]} amplifiers by hand. Adding or removing a channel can force you to
+make cascading changes through large sections of the patch.
 
-     Since multichannel processing is more convenient in SC, you'll do
-     more of it and get more interesting sounds.
+In SuperCollider, the difference is merely:
+
+- One channel: \cd{PlayBuf.ar(1, ...) * amp}.
+- Two channels: \cd{PlayBuf.ar(2, ...) * amp}.
+
+In the second case, \cd{PlayBuf.ar} gives you an array of two
+signals. This automatically expands the \ci{*} operator: @@latex:\cd{[left,
+right] * amp} = \cd{[left * amp, right * amp]}@@. You could even go up
+to large multichannel diffusion systems, and amplify all the channels
+at once in exactly the same way.
+
+Even for ordinary synthesis: Because multichannel processing is more
+convenient in SC, you'll do more of it and get more interesting sounds
+for less work.
 
 *** Detuning by octaves or other intervals
 **** Standard analog-style plug-ins (e.g. Massiv) feature multiple oscillators.
@@ -626,7 +734,7 @@ Close the old GUI window, and try different \ci{rq} values.
      - Q is a standard measure. SC uses \ci{rq} = $\frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
 
-* Modulation: Low-Frequency Oscillators
+* Modulation: Low-Frequency Oscillators				   :noexport:
 ** Modulation: Low-Frequency Oscillators
 *** Modulation
 **** Little secret: Synthesis techniques are sometimes /really simple/.
@@ -1018,3 +1126,152 @@ ffreq = 2300
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
 ** Distortion
+
+* Removed							   :noexport:
+*** New language elements
+#+Latex: \glsadd{BinaryOpUGen}\glsadd{UnaryOpUGen}
+    - \ugen{Mix} :: Mix a group of signals together (addition).
+    - \clss{Array} :: An ordered collection of items.
+    - \mth{midiratio} :: Convert a number of semitones into a frequency factor.
+    - \mth{reciprocal} :: Equivalent to \cd{1 / number}, but slightly faster.
+
+*** Math on UGens
+**** UGens respond to math operators!
+     - \cd{aUGen * bUGen} \to \cd{BinaryOpUGen('*', aUGen, bUGen)}
+     - \cd{detun.reciprocal} \to \cd{UnaryOpUGen('reciprocal', detun)}
+     - Transparent to the user. In SC, there is no \cd{*\textasciitilde}: just use regular math operators.
+
+*** Multichannel expansion
+    \cd{Saw.ar(220 * [1, detun, detun.reciprocal], 0.1)}
+    - Most UGens are monophonic: one channel in, one out.
+    - Here, we provide a control input multiplied by an array.\\
+      \cd{freq * [1, detun, detun.reciprocal]}\\ \to \cd{[freq * 1, freq * detun, freq * detun.reciprocal]}
+**** How does a monophonic UGen cope with three frequencies?
+     It performs \egls{multichannel expansion}, and makes three \ci{Saw}s.
+#+name: mc-exp1
+#+caption: Multichannel expansion.
+#+begin_src {} -i
+Saw.ar([1, 2, 3])
+
+// prints: [ a Saw, a Saw, a Saw ]
+#+end_src
+
+*** Unpacking multichannel expansion
+**** All three of these expressions are identical
+#+begin_src {} -i
+// Compact form
+Mix(Saw.ar(220 * [1, detun, detun.reciprocal], 0.1))
+
+// Expanding *
+Mix(Saw.ar([
+   220 * 1,
+   220 * detun,
+   220 * detun.reciprocal
+], 0.1))
+
+// Fully expanded
+Saw.ar(220 * 1, 0.1),
+   + Saw.ar(220 * detun, 0.1),
+   + Saw.ar(220 * detun.reciprocal, 0.1)
+#+end_src
+
+
+*** More convenience for gates: Events
+**** Sequencing: Inconvenient to close gates by hand.
+     Introducing \clss{Event}.
+     - We saw an \clss{Event} briefly, in the "canonical" example (Listing [[canonical]]).
+     - It both played and released a Synth.
+     - We will learn more about events as we go.
+**** Events have lots of properties, including timing.
+     - \ci{dur} :: Number of beats until the next event.
+     - \ci{sustain} :: Number of beats to keep a gate open. (May
+		       also be calculated from \cd{dur * legato}.)
+
+*** Event patterns: One-stop shopping
+    Let's be clear about the implications:
+**** Event patterns handle everything for sequencing
+     - Parameter setting
+       - New parameter values are saved in the event
+     - Timing
+       - Every event has a \egls{delta}
+
+*** What is \textbackslash psSet?
+**** \ci{\textbackslash psSet} says how the pattern's events should be used.
+     - \clss{Pbind} doesn't say /what to do/.\\
+       It only says what information to use.
+     - The \clss{Event} interprets the data and takes action, based on the \egls{event type}.
+**** \ci{\textbackslash psSet} is an event type.
+     - It tells the pattern's events to operate on existing \clsspl{NodeProxy} within the \clss{ProxySpace}.
+     - Actually a bit more: It connects the events to the current \clss{ProxySpace}.
+
+*** Why not use \textbackslash note?
+**** If \ci{\textbackslash note} is the normal \gls{event type}, why not use it?
+     - We will, later.
+     - We are beginning with a \egls{modular} approach, for reasons noted earlier.
+     - This approach needs a different event type.
+
+** Special event keys: Pitch and Time
+*** Pitch and time in events
+**** Many levels to write pitch and time.
+     You can organize pitch and time in different ways, appropriate to different musical ideas.
+**** "Physical" level
+     Ultimately, SC uses specific event keys for the final result. These can be calculated from higher levels.
+     - Time :: \ci{delta} and \ci{sustain}
+     - Pitch :: \ci{freq}
+
+*** Time model
+**** Physical level: \ci{delta} and \ci{sustain}.
+     - \ci{delta} :: How many beats until the next event.
+     - \ci{sustain} :: How many beats before releasing the envelope.
+**** Higher level: \ci{dur}, \ci{legato}, \ci{stretch}
+     - Larger \ci{stretch} makes things go slower.
+     - Smaller \ci{legato} makes the notes shorter.
+     - \cd{delta = dur * stretch}
+     - \cd{sustain = dur * stretch * legato}
+
+*** Example: Articulation using \textbackslash legato
+    First a synth. Further explanation later today.
+#+name: legato1
+#+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
+#+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+~oscil = { |freq = 440|
+   Mix(Pulse.ar(
+      Lag.kr(freq, 0.08) * { exprand(1/1.005, 1.005) }.dup(5),
+      { rrand(0.4, 0.5) }.dup(5)
+   ))
+};
+~ampEg = { |gt|
+   EnvGen.kr(Env.adsr(0.01, 0.1, 0.6, 0.15), gt)
+};
+~feg = { |gt, width = 3|
+   EnvGen.kr(Env.perc(0.01, 0.14, width), gt) + 1
+};
+~filter = { |ffreq = 1800, rq = 0.2, amp = 0.05|
+   (RLPF.ar(~oscil.ar, clip(ffreq * ~feg, 20, 20000), rq)
+      * amp * ~ampEg).dup
+};
+~filter.play;
+#+end_src
+
+*** The \textbackslash legato pattern
+    Play it with a \mth{psSet} pattern.
+    - Two possible \ci{\textbackslash legato} values:
+      - 0.5: Half the note's duration---staccato
+      - 1.05: Longer than the note's duration---legato\\
+        This makes a sliding pitch, like a classic mono synth.
+    - \ci{\textbackslash legato} is easier than calculating
+      \ci{sustain} by hand.
+#+name: legato2
+#+caption: A pattern, to play the previous synth like a mono synth with fingered glides.
+#+begin_src {} -i
+~player = \psSet -> Pbind(
+   \freq, Pwhite(36, 48, inf),
+   \dur, Pwhite(1, 3, inf) * 0.125,
+   \legato, Prand(#[0.5, 1.05], inf),
+   \gt, 1
+);
+
+~player.clear;
+#+end_src
+
