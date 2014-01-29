@@ -100,7 +100,7 @@ A little trick: Add an empty string after printing a collection, for cleaner out
 
 *** Automatic calculations in events: Pitch
 **** Pitch information lives at /several/ levels:
-     The most important are:
+#      The most important are:
      - \ci{freq} :: Note frequency, in Hz.
      - \ci{midinote} :: MIDI note number. 60 = middle C, about 261 Hz.
      - \ci{degree} :: A diatonic scale degree. Depends on:
@@ -181,7 +181,6 @@ p.setEvent((freq: exprand(200, 400), sustain: 3)).play;
 *** Patterns make Events very easily
 **** An \clss{Event} is a set of named values.
      - Each value's name says how the value will be used for synthesis.
-#      - To use the values, call \mth{play} on the event.
 **** A pattern called \clss{Pbind} is a list of /named patterns/.
      - Every \mth{next} value collects one value from each child pattern.
      - \mth{next} needs an empty \clss{Event} as a container for the new values.
@@ -305,9 +304,9 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
        the pattern act like \cd{p.setEvent}.
 
 *** \textbackslash psSet pattern example
-**** Main point: This is easy.
-     - There are a lot of concepts behind this example.
-     - But using it---playing notes automatically---is convenient.
+# **** Main point: This is easy.
+#      - There are a lot of concepts behind this example.
+#      - But using it---playing notes automatically---is convenient.
 #+name: rVsPbind
 #+caption: A Pbind, controlling NodeProxies in a ProxySpace.
 #+begin_src {} -i
@@ -318,6 +317,11 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
 
 ~player.clear;
 #+end_src
+**** *Note:* \ci{\textasciitilde player} is now a \clss{NodeProxy}.
+     - Just like \ci{\textasciitilde out} in Listing [[gateEvent]].
+     - You can change the synthesis function any time.
+     - Likewise, you can change \ci{\textasciitilde player}'s pattern anytime! \\
+       Just assign a new pattern (with \ci{\textbackslash psSet}).
 
 *** Pbind summary
 **** \clss{Pbind} unifies everything you need for sequencing.
@@ -330,7 +334,18 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
        \cd{\textasciitilde name = \textbackslash psSet -> Pbind(...);}.
 **** Now we can run lots of notes while playing with synthesis techniques.
 
-*** TODO Exercises: Different pitch and rhythm patterns
+*** Exercises: Different pitch and rhythm patterns
+**** Change the pattern from Listing [[rVsPbind]]:
+     *Note:* You may use \clss{Pdefn}.
+     1. Choose notes from the C major scale.
+     2. Choose C major notes, but favor C, E and G. \\
+	Hint: Use \clss{Pwrand}. Check its help file for details.
+     3. Make it E major (change the \ci{\textbackslash root}).
+     4. Try \clss{Pwhite} for rhythm (with fractional low/high). \\
+	Then try \clss{Pexprand}. How would you describe the difference?
+     5. With \ci{\textbackslash psSet}, what's the difference between
+        \ci{\textbackslash legato} < 1 and > 1?
+
 * Subtractive synthesis						   :noexport:
 ** Overview
 *** Subtractive synthesis
