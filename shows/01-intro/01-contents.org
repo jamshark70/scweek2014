@@ -818,7 +818,7 @@ p.gui;
 
 *** Arguments in synthesis functions
 **** Listing [[mod1]] declares two arguments.
-     - freq :: Frequency, with a default 261.625 (middle C).
+     - freq :: Frequency, with a default 440 (A natural).
      - amp :: Amplitude (volume), with a default 0.1 (-20 dB).
 **** Arguments are magical in synthesis functions.
      - They automatically become \gls{control inputs}.
@@ -826,14 +826,16 @@ p.gui;
      - Try it: \cd{\textasciitilde oscil.set(\textbackslash freq, 261.6)}.
 **** Control inputs make it possible to do musical sequencing.
      - The function defines the /structure/ of synthesis.
-     - The controls produce specific pitches, volumes, filtering effects etc.
+     - The controls produce specific pitches, volumes etc.
 
 *** Modular example: Add a filter
 **** Add a filter, for a brightness control.
      - The filter needs an audio input.
      - Provide this by referring to the oscillator: \cd{\textasciitilde oscil.ar}.
      - Now the filter is the desired output, so \mth{play} and \mth{stop} that.
-#+latex: \glsadd{LPF}\glsadd{addSpec}
+     - \mth{addSpec} sets the correct range (frequency) for \ci{ffreq}.\\
+       More on ranges tomorrow.
+#+latex: \glsadd{LPF}
 #+name: mod2
 #+caption: Within a ProxySpace, create a filter module.
 #+begin_src {} -i
