@@ -1191,12 +1191,12 @@ ffreq = 2300
 p.clear;  // or p = ProxySpace.new; p.push;
 
 (
-~oscil = { |freq = 440, amp = 0.1|
+~exciter = { |freq = 440, amp = 1|
    PinkNoise.ar(amp)
    * EnvGen.kr(Env.perc(0.01, 0.3), Impulse.kr(2))
 };
 ~filter = { |ffreq = 2000, rq = 0.1|
-   BPF.ar(~oscil.ar, ffreq, rq, 10.dbamp).dup
+   BPF.ar(~exciter.ar, ffreq, rq, 10.dbamp).dup
 };
 ~filter.play;
 ~filter.addSpec(\ffreq, \freq).addSpec(\rq, [1, 0.05, \exp]);
@@ -1214,7 +1214,7 @@ p.gui;
 #+begin_src {} -i
 ~filter.addSpec(\ringtime, [0.01, 2, \exp]);
 ~filter = { |ffreq = 2000, ringtime = 0.5|
-   Ringz.ar(~oscil.ar, ffreq, ringtime, 0.01).dup
+   Ringz.ar(~exciter.ar, ffreq, ringtime, 0.01).dup
 };
 #+end_src
 
@@ -1223,7 +1223,7 @@ p.gui;
 #+name: ringz1c
 #+caption: Impulse into a ringing filter.
 #+begin_src {} -i
-~oscil = { Impulse.ar(2) };
+~exciter = { Impulse.ar(2) };
 #+end_src
      - Suddenly much quieter. (Change 0.01 to 0.1 in the filter.)
      - Now you're hearing the filter's \egls{impulse response}.
@@ -1252,6 +1252,83 @@ p.gui;
 #+attr_latex: :height 1in
 [[../02-synth/img/A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg]]
 #+end_center
+
+*** More modes: Klank
+**** \ugen{Klank} is an easy way to get lots of ringing filters.
+     The example shows how to write it.
+     - Wrap the filter parameters inside @@latex:\textcolor{codecolor}{$^{\backprime}$}\cd{[...]}@@.\\
+       The backtick @@latex:\textcolor{codecolor}{$^{\backprime}$}@@ is important!
+     - This should contain three arrays:
+       - Filter frequencies;
+       - Amplitudes;
+       - Ring times.
+#+name: klank1
+#+caption: Klank gives you several vibrating modes. Integer multiples sound like a synthetic oscillator. Randomized frequencies produce various percussive sounds.
+#+begin_src {} -i
+~filter = {
+   Klank.ar(`[
+      [220, 440, 660, 880, 1100],
+      [0.1, 0.1, 0.1, 0.1, 0.1],
+      Array.fill(5, { rrand(0.25, 0.75) })
+   ], ~exciter.ar).dup
+};
+#+end_src
+
+*** Array.fill
+**** Note \cd{Array.fill(size, item)}.\glsadd{fill}\glsadd{Array}
+     - In the example, it makes five random ring times.
+     - For random numbers, the expression should be in a function (curly braces).
+**** Exercise for you:
+     - Write \cd{Array.fill} expressions for frequency and amplitude.
+     - Experiment with different random boundaries.
+     - (Remember, frequency is exponential: \mth{exprand}.)
+
+*** Exciters
+**** The \gls{exciter} is usually a noise generator, with a short envelope.
+     - Remember three noise types: \ugen{WhiteNoise}, \ugen{PinkNoise}, \ugen{BrownNoise}.
+     - \cd{Env.perc}\glsadd{perc} is a good envelope choice.
+**** Exercises for you:
+    - Rewrite \cd{\textasciitilde exciter} to use a noise generator.
+    - Multiply by a percussive envelope.
+    - Also add a trigger \ci{t \textunderscore trig} argument.
+    - Drive the trigger argument with a \ci{\textbackslash psSet} pattern.
+**** These exercises prepare for the next topic.
+
+*** Klank, Ringz, DynKlank
+**** \ugen{Klank}'s filter parameters are the same as in \ugen{Ringz}.
+     - \ugen{Klank} sounds like one \ugen{Ringz} per array item, mixed.
+     - *Good:* \ugen{Klank} is more efficient.
+     - *Bad:* You can't change the filters after starting the Synth.\\
+       This is a big problem for this style of modular synthesis.
+**** \ugen{DynKlank} takes the same kind of input.
+     - But it makes lots of \ugen{Ringz} filters.
+     - So you /can/ change the filter parameters (but, higher CPU cost).
+
+*** DynKlank to play pitches
+**** Both \ugen{Klank} and \ugen{DynKlank} have /scaling/ inputs.
+     - The actual filter frequencies are \cd{freqArray * freqscale}.
+     - So, to play a specific pitch:
+       - Write the frequency array so that 1.0 is the fundamental pitch.
+       - Plug the desired frequency into \ci{freqscale}.
+     - (Read the help file for details on \ci{freqoffset} and \ci{decayscale}.)
+**** In modular style, you have to use \ugen{DynKlank} for this.
+     Otherwise, the pitch can't change.
+
+*** Pitched DynKlank example
+#+name: dkpitch1
+#+caption: Using DynKlank in modular style to play pitches by modal synthesis.
+#+begin_src {} -i
+~filter = { |freq = 440|
+   DynKlank.ar(`[
+      Array.fill(5, { |i| (i+1) * rrand(0.97, 1.03) }),
+      Array.fill(5, 0.1),
+      Array.fill(5, { rrand(0.25, 0.75) })
+   ], ~oscil.ar, freqscale: freq).dup
+};
+#+end_src
+**** Exercise for you:
+     - Change the pattern to play other pitches.\\
+       You can use \ci{degree}, \ci{midinote} or \ci{freq}.
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
