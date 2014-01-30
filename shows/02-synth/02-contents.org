@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Events and Sequencing
+* Events and Sequencing						   :noexport:
 ** Events and synthesis control
 *** What are Events?
 **** \clsspl{Event} represent a pre-defined action.
@@ -502,8 +502,8 @@ p.clear;
 
 *** Detuned oscillators
 **** The ear doesn't like sound that is too perfect.
-     We like small imperfections: Human players are never exactly in tune.
-**** Do the same in a synth.
+     - Human players are never exactly in tune.
+     - We can do the same in a synth.
 #+name: detune
 #+caption: Detuning: Make several oscillators and mix (add) them.
 #+begin_src {} -i
@@ -511,9 +511,7 @@ p = ProxySpace.new; p.push;
 
 ~oscil = { |freq = 220, detun = 1.003|
    0.1 * (
-      Saw.ar(freq)
-      + Saw.ar(freq * detun)
-      + Saw.ar(freq / detun)
+      Saw.ar(freq) + Saw.ar(freq * detun) + Saw.ar(freq / detun)
    ).dup
 };
 ~filter = { |ffreq = 2000| LPF.ar(~oscil.ar, ffreq).dup };
@@ -538,7 +536,7 @@ p.clear;
      - /Up/ by a small interval (assuming \cd{detun > 1});
      - /Down/ by the same small interval.
 **** Add the oscillators to make a combined signal.
-     The almost-exact frequencies create shifts in the spectrum.
+     The almost-exact frequencies create changes in the spectrum.
 
 *** An easier way
 **** What if you want more oscillators?
@@ -602,6 +600,25 @@ Saw.ar([1, 2, 3]);  // prints: [ a Saw, a Saw, a Saw ]
       Saw.ar(freq * [1, detun, detun.reciprocal])
    )).dup
 };
+#+end_src
+
+*** Unpacking multichannel expansion
+**** All three of these expressions are identical
+#+begin_src {} -i
+// Compact form
+Mix(Saw.ar(220 * [1, detun, detun.reciprocal], 0.1))
+
+// Expanding *
+Mix(Saw.ar([
+   220 * 1,
+   220 * detun,
+   220 * detun.reciprocal
+], 0.1))
+
+// Fully expanded
+Saw.ar(220 * 1, 0.1),
+   + Saw.ar(220 * detun, 0.1),
+   + Saw.ar(220 * detun.reciprocal, 0.1)
 #+end_src
 
 *** Notes on MC expansion				    :B_ignoreheading:
@@ -749,13 +766,21 @@ Close the old GUI window, and try different \ci{rq} values.
      - Q is a standard measure. SC uses \ci{rq} = $\frac{1}{Q}$ to save CPU.
      - \ugen{RLPF}, \ugen{RHPF}, and \ugen{BPF} all have a \ci{rq} input.
 
+*** Next step: Modulation
+**** That's pretty much it for subtractive synthesis.
+     - Multiple oscillators, slightly detuned and with different octave relationships.
+     - Different types of filters.
+**** The power comes from \egls{modulation}.
+     - Modulation means that the parameters are not constant.
+     - We'll talk about that next.
+
 * Modulation: Low-Frequency Oscillators				   :noexport:
 ** Modulation: Low-Frequency Oscillators
 *** Modulation
 **** Little secret: Synthesis techniques are sometimes /really simple/.
      We just beef them up with /layering/ and \egls{modulation}.
 **** Modulate a parameter by another signal.
-     - We already did this, with the filter frequency envelope.
+     - We can use envelopes for this.
      - Another modulation source: \eglspl{LFO} (Low-Frequency Oscillators)
      - SC has a /lot/ of them.
 **** For this section:
@@ -986,7 +1011,7 @@ item, use \mth{drop}:
      For frequency, the depth should be a multiplier.
 
 *** Thought process
-**** /Reason/ about the UGen ranges.
+**** /Thinking/ about the UGen ranges.
      - The range I've got: $-1$ to $1$. \pause
      - The range I need is \egls{exponential}: Use \mth{exprange}. \pause
      - A balanced \egls{linear} range is $-d$ to $d$.\\
@@ -1031,17 +1056,43 @@ item, use \mth{drop}:
 ~depth.addSpec(\depth, [0, 4]);
 #+end_src
 
-*** TODO Modulation summary?
+*** Note on efficiency					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** A note on efficiency:
+The above example calculates \cd{\textasciitilde depth + 1}, saves it
+in a variable, and then uses the variable in \mth{exprange}. Why?
 
-*** Refinements 						   :noexport:
-**** Making it sound richer
-     - Detuned oscillators
-     - ??
-**** Controlling the sound musically
-     - Envelopes: Playing notes
-     - Parameter control
-       - Internal: Low Frequency Oscillators (LFOs)
-       - External: GUI and device input
+If it were written @@latex:\cd{.exprange((\textasciitilde depth +
+1).reciprocal, \textasciitilde depth + 1)}@@, the server would
+calculate \cd{\textasciitilde depth + 1} /twice/. There are two
+\cd{+ 1} operations, and it's too difficult for the \gls{SynthDef} builder
+to identify that both will have the same result.
+
+As written above, there is one addition, and the result is used twice.
+
+The equivalent in Pure Data shows the difference graphically.
+
+#+begin_center
+#+attr_latex: :height 1.1in
+[[../02-synth/img/pd-save-an-add.png]]
+#+end_center
+
+*Tip:* Whenever you need to use a signal in more than one place in a
+synthesis function, assign it to a variable.
+- "Calculate once, use many times" is more efficient.
+- The variable name can remind you of the signal's purpose.
+
+*** Modulation summary
+**** For effective modulation:
+     The key is to think about:
+     - The expected range of the /modulated/ input;
+     - How to convert a UGen's range to match.
+**** This applies to all kinds of LFOs.
+     - Oscillators
+     - Sample players (at slow playback rates).
+     - Envelopes (next...).
 
 ** Another envelope use: Articulation
 *** Envelopes for articulation
@@ -1118,30 +1169,95 @@ ffreq = 2300
    .linexp(0, 1, 1, 4)
 };
 
-*** Note control summary: Envelopes
-**** \eGls{breakpoint} \eglspl{envelope}
-     - Idea: Start level, list of segments
-     - Written in \clss{Env} using three arrays: \ci{levels}, \ci{times}, \ci{curve}
-**** \eGls{envelope generator}
-     - Renders the segments into a signal.
-     - Responds to \eglspl{trigger} and \eglspl{gate}.
-**** Triggers and gates: signal > 0
-     - A \te{trigger} is instantaneous, when the signal becomes > 0.
-     - A \te{gate} is open when > 0, closed otherwise.
+*** Exercise: Fingered portamento
+    1. Clear the ProxySpace. Then write a modular synth:
+       - \ci{\textasciitilde oscil} :: Detuned oscillator.
+       - \ci{\textasciitilde ampEg} :: Amplitude envelope.
+       - \ci{\textasciitilde filtEg} :: Filter frequency envelope.
+       - \ci{\textasciitilde filter} :: Resonant lowpass filter and main output.
+    2. Write a \ci{\textbackslash psSet} pattern to play notes.
+       - Use \ci{\textbackslash legato} so that some notes slur, but not all.
+    3. The pitches don't slide. Look up \ugen{Lag}'s help file, and
+       apply it to the oscillator's frequency.
 
-*** Note control summary: Gates and Events
-**** \eGlspl{gate} must be opened and closed.
-     - By hand, using \cd{\textasciitilde something.set(\textbackslash gt, 1)} or \cd{0}.
-     - An \clss{Event} can close the gate for you, after a given \ci{sustain} time.
-       - \ci{sustain} can be given directly, or you can provide \ci{dur} and \ci{legato}.
-**** Events can set many parameters at once.
-     Very useful for sequencing: The start of a note can change pitch,
-     amplitude, timbre controls all at once.
+* Modal synthesis: Ringing filters
+** Ringing filters
+*** What's a ringing filter?
+    Let's compare a bandpass filter (\ugen{BPF}) against a ringing filter (\ugen{Ringz}).
+    - \cd{10.dbamp} in the filter: \ugen{BPF} is a quiet UGen, needs to be boosted.
+#+name: ringz1a
+#+caption: Noise into a bandpass filter: sounds like filtered noise.
+#+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+
+(
+~oscil = { |freq = 440, amp = 0.1|
+   PinkNoise.ar(amp)
+   * EnvGen.kr(Env.perc(0.01, 0.3), Impulse.kr(2))
+};
+~filter = { |ffreq = 2000, rq = 0.1|
+   BPF.ar(~oscil.ar, ffreq, rq, 10.dbamp).dup
+};
+~filter.play;
+~filter.addSpec(\ffreq, \freq).addSpec(\rq, [1, 0.05, \exp]);
+p.gui;
+)
+#+end_src
+
+*** Substitute the ringing filter
+    - *Note:* \ugen{Ringz} can be /very/ loud! \\
+      0.01 = --40 dB.
+    - Also, we control the \gls{ring time}, not \ci{rq}.
+**** Switch back and forth between \ugen{BPF} and \ugen{Ringz}.
+#+name: ringz1b
+#+caption: Noise into a ringing filter: pitch is much stronger.
+#+begin_src {} -i
+~filter.addSpec(\ringtime, [0.01, 2, \exp]);
+~filter = { |ffreq = 2000, ringtime = 0.5|
+   Ringz.ar(~oscil.ar, ffreq, ringtime, 0.01).dup
+};
+#+end_src
+
+*** Impulse response
+**** What if we use impulses?
+#+name: ringz1c
+#+caption: Impulse into a ringing filter.
+#+begin_src {} -i
+~oscil = { Impulse.ar(2) };
+#+end_src
+     - Suddenly much quieter. (Change 0.01 to 0.1 in the filter.)
+     - Now you're hearing the filter's \egls{impulse response}.
+     - What does it sound like? \\
+       Use the oscilloscope (/Language/ menu) for more detail.
+
+*** Modal synthesis, in a nutshell
+**** Simplest explanation of modal synthesis:
+     - \Gls{exciter} :: A short burst of noise, like a hammer striking a bell.
+     - Filter :: A ringing filter simulates one vibrational \egls{mode}.
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :END:
+***** Vibrational modes
+      - When you hit an object---``excite'' it---it starts to vibrate.
+      - It vibrates in many different ways at the same time.
+      - Each one of these consistent patterns is a \egls{mode}.
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.35
+     :END:
+#+begin_center
+#+name: modejpg
+#+caption: Vibrational modes in a cup of coffee. Image credit: Natural Philo, http://en.wikipedia.org/wiki/File:A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg.
+#+attr_latex: :height 1in
+[[../02-synth/img/A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg]]
+#+end_center
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
 ** Distortion
 
+#+begin_comment
 * Removed							   :noexport:
 *** New language elements
 #+Latex: \glsadd{BinaryOpUGen}\glsadd{UnaryOpUGen}
@@ -1170,26 +1286,6 @@ Saw.ar([1, 2, 3])
 
 // prints: [ a Saw, a Saw, a Saw ]
 #+end_src
-
-*** Unpacking multichannel expansion
-**** All three of these expressions are identical
-#+begin_src {} -i
-// Compact form
-Mix(Saw.ar(220 * [1, detun, detun.reciprocal], 0.1))
-
-// Expanding *
-Mix(Saw.ar([
-   220 * 1,
-   220 * detun,
-   220 * detun.reciprocal
-], 0.1))
-
-// Fully expanded
-Saw.ar(220 * 1, 0.1),
-   + Saw.ar(220 * detun, 0.1),
-   + Saw.ar(220 * detun.reciprocal, 0.1)
-#+end_src
-
 
 *** More convenience for gates: Events
 **** Sequencing: Inconvenient to close gates by hand.
@@ -1224,6 +1320,26 @@ Saw.ar(220 * 1, 0.1),
      - We will, later.
      - We are beginning with a \egls{modular} approach, for reasons noted earlier.
      - This approach needs a different event type.
+
+*** Note control summary: Envelopes
+**** \eGls{breakpoint} \eglspl{envelope}
+     - Idea: Start level, list of segments
+     - Written in \clss{Env} using three arrays: \ci{levels}, \ci{times}, \ci{curve}
+**** \eGls{envelope generator}
+     - Renders the segments into a signal.
+     - Responds to \eglspl{trigger} and \eglspl{gate}.
+**** Triggers and gates: signal > 0
+     - A \te{trigger} is instantaneous, when the signal becomes > 0.
+     - A \te{gate} is open when > 0, closed otherwise.
+
+*** Note control summary: Gates and Events
+**** \eGlspl{gate} must be opened and closed.
+     - By hand, using \cd{\textasciitilde something.set(\textbackslash gt, 1)} or \cd{0}.
+     - An \clss{Event} can close the gate for you, after a given \ci{sustain} time.
+       - \ci{sustain} can be given directly, or you can provide \ci{dur} and \ci{legato}.
+**** Events can set many parameters at once.
+     Very useful for sequencing: The start of a note can change pitch,
+     amplitude, timbre controls all at once.
 
 ** Special event keys: Pitch and Time
 *** Pitch and time in events
@@ -1290,3 +1406,4 @@ p.clear;  // or p = ProxySpace.new; p.push;
 ~player.clear;
 #+end_src
 
+#+end_comment

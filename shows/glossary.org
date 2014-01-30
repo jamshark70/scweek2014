@@ -84,6 +84,10 @@
 | UGen                   |               | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                                |
 | unordered              |               | Of a collection, indicates that the collection may rearrange the items' order for faster lookup, e.g., Set, Dictionary                                                                |
 | variable               |               | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                                       |
+| ring time              |               | In Ringz, Klank and Formlet, the time for the filter's resonance to decay to -60 dB. The longer the ring time, the narrower the bandwidth (higher Q)                                  |
+| impulse response       |               | A filter's output when given a single-sample impulse in the input. This is one way to describe a filter's behavior                                                                    |
+| exciter                |               | In modal synthesis, a short burst of noise fed into a ringing filter, to ``excite'' the filter so that it oscillates                                                                  |
+| mode                   |               | In a vibrating body, a mode is one of the consistent patterns of vibration. Real objects vibrate in many modes at once, producing many frequencies                                    |
 
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
@@ -206,10 +210,13 @@
 #+name: ugens
 | Type  | Term         | Description                                                                                                                                                | Arguments                                                      |
 |-------+--------------+------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------|
+| Buf   | PlayBuf      | Play back a sample audio in a server Buffer. The entire sample must be loaded in memory (no streaming). See also DiskIn, VDiskIn.                          | numChannels, bufnum, rate, trigger, startPos, loop, doneAction |
 | Chaos | LinCongL     | Linear-congruent chaos generator. Has N and C variants                                                                                                     | See helpfile                                                   |
 | Chaos | QuadL        | Quadratic-map chaos generator. Has N and C variants                                                                                                        | See helpfile                                                   |
 | Ctl   | EnvGen       | Envelope Generator. Produces the envelope signal from an Env specification                                                                                 | envelope, gate, levelScale, levelBias, timeScale, doneAction   |
+| Ctl   | Lag          | Smooth out a control signal by sliding (exponentially) from the old value to the new, in a given time. See also \ci{VarLag}                                | in, lagTime                                                    |
 | Ctl   | Line         | A straight line from \ci{start} to \ci{end}, in \ci{dur} seconds                                                                                           | start, end, dur                                                |
+| Ctl   | VarLag       | Smooth out a control signal by sliding from the old value to the new, using any of \ci{Env}'s curvature styles (often linear)                              | in, time, curvature, warp, start                               |
 | Ctl   | XLine        | An exponentially-curved line from \ci{start} to \ci{end}, in \ci{dur} seconds. \ci{start} and \ci{end} must be the same sign and non-zero                  | start, end, dur                                                |
 | Filt  | BPF          | Bandpass filter                                                                                                                                            | in, freq, rq                                                   |
 | Filt  | HPF          | Butterworth highpass filter                                                                                                                                | in, freq                                                       |
@@ -237,7 +244,7 @@
 | Osc   | WhiteNoise   | A noise generator containing all frequencies equally loudly. The sound is extremely bright                                                                 | mul, add                                                       |
 | Trig  | Dust         | Produces randomly timed triggers, averaging \emph{density} triggers per second                                                                             | density                                                        |
 | Trig  | Impulse      | Produces triggers at equal time intervals---single sample impulses, \emph{freq} times per second                                                           | freq, phase                                                    |
-| Buf   | PlayBuf      | Play back a sample audio in a server Buffer. The entire sample must be loaded in memory (no streaming). See also DiskIn, VDiskIn.                          | numChannels, bufnum, rate, trigger, startPos, loop, doneAction |
+| Filt  | Ringz        | A ringing filter, similar to a bandpass filter but controlled by a ringing decay time, not \ci{rq}                                                         | in, freq, decaytime                                            |
 
 * src blocks 							   :noexport:
 
