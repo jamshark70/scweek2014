@@ -1180,7 +1180,7 @@ ffreq = 2300
     3. The pitches don't slide. Look up \ugen{Lag}'s help file, and
        apply it to the oscillator's frequency.
 
-* Modal synthesis: Ringing filters
+* Modal synthesis
 ** Ringing filters
 *** What's a ringing filter?
     Let's compare a bandpass filter (\ugen{BPF}) against a ringing filter (\ugen{Ringz}).
@@ -1253,6 +1253,7 @@ p.gui;
 [[../02-synth/img/A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg]]
 #+end_center
 
+** Banks of ringing filters
 *** More modes: Klank
 **** \ugen{Klank} is an easy way to get lots of ringing filters.
      The example shows how to write it.
@@ -1357,7 +1358,7 @@ p.gui;
 **** How does a monophonic UGen cope with three frequencies?
      It performs \egls{multichannel expansion}, and makes three \ci{Saw}s.
 #+name: mc-exp1
-#+caption: Multichannel expansion.
+# #+caption: Multichannel expansion.
 #+begin_src {} -i
 Saw.ar([1, 2, 3])
 
@@ -1440,7 +1441,7 @@ Saw.ar([1, 2, 3])
 *** Example: Articulation using \textbackslash legato
     First a synth. Further explanation later today.
 #+name: legato1
-#+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
+# #+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
 #+begin_src {} -i
 p.clear;  // or p = ProxySpace.new; p.push;
 ~oscil = { |freq = 440|
@@ -1471,7 +1472,7 @@ p.clear;  // or p = ProxySpace.new; p.push;
     - \ci{\textbackslash legato} is easier than calculating
       \ci{sustain} by hand.
 #+name: legato2
-#+caption: A pattern, to play the previous synth like a mono synth with fingered glides.
+# #+caption: A pattern, to play the previous synth like a mono synth with fingered glides.
 #+begin_src {} -i
 ~player = \psSet -> Pbind(
    \freq, Pwhite(36, 48, inf),
