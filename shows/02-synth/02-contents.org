@@ -1230,6 +1230,17 @@ p.gui;
      - What does it sound like? \\
        Use the oscilloscope (/Language/ menu) for more detail.
 
+*** Ringz impulse response, plotted
+**** Plot code							   :noexport:
+{ Ringz.ar(Impulse.ar(0.025.reciprocal), 440, 0.05) }.plot(0.05, minval: -1.2, maxval: 1.2);
+**** This is a \ugen{Ringz}'s response to two impulses.
+     - Note especially the spike when the second impulse comes in.
+     - This will make a slight click in the output---not clean.
+#+begin_center
+#+attr_latex: :height 1.5in
+[[../02-synth/img/ringz-impulse-responses.png]]
+#+end_center
+
 *** Modal synthesis, in a nutshell
 **** Simplest explanation of modal synthesis:
      - \Gls{exciter} :: A short burst of noise, like a hammer striking a bell.
@@ -1330,6 +1341,160 @@ p.gui;
 **** Exercise for you:
      - Change the pattern to play other pitches.\\
        You can use \ci{degree}, \ci{midinote} or \ci{freq}.
+
+*** Graphical editor for ringing filters
+**** SC includes a graphical way to play with \ugen{Ringz} filters.
+     - It's "hidden" in the code examples directory.
+     - When finished, it will print an Array to use directly in \ugen{Klank}.
+     - This code snippet will access the editor, in any OS.
+       - \clss{Platform} contains many file paths that are different depending on the OS.
+       - \mth{resourceDir} points to examples and sounds, among other things.
+#+name: klankEditor
+#+caption: Open, or run, the GUI example of editing up to 10 Ringz filters.
+#+begin_src {} -i :var extract='t
+(Platform.resourceDir +/+
+   "examples/GUI examples/analog-drum-tuner.scd").openDocument;
+
+(Platform.resourceDir +/+
+   "examples/GUI examples/analog-drum-tuner.scd").load;
+#+end_src
+
+** Formant synthesis
+*** What are formants?
+**** \eGlspl{formant} are the way sounds resonate in the vocal cavity.
+     - The formants change for different vowels and voice types.
+**** FOF (/fonctions d'ondes formantiques/) (X. Rodet, 1979/1984).
+     - One FOF is a decaying sine wave, triggered by impulses at the desired pitch.
+     - Decaying sine wave... isn't that the \ugen{Ringz} impulse response?
+**** We can use ringing filters to do this!
+     But, the impulse response also had a nasty click in it.
+
+*** Controlling the "click"
+**** What if we subtract a shorter \ugen{Ringz} from a longer one?
+#+begin_center
+#+attr_latex: :height 1.8in
+[[../02-synth/img/ringz-minus-ringz.png]]
+#+end_center
+**** This changes the impulse response's envelope.
+     - Smoother at the beginning.
+
+*** Formant synthesis
+**** \ugen{Formlet} does this for you.
+     - It's the same as @@latex:\cd{Ringz.ar(in, freq, decay) - Ringz.ar(in, freq, attack)}@@.
+**** This is one way to do \egls{formant} synthesis.
+     - The \gls{exciter} gives the main pitch.
+     - The \ugen{Formlet} resonates at another frequency.
+     - In the GUI, move \ci{ringtime} down to 0.02 or 0.03.
+     - Then move \ci{ffreq} around in the midrange.
+#+name: fmlet1
+#+caption: Create one formant around a train of impulses, using Formlet.
+#+begin_src {} -i
+~filter = { |ffreq = 2000, ringtime = 0.5|
+   Formlet.ar(~exciter.ar, ffreq, ringtime * 0.1, ringtime, 0.1).dup
+};
+
+~exciter = { |freq = 220| Impulse.ar(freq) };
+#+end_src
+
+*** Producing vowels
+**** Real vowels have two or three main formants.
+     Plus a couple of others that are weaker.
+**** So, we need a bank of \ugen{Formlet}s.
+     - \ugen{Formlet} = \cd{Ringz(decay) - Ringz(attack)}.
+     - \ugen{Klank} or \ugen{DynKlank} = bank of \ugen{Ringz}.
+     - So, a bank of \ugen{Formlet}s = \cd{Klank(decay) - Klank(attack)}!
+
+*** Example: FormantTable and Klank
+    - The result of \mth{atKlank} is used directly where the filter array should appear.
+    - One \ugen{Klank} minus another (like \ugen{Formlet}).
+      - The second one uses \ci{decayscale} to make the attack shorter than the real ring time.
+**** Turn down the volume before running this!
+     It may be very loud.
+#+name: formants1
+#+caption: Formant synthesis with FormantTable and Klank
+#+begin_src {} -i
+~filter = {
+   var in = ~exciter.ar,
+   formant = FormantTable.atKlank(\tenorU);
+   (Klank.ar(`formant, in)
+      - Klank.ar(`formant, in, decayscale: 0.1)).dup
+};
+#+end_src
+
+*** Exercises for you
+**** On your own:
+     - With \ugen{Impulse} as the exciter, it could be too buzzy.
+       - Add a lowpass filter.
+       - Also add a \ci{ffreq} argument, with spec, so that you can find a good cutoff frequency in the GUI.
+     - Try other voice types and vowels.
+     - Try detuning the exciter.
+
+*** Changing vowels by arguments: Filter
+**** Up to now, we can't slide from one vowel to another.
+     - \ugen{Klank} can't change parameters!
+     - Change to another filter. \\
+       \ugen{DynKlank} works, but each one makes five \ugen{Ringz}.\\
+       10 filters for five formants!
+     - We could get the same with just five \ugen{Formlet}s.
+#+begin_src {} -i
+sig = DynKlank.ar(`formant, in) -
+   DynKlank.ar(`formant, in, decayscale: 0.1);
+
+// or
+Mix(Formlet.ar(in, formant[0],
+   formant[2] * 0.1, formant[2], formant[1]));
+#+end_src
+
+*** Changing vowels by arguments 2: Arrayed controls
+**** We also need a way to send arrays to an argument.
+     - Regular arguments have some limitations for this.
+     - Remember that arguments turn into \egls{control inputs}.
+     - We can make control inputs explicitly, using \ugen{NamedControl}.
+     - An array for the default value makes an \egls{arrayed control}.
+#+begin_src {} -i
+formant = NamedControl.kr(\formant,
+   FormantTable.atKlank(\tenorE).flat);
+#+end_src
+**** This is often used to send envelope definitions.
+
+*** Changing vowels by arguments 3: Array geometry
+**** Small complication: Array dimensions
+     - \clss{FormantTable} gives a two-dimensional array (5x3).
+     - The filters expect the two-dimensional array (5x3).
+     - The \ugen{NamedControl} must be one-dimensional!
+**** Solution:
+     - One-dimensional array for messaging: use \mth{flat}.
+     - Two dimensions in the synth function: use \mth{clump}.
+       - \mth{clump}'s argument is a number, saying how big each row should be.
+       - \clss{FormantTable} gives five filters, so \cd{clump(5)}.
+#+name: flat1
+#+caption: Try these to see the effect of flat and clump.
+#+begin_src {} -i
+a = FormantTable.atKlank(\tenorE).flat;
+
+a.clump(5);
+#+end_src
+
+*** Changing vowels: Put it all together
+**** Also note the \ugen{Lag}.
+     - We want the vowels to slide, not jump.
+#+name: formant2
+#+caption: All the pieces of the "changing vowels" puzzle: Formlet rather than DynKlank, the arrayed control (NamedControl), fixing the array geometry (flat, clump).
+#+begin_src {} -i
+~filter = { |ffreq = 6000|
+   var sig, in = ~exciter.ar,
+   formant = NamedControl.kr(\formant,
+      FormantTable.atKlank(\tenorE).flat);
+   formant = Lag.kr(formant, 1).clump(5);
+   sig = Mix(Formlet.ar(in, formant[0],
+      formant[2] * 0.1, formant[2], formant[1]));
+   LPF.ar(sig, ffreq).dup;
+};
+
+~filter.set(\formant, FormantTable.atKlank(\tenorO).flat);
+
+~filter.set(\formant, FormantTable.atKlank(\tenorU).flat);
+#+end_src
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus

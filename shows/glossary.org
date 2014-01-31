@@ -7,6 +7,7 @@
 | amplitude modulation   |               | Multiplying two signals together. If both signals' frequencies are in the range of human hearing, interesting things happen                                                           |
 | arguments              |               | Inputs to a function or method, provided at the time of calling it                                                                                                                    |
 | array                  |               | One type of collection, consisting of an ordered list of items, enclosed in square brackets \cd{[ ]}                                                                                  |
+| arrayed control        |               | An array of control inputs to a synth, grouped under one name. You can send flat (one-dimensional) arrays of values to that name                                                      |
 | assignment             |               | To replace a variable's current value with a new object. Written \cd{name = value}                                                                                                    |
 | audio rate             |               | The UGen rate that produces one output value for every sample going to the audio hardware. Use for audio signals                                                                      |
 | band-limited           |               | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                                            |
@@ -88,7 +89,8 @@
 | impulse response       |               | A filter's output when given a single-sample impulse in the input. This is one way to describe a filter's behavior                                                                    |
 | exciter                |               | In modal synthesis, a short burst of noise fed into a ringing filter, to ``excite'' the filter so that it oscillates                                                                  |
 | mode                   |               | In a vibrating body, a mode is one of the consistent patterns of vibration. Real objects vibrate in many modes at once, producing many frequencies                                    |
-
+| formant                |               | A formant is one of the resonances in the vocal cavity, coloring the ``buzz'' coming from the vocal cords. The right combination of formants can produce vowel sounds                 |
+  
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
 
@@ -108,6 +110,7 @@
 | Event              |                      | Stores information like IdentityDictionary. Playing an event gets musical results: play a note, change values etc. Patterns can produce events for sequencing      |
 | EventStreamPlayer  |                      | Gets Events from an event stream. It plays each one in turn, and then waits event's delta time before retrieving the next event                                    |
 | File               |                      | Read and write text or binary files on the local filesystem                                                                                                        |
+| FormantTable       |                      | An extension class (from sc3-plugins) listing filter parameters for different voice types and vowels                                                               |
 | Function           |                      | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object |
 | IdentityDictionary | IdentityDictionaries | Like Dictionary, but restricts the types of keys for faster lookup. Usually the keys are Symbols                                                                   |
 | IdentitySet        |                      | Like Set, but restricts the types of items for faster membership testing                                                                                           |
@@ -118,6 +121,7 @@
 | Pdefn              |                      | Global storage for pattern proxies, where the patterns produce simple values                                                                                       |
 | Pexprand           |                      | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
 | Pgeom              |                      | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
+| Platform           |                      | Holds settings and file paths that are specific to the operating system                                                                                            |
 | Prand              |                      | A Pattern to choose values randomly from an array                                                                                                                  |
 | ProxySpace         |                      | An environment that automatically makes a NodeProxy from any item in it                                                                                            |
 | Pseq               |                      | A Pattern to return values from an array, one by one                                                                                                               |
@@ -154,7 +158,9 @@
 | asr           |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                       |
 | asStream      |        | Produce a Stream from another object (usually a Pattern)                                                                                                          |
 | at            |        | Retrieve an item from an indexed collection (e.g. Array or Dictionary) by its index. Shortcut syntax: \cd{collection[index]}                                      |
+| atKlank       |        | Get filter parameters from FormantTable, suitable for use in Klank                                                                                                |
 | clip          |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
+| clump         |        | Group the items of a flat array into equally-sized chunks. \cd{[0, 1, 2, 3, 4].clump(2)} returns \cd{[[0, 1], [2, 3], [4]]}                                       |
 | cpsmidi       |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
 | curvelin      |        | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
 | differentiate |        | Returns an array $y$ where $y_0 = x_0 - 0$, $y_1 = x_1 - x_0$ and so on                                                                                           |
@@ -166,6 +172,7 @@
 | exprange      |        | Converts a UGen's range into a different exponential range                                                                                                        |
 | fadeTime      |        | Controls the time it takes to crossfade between sources in a \ci{NodeProxy}. When used on a \ci{ProxySpace}, it applies to all proxies in that space              |
 | fill          |        | \cd{Array.fill(size, item)} makes a new Array of \ci{size} elements based on \ci{item}. Functions are evaluated (good for random numbers)                         |
+| flat          |        | Convert any nested array into a single array, e.g. \cd{[[0, 1, 2], [3, 4]].flat} returns \cd{[0, 1, 2, 3, 4]}                                                     |
 | fold          |        | Constrain a number within a range. The boundaries are like mirrors: A value above the maximum gets reflected back into the range                                  |
 | if            |        | A branching structure common in many programming languages. If the condition is true, do the ``true'' branch; otherwise, the ``false'' branch                     |
 | integrate     |        | Given an array, return a new array where each item is the sum of all the previous original items                                                                  |
@@ -192,6 +199,7 @@
 | reciprocal    |        | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
 | release       |        | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
 | reset         |        | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                         |
+| resourceDir   |        | \cd{Platform.resourceDir} points to a directory of extra resources, which are part of a normal SC installation                                                    |
 | round         |        | Round a number to the nearest division---by default, 1 (integers) but it may also be fractional                                                                   |
 | rrand         |        | \cd{rrand(low, high)}: Generate a random number $x$ where $low \le x \le high$                                                                                    |
 | sched         |        | Schedule an activity to happen a certain number of beats/seconds in the future (i.e., later than now)                                                             |
@@ -248,6 +256,8 @@
 | Filt  | Ringz        | A ringing filter, similar to a bandpass filter but controlled by a ringing decay time, not \ci{rq}                                                             | in, freq, decaytime                                              |
 | Filt  | Klank        | A set of ringing filters (just like Ringz). The filters' parameters are fixed (can't change them within the Synth), but it's more efficient. See also DynKlank | specificationsArrayRef, input, freqscale, freqoffset, decayscale |
 | Filt  | DynKlank     | A set of ringing filters. Calculates as a sum of Ringz units, but it has the same arguments as Klank                                                           | specificationsArrayRef, input, freqscale, freqoffset, decayscale |
+| Filt  | Formlet      | A ringing filter, but whose impulse response has a smoother attack phase. Useful for synthesizing vocal-like sounds                                            | in, freq, attacktime, decaytime                                  |
+| Ctl   | NamedControl | Explicitly create a control input with a given name. You may initialize the control with an array, to get an arrayed control                                   | name, values, lags, fixedLag                                     |
 
 
 * src blocks 							   :noexport:
