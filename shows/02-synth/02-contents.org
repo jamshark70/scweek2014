@@ -120,9 +120,9 @@ A little trick: Add an empty string after printing a collection, for cleaner out
 
 *** Details on Event parameters and calculations
     See the following help files for documentation on \clss{Event} parameters.
-    - /Pattern Guide 07: Value Conversions/ \\<all>
+    - /Pattern Guide 07: Value Conversions/\\<all>
       [[http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_07_Value_Conversions.html][Web link]]
-    - /Pattern Guide 08: Event Types and Parameters/ \\<all>
+    - /Pattern Guide 08: Event Types and Parameters/\\<all>
       [[http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters.html][Web link]]
 
 *** What are the example events actually doing?
@@ -266,19 +266,19 @@ a.stop;
     :END:
 This has a somewhat complex flow, wrapped up in a simple expression. It divides into these parts:
 
-- *\clss{EventStreamPlayer} control of rhythm and event-playing.* \\<all>
+- *\clss{EventStreamPlayer} control of rhythm and event-playing.*\\<all>
   In a loop:
   1. Get an \clss{Event} from the \clss{Pbind}'s stream.
   2. Play the event.
   3. Ask the event for its \mth{delta} time, and \mth{wait} for that duration.
 
-- *\clss{Pbind} evaluation of events.* \\<all>
+- *\clss{Pbind} evaluation of events.*\\<all>
   Every time the \clss{EventStreamPlayer} asks for an event, loop through the key/pattern pairs:
   1. Get a value from the child pattern's stream.
   2. Put the value into the event, using the pattern's key.
   At the end of this, the event will have a value for every key.
 
-- *The event's action, triggered by \mth{play}.* \\<all>
+- *The event's action, triggered by \mth{play}.*\\<all>
   Takes action, according to the \egls{event type}.
 
 *** Patterns: "Declarative" programming
@@ -320,7 +320,7 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
 **** *Note:* \ci{\textasciitilde player} is now a \clss{NodeProxy}.
      - Just like \ci{\textasciitilde out} in Listing [[gateEvent]].
      - You can change the synthesis function any time.
-     - Likewise, you can change \ci{\textasciitilde player}'s pattern anytime! \\
+     - Likewise, you can change \ci{\textasciitilde player}'s pattern anytime!\\
        Just assign a new pattern (with \ci{\textbackslash psSet}).
 
 *** Pbind summary
@@ -330,7 +330,7 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
      - The event turns the data into action.
      - The event also tells the \clss{EventStreamPlayer} how long to wait.
 **** To control modular synthesis by Pbind, use the \cd{\textbackslash psSet} modifier.
-     - Within a \clss{ProxySpace}: \\<all>
+     - Within a \clss{ProxySpace}:\\<all>
        \cd{\textasciitilde name = \textbackslash psSet -> Pbind(...);}.
 **** Now we can run lots of notes while playing with synthesis techniques.
 
@@ -338,10 +338,10 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
 **** Change the pattern from Listing [[rVsPbind]]:
      *Note:* You may use \clss{Pdefn}.
      1. Choose notes from the C major scale.
-     2. Choose C major notes, but favor C, E and G. \\
+     2. Choose C major notes, but favor C, E and G.\\
 	Hint: Use \clss{Pwrand}. Check its help file for details.
      3. Make it E major (change the \ci{\textbackslash root}).
-     4. Try \clss{Pwhite} for rhythm (with fractional low/high). \\
+     4. Try \clss{Pwhite} for rhythm (with fractional low/high).\\
 	Then try \clss{Pexprand}. How would you describe the difference?
      5. With \ci{\textbackslash psSet}, what's the difference between
         \ci{\textbackslash legato} < 1 and > 1?
@@ -590,7 +590,7 @@ Saw.ar([1, 2, 3]);  // prints: [ a Saw, a Saw, a Saw ]
 *** One further step
     - It isn't even necessary to write \ci{freq} every time.
     - You can multiply \ci{freq} by an array of factors.
-    - Small problem: If the operator is \ci{*}, how to do \ci{/}? \\<all>
+    - Small problem: If the operator is \ci{*}, how to do \ci{/}?\\<all>
       Get the \mth{reciprocal} of \ci{detun}.
 #+name: detune4
 #+caption: Mix an array of oscillators, instead of explicitly adding them.
@@ -1182,7 +1182,7 @@ ffreq = 2300
 
 * Modal synthesis
 ** Ringing filters
-*** What's a ringing filter?
+*** What's a \egls{ringing filter}?
     Let's compare a bandpass filter (\ugen{BPF}) against a ringing filter (\ugen{Ringz}).
     - \cd{10.dbamp} in the filter: \ugen{BPF} is a quiet UGen, needs to be boosted.
 #+name: ringz1a
@@ -1205,7 +1205,7 @@ p.gui;
 #+end_src
 
 *** Substitute the ringing filter
-    - *Note:* \ugen{Ringz} can be /very/ loud! \\
+    - *Note:* \ugen{Ringz} can be /very/ loud!\\
       0.01 = --40 dB.
     - Also, we control the \gls{ring time}, not \ci{rq}.
 **** Switch back and forth between \ugen{BPF} and \ugen{Ringz}.
@@ -1227,7 +1227,7 @@ p.gui;
 #+end_src
      - Suddenly much quieter. (Change 0.01 to 0.1 in the filter.)
      - Now you're hearing the filter's \egls{impulse response}.
-     - What does it sound like? \\
+     - What does it sound like?\\
        Use the oscilloscope (/Language/ menu) for more detail.
 
 *** Ringz impulse response, plotted
@@ -1242,7 +1242,7 @@ p.gui;
 #+end_center
 
 *** Modal synthesis, in a nutshell
-**** Simplest explanation of modal synthesis:
+**** Simplest explanation of \egls{modal synthesis}:
      - \Gls{exciter} :: A short burst of noise, like a hammer striking a bell.
      - Filter :: A ringing filter simulates one vibrational \egls{mode}.
 **** Left							      :BMCOL:
@@ -1432,7 +1432,7 @@ p.gui;
 *** Changing vowels by arguments: Filter
 **** Up to now, we can't slide from one vowel to another.
      - \ugen{Klank} can't change parameters!
-     - Change to another filter. \\
+     - Change to another filter.\\
        \ugen{DynKlank} works, but each one makes five \ugen{Ringz}.\\
        10 filters for five formants!
      - We could get the same with just five \ugen{Formlet}s.
@@ -1473,7 +1473,7 @@ formant = NamedControl.kr(\formant,
 
 *** Arrayed control example
     Not related to formant synthesis; just to show \glspl{arrayed control}.
-    - Also note the \ci{\textbackslash dur} pattern. \\
+    - Also note the \ci{\textbackslash dur} pattern.\\
       Can you figure out why it makes the rhythm you hear?
 #+name: arrayctl1
 #+caption: An arrayed control, to make three pitches from one oscillator module. Assumes you are already in a ProxySpace.
@@ -1590,6 +1590,92 @@ arrangement while creating the \clss{SynthDef} only once. Then, the
 server works only with the UGens, placeholders and their connections,
 without worrying about /how/ the connections were arranged in the
 first place.
+
+** Karplus-Strong, banded waveguides
+*** Karplus-Strong, banded waveguides
+**** Related to modal synthesis:
+     - An \egls{exciter} feeds into a filter.
+     - The exciter is noisy.
+     - The filter shapes it into pitch.
+**** Different type of filter.
+     - Modal synthesis uses ringing filters.
+     - Waveguides use feedback-delay filters.
+
+*** Feedback-delay filters
+**** \eGlspl{feedback-delay filter} include:
+     - \eGlspl{comb filter} :: Uses a simple delay line. The spectrum looks like teeth of a comb.
+     - \eGlspl{allpass filter} :: Passes all input frequencies at the original volume (hence "allpass"), but changes the phases.
+#+name: fbdelay1
+#+caption: Compare the effects of the two types of feedback-delay filters.
+#+begin_src {} -i
+(
+~noise = { WhiteNoise.ar(0.1) };
+~filter = {
+   CombL.ar(~noise.ar, 0.1, 1/220, 1).dup
+};
+~filter.play;
+)
+
+~filter = {
+   AllpassL.ar(~noise.ar, 0.1, 1/220, 1).dup
+};
+#+end_src
+
+*** Allpass filters and phases
+**** The \gls{allpass filter} didn't sound like it was doing much.
+     - It doesn't change the frequencies' strengths.\\
+       So, the output sounds like the original.
+     - It does affect the frequencies' phases.\\
+       You don't hear the phase shifts until you the original and filtered signals.
+     - The result is like a \gls{comb filter}, but with a softer edge.
+#+name: fbdelay2
+#+caption: Mix the original with the allpass-filtered signal.
+#+begin_src {} -i
+~filter = {
+   var sig = ~noise.ar;
+   sig + AllpassL.ar(sig, 0.1, 1/220, 1).dup
+};
+#+end_src
+
+*** Short exciter
+**** We can excite feedback filters with short noise bursts.
+     Just like \gls{modal synthesis}.
+**** Exercise for you
+     - Add a percussive envelope to the \ci{\textasciitilde noise} module.
+     - What does it sound like?
+**** Code :noexport:
+~noise = {
+   WhiteNoise.ar(0.1)
+   * EnvGen.ar(Env.perc(0.01, 0.08), Impulse.ar(2))
+};
+
+*** Karplus-Strong plucked string synthesis
+**** This sounds a lot like a plucked string! Except...
+     - In a real string, energy leaks away from the high frequencies first.
+     - To model this: Put a lowpass filter in the middle of the feedback loop.
+     - The \ugen{Pluck} UGen does this automatically.
+
+*** Pluck.ar example
+#+name: pluck1
+#+caption: The Pluck UGen. Experiment with the parameters in p.gui.
+#+begin_src {} -i
+~pluck = { |freq = 220, decay = 1, coef = 0.5|
+   Pluck.ar(
+      in: WhiteNoise.ar(0.3),
+      trig: Impulse.ar(2),
+      maxdelaytime: 0.2,
+      delaytime: freq.reciprocal,
+      decaytime: decay,
+      coef: coef
+   ).dup
+};
+~pluck.addSpec(\decay, [0.1, 2, \exp]);
+~pluck.addSpec(\coef, [0, 1]);
+~pluck.play;
+
+~pluck.clear;
+#+end_src
+
 
 
 * Effects common in subtractive synthesis 			   :noexport:

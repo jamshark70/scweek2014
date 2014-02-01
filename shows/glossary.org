@@ -90,7 +90,13 @@
 | exciter                |               | In modal synthesis, a short burst of noise fed into a ringing filter, to ``excite'' the filter so that it oscillates                                                                  |
 | mode                   |               | In a vibrating body, a mode is one of the consistent patterns of vibration. Real objects vibrate in many modes at once, producing many frequencies                                    |
 | formant                |               | A formant is one of the resonances in the vocal cavity, coloring the ``buzz'' coming from the vocal cords. The right combination of formants can produce vowel sounds                 |
-  
+| ringing filter         |               | A filter that "rings" at the given frequency in response to a burst of noise. Its impulse response is a decaying sine wave. See Ringz, Klank and Formlet                              |
+| feedback-delay filter  |               | A filter based on delay a signal, and feeding the delayed copy back to the input. Comb and Allpass filters are feedback-delay types                                                   |
+| comb filter            |               | A feedback-delay filter using a simple delay, whose fundamental frequency is $\frac{1}{t}$ ($t$ is the delay time). Its spectrum resembles the teeth of a comb                        |
+| allpass filter         |               | A feedback-delay filter that does not change the strength of the frequencies, only the phases                                                                                         |
+| modal synthesis        |               | A technique to simulate the vibrating modes in a body that has been struck. It uses a short burst of noise to excite a bank of ringing filters                                        |
+| Karplus-Strong         |               | A technique to synthesize plucked strings, using a feedback-delay filter with a lowpass filter in the feedback loop                                                                   |
+
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
 
@@ -260,6 +266,7 @@
 | Filt  | DynKlank     | A set of ringing filters. Calculates as a sum of Ringz units, but it has the same arguments as Klank                                                           | specificationsArrayRef, input, freqscale, freqoffset, decayscale |
 | Filt  | Formlet      | A ringing filter, but whose impulse response has a smoother attack phase. Useful for synthesizing vocal-like sounds                                            | in, freq, attacktime, decaytime                                  |
 | Ctl   | NamedControl | Explicitly create a control input with a given name. You may initialize the control with an array, to get an arrayed control                                   | name, values, lags, fixedLag                                     |
+| Model | Pluck        | Implements the Karplus-Strong algorithm for synthesis of plucked strings                                                                                       | in, trig, maxdelaytime, delaytime, decaytime, coef               |
 
 
 * src blocks 							   :noexport:
