@@ -1424,7 +1424,7 @@ p.gui;
 *** Exercises for you
 **** On your own:
      - With \ugen{Impulse} as the exciter, it could be too buzzy.
-       - Add a lowpass filter.
+       - Add a lowpass filter to the \ci{\textasciitilde filter} module.
        - Also add a \ci{ffreq} argument, with spec, so that you can find a good cutoff frequency in the GUI.
      - Try other voice types and vowels.
      - Try detuning the exciter.
@@ -1445,6 +1445,20 @@ Mix(Formlet.ar(in, formant[0],
    formant[2] * 0.1, formant[2], formant[1]));
 #+end_src
 
+*** Notes (filter)					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** What's \cd{formant[0]}?
+It happens that \mth{atKlank} returns exactly the array that
+\ugen{Klank} expects: @@latex:\cd{[[frequencies], [amplitudes], [ring
+times]]}@@. \cd{formant[0]} accesses the first item: the array of
+frequencies. When we put this into the frequency input of
+\ugen{Formlet}, we have multichannel expansion. The five frequencies,
+five amplitudes and five ring times cause \ugen{Formlet} to expand
+into an array of five \ugen{Formlet}s. Then, all we have to do is
+\ugen{Mix} them together.
+
 *** Changing vowels by arguments 2: Arrayed controls
 **** We also need a way to send arrays to an argument.
      - Regular arguments have some limitations for this.
@@ -1456,6 +1470,32 @@ formant = NamedControl.kr(\formant,
    FormantTable.atKlank(\tenorE).flat);
 #+end_src
 **** This is often used to send envelope definitions.
+
+*** Arrayed control example
+    Not related to formant synthesis; just to show \glspl{arrayed control}.
+    - Also note the \ci{\textbackslash dur} pattern. \\
+      Can you figure out why it makes the rhythm you hear?
+#+name: arrayctl1
+#+caption: An arrayed control, to make three pitches from one oscillator module. Assumes you are already in a ProxySpace.
+#+begin_src {} -i :var extract='t
+~arrayarg = { |amp = 0.1|
+   var freq = NamedControl.kr(\freq, 55 * [4, 5, 6]);
+   (Mix(SinOsc.ar(freq)) * amp).dup
+};
+~arrayarg.play;
+
+~arrayarg.set(\freq, 82.5 * [4, 5, 6]);
+
+~player = \psSet -> Pbind(
+   \degree, Pwhite(-7, 7, inf) + [0, 2, 4],
+   \dur, Pseq([
+      Pn(0.15, { rrand(3, 8) }),
+      0.15 * Pwhite(3, 6, 1)
+   ], inf)
+);
+
+~player.clear; ~arrayarg.clear;
+#+end_src
 
 *** Changing vowels by arguments 3: Array geometry
 **** Small complication: Array dimensions
@@ -1495,6 +1535,62 @@ a.clump(5);
 
 ~filter.set(\formant, FormantTable.atKlank(\tenorU).flat);
 #+end_src
+
+*** Exercise for you
+    Write a \ci{\textbackslash psSet} pattern to play different
+    pitches, and send a different vowel for each note.
+    - Look back at the list patterns. Which ones let you choose
+      randomly from a list?
+    - If this random pattern returns the names from
+      \clss{FormantTable}, how to get the filter specs?
+      - \mth{collect} can run a function on every one of the names.
+      - @@latex:\cd{.collect \{ |name| FormantTable.atKlank(name).flat \}}@@.
+
+*** Notes (arrays in SynthDef)				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Array geometry in synthesis functions
+One of the hardest things to understand in SuperCollider is:
+
+- What is the server's responsibility?
+- What is the language's responsibility?
+
+The server runs the UGens, and passes signals between them based on
+the kinds of connections we have already discussed. That's all it
+does. It doesn't know anything about language structures. Functions,
+patterns, loops, arrays---all are completely unknown to the server.
+
+\mth{clump}, therefore, is the language's job. But what is it actually
+doing in this case?
+
+1. We're initializing the \ugen{NamedControl} with an array of 15
+   items. The language needs to have 15 objects, so that it can keep
+   track of UGen connections. These 15 objects are
+   \clsspl{OutputProxy}. Using "op" as an abbreviation for
+   \clss{OutputProxy}:
+
+   #+latex: \cd{[op$_0$, op$_1$, op$_2$, ... op$_14$]}
+
+2. \mth{clump} separates the \clsspl{OutputProxy} into groups of five.
+
+   - \cd{[op$_0$, op$_1$, ... op$_4$]},
+   - \cd{[op$_5$, op$_6$, ... op$_9$]},
+   - @@latex:\cd{[op$_{10}$, op$_{11}$, ... op$_{14}$]}@@.
+
+3. Then, \cd{formant[0]} allows any other UGen (here, \ugen{Formlet})
+   to connect back to the first five items from the
+   \ugen{NamedControl}. \cd{formant[1]} connects to the second five,
+   and so on.
+
+The language can do whatever you need to these array structures while
+building a \clss{SynthDef}. But this is only working on the
+arrangement of the /signal placeholders/. The language produces the
+arrangement while creating the \clss{SynthDef} only once. Then, the
+server works only with the UGens, placeholders and their connections,
+without worrying about /how/ the connections were arranged in the
+first place.
+
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus

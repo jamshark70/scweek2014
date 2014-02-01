@@ -145,6 +145,7 @@
 | Tdef               |                      | Global storage for Tasks. Give the task function a name, and Tdef will treat the function as a Task                                                                |
 | TdefAllGui         |                      | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
 | TempoClock         |                      | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
+| OutputProxy        | OutputProxies        | One channel of a multichannel UGen. The SynthDef builder has to track connections to individual channels. OutputProxy is the individual connection                 |
 
 
 * Methods							   :noexport:
@@ -161,6 +162,7 @@
 | atKlank       |        | Get filter parameters from FormantTable, suitable for use in Klank                                                                                                |
 | clip          |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
 | clump         |        | Group the items of a flat array into equally-sized chunks. \cd{[0, 1, 2, 3, 4].clump(2)} returns \cd{[[0, 1], [2, 3], [4]]}                                       |
+| collect       |        | A looping structure, like \ci{do}, which collects the results of the loop function into a new collection. Like \ci{map} in many other languages                   |
 | cpsmidi       |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
 | curvelin      |        | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
 | differentiate |        | Returns an array $y$ where $y_0 = x_0 - 0$, $y_1 = x_1 - x_0$ and so on                                                                                           |
