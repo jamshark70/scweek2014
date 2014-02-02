@@ -1570,7 +1570,7 @@ doing in this case?
    \clsspl{OutputProxy}. Using "op" as an abbreviation for
    \clss{OutputProxy}:
 
-   #+latex: \cd{[op$_0$, op$_1$, op$_2$, ... op$_14$]}
+   #+latex: \cd{[op$_0$, op$_1$, op$_2$, ... op$_{14}$]}
 
 2. \mth{clump} separates the \clsspl{OutputProxy} into groups of five.
 
@@ -1591,20 +1591,21 @@ server works only with the UGens, placeholders and their connections,
 without worrying about /how/ the connections were arranged in the
 first place.
 
-** Karplus-Strong, banded waveguides
-*** Karplus-Strong, banded waveguides
+** Karplus-Strong
+*** Karplus-Strong
 **** Related to modal synthesis:
      - An \egls{exciter} feeds into a filter.
      - The exciter is noisy.
      - The filter shapes it into pitch.
 **** Different type of filter.
      - Modal synthesis uses ringing filters.
-     - Waveguides use feedback-delay filters.
+     - Karplus-Strong uses feedback-delay filters.
 
 *** Feedback-delay filters
 **** \eGlspl{feedback-delay filter} include:
      - \eGlspl{comb filter} :: Uses a simple delay line. The spectrum looks like teeth of a comb.
      - \eGlspl{allpass filter} :: Passes all input frequencies at the original volume (hence "allpass"), but changes the phases.
+#+latex: \glsadd{CombL}\glsadd{AllpassL}
 #+name: fbdelay1
 #+caption: Compare the effects of the two types of feedback-delay filters.
 #+begin_src {} -i
@@ -1676,6 +1677,136 @@ first place.
 ~pluck.clear;
 #+end_src
 
+*** Custom feedback
+**** \ugen{Pluck} includes only a very simple filter.
+     - Doesn't control the cutoff frequency directly.
+     - The control is just the amount of damping.
+**** For different filters, write the feedback loop explicitly.
+     This introduces a number of new server concepts.
+     - Feedback with \ugen{LocalIn} and \ugen{LocalOut}.
+     - Server \eglspl{control cycle}, delay and frequency.
+
+*** Feedback within a synth
+**** Signal flow is always UGen /input/ $\to$ /output/.
+     - UGens are ordered. Input UGens must calculate first.
+     - For feedback, an earlier UGen needs to get a signal from a later UGen.
+     - The normal mechanism cannot do this.
+**** \ugen{LocalIn} and \ugen{LocalOut} /can/ do it.
+     - Early in the synth: \ugen{LocalIn} says how many channels.
+     - Later: \ugen{LocalOut} receives that many channels as input.
+     - \ugen{LocalOut} passes the signal back to \ugen{LocalIn}.
+
+*** LocalIn/LocalOut example
+    - For now, concentrate on the \ugen{LocalIn} and \ugen{LocalOut}.
+    - On your own, puzzle out what the \ugen{SinOsc} is doing.
+#+latex: \glsadd{DelayL}\glsadd{TExpRand}\glsadd{Dust}
+#+name: localfb1
+#+caption: An echo delay, implemented by a LocalIn/LocalOut pair.
+#+begin_src {} -i
+~feedback = {
+   var delay, trig = Dust.kr(0.75),
+   sig = SinOsc.ar(TExpRand.kr(300, 600, trig), 0, 0.15)
+      * EnvGen.kr(Env.perc(0.01, 0.1), trig),
+   feedback = LocalIn.ar(1) * 0.9;  // decay
+   sig = sig + feedback;
+   delay = DelayL.ar(sig, 0.5, 0.5);
+   LocalOut.ar(delay);
+   sig.dup
+};
+~feedback.play;
+
+~feedback.clear;
+#+end_src
+
+*** Simplified signal flow
+    - This graphic removes the envelope and random frequencies.
+    - Imagine a connection from \ugen{LocalOut} to \ugen{LocalIn}.
+#+begin_center
+#+attr_latex: :height 2.1in
+[[../02-synth/img/localin-out-dot.png]]
+#+end_center
+
+*** Insert filtering
+**** This exposes a place to insert filtering.
+     - You need to filter before feeding back.
+     - \ugen{LocalOut} supplies the signal being fed back.
+     - So, filter before \ugen{LocalOut}.\\
+       (Or any other kind of processing.)
+#+begin_src {} -i
+   feedback = LocalIn.ar(1) * 0.9;  // decay
+   sig = sig + feedback;
+   delay = DelayL.ar(sig, 0.5, 0.5);
+   delay = LPF.ar(sig, 2000);  // <-- NEW
+   LocalOut.ar(delay);
+#+end_src
+**** Also try substituting \ugen{HPF}.
+
+*** Feedback and pitch
+**** If the delay time is short enough, you hear pitch.
+     - $f = \frac{1}{t}$ and $t = \frac{1}{f}$
+     - So you can set the delay time to \cd{1 / freq}.
+**** Change the \ci{\textasciitilde feedback} example for a pitch of 110 Hz.
+     - You might not hear much pitch at first. Why? \pause
+     - Try changing back to \ugen{LPF}.
+     - What should you change to make the pitch sustain longer?
+
+*** Feedback and tuning
+**** But... the pitch sounds too low.
+     - If the pitch is too low, the delay time must be too long.
+     - What would add extra delay time? \pause
+**** \eGls{block calculation} in the server.
+     - To save CPU time, the server calculates several audio samples in one block.
+     - It must finish the whole block before feeding back into \ugen{LocalIn}.
+     - \ugen{LocalIn}'s output is one block's duration late.
+
+*** Notes (blocks)					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** How does block calculation save CPU time?
+UGens process their signals in C++ functions. When the server needs
+the output from a particular UGen, it must call into the appropriate
+\ci{\textunderscore next} function. Every function call and return
+takes a little CPU time. This time is extremely short, but if hundreds
+or thousands of UGens are active, the time multiplies dramatically.
+
+Without block calculation, you would need a function call and return
+for every UGen, /every audio sample/. That ends up being a lot of time
+spent only on flow of control, in addition to the actual signal
+processing.
+
+Block calculation reduces the UGen function calls to happen only once
+per block. By default, the block size is 64 samples. The server calls
+into an audio rate UGen and gets 64 samples instead of just one, and
+it can issue the function calls $\frac{1}{64}$ as often. Signal
+processing still takes the same amount of time, but CPU time for flow
+of control goes down.
+
+*** Frequency limit from block size
+**** The control duration sets the upper limit on frequency.
+     - When using \ugen{LocalIn}/\ugen{LocalOut} to make pitch, the shortest possible delay is \ugen{ControlDur}.
+     - Maximum frequency is $\frac{1}{t} = \frac{samplerate}{blocksize}$.
+     - With default settings, $\frac{44100}{64}$ = 689.0625 Hz $\approx$ MIDI note 76 (E).
+     - That's not a very high note.
+
+*** Higher frequencies
+**** How to raise the frequency limit?
+     - Start the server with a smaller block size.
+       - Must be a power of two: 1, 2, 4, 8, 16, 32, 64...
+       - \cd{s.options.blockSize = 16} before booting the server, to get two more octaves.
+       - The server will start using more CPU.
+     - Or, use a trick for single-sample feedback.
+       - No time to discuss the details. See the example files.
+#+name: ssfeedback1
+#+caption: Code snippet to open the single-sample feedback example files.
+#+begin_src {} -i :var extract='t
+(Platform.resourceDir +/+
+   "examples/demonstrations/single_sample_feedback.scd"
+).openDocument;
+(Platform.resourceDir +/+
+   "examples/demonstrations/single_sample_feedback_02.scd"
+).openDocument;
+#+end_src
 
 
 * Effects common in subtractive synthesis 			   :noexport:
