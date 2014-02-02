@@ -1808,6 +1808,17 @@ of control goes down.
 ).openDocument;
 #+end_src
 
+*** Karplus-Strong exercises
+    1. Start with a feedback-delay plucked string synth.\\
+       - You may model it after Listing [[localfb1]].
+       - Replace the \ci{SinOsc} with a noise generator, and use a \ci{t\textunderscore trig} argument.
+       - Add a filter into the chain.
+    2. Run a \ci{\textbackslash psSet} pattern to play notes.
+    3. Try different noise generators. How does it change the sound?
+    4. Try different envelopes on the noise generator.
+       - Shorter and longer.
+
+
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
