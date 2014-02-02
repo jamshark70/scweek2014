@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Events and Sequencing						   :noexport:
+* Events and Sequencing
 ** Events and synthesis control
 *** What are Events?
 **** \clsspl{Event} represent a pre-defined action.
@@ -346,7 +346,7 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
      5. With \ci{\textbackslash psSet}, what's the difference between
         \ci{\textbackslash legato} < 1 and > 1?
 
-* Subtractive synthesis						   :noexport:
+* Subtractive synthesis
 ** Overview
 *** Subtractive synthesis
 **** One of the most basic techniques
@@ -774,7 +774,7 @@ Close the old GUI window, and try different \ci{rq} values.
      - Modulation means that the parameters are not constant.
      - We'll talk about that next.
 
-* Modulation: Low-Frequency Oscillators				   :noexport:
+* Modulation: Low-Frequency Oscillators
 ** Modulation: Low-Frequency Oscillators
 *** Modulation
 **** Little secret: Synthesis techniques are sometimes /really simple/.
@@ -1818,7 +1818,204 @@ of control goes down.
     4. Try different envelopes on the noise generator.
        - Shorter and longer.
 
+* Frequency modulation (FM) synthesis
+** John Chowning's experiment
+*** John Chowning's discovery of FM
+**** Let's replicate a famous 1967 experiment by John Chowning.
+     - We will /modulate/ \glsadd{modulation}a sinewave's frequency by another sinewave.
+     - This led to the discovery of \egls{frequency modulation} (FM) synthesis.
+**** Terms
+     - \egls{modulator} :: The signal controlling the modulation.
+     - \egls{carrier} :: The output signal, subject to the modulation.
+     - \egls{modulation index} :: The amount of modulation.
 
+*** The FM experiment: Code
+#+name: fm1
+#+caption: The first FM synthesis experiment, translated to SuperCollider.
+#+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+
+~freq = 440;
+
+~modulator.addSpec(\mod_freq, [1, 880, \exp]);
+~modulator.addSpec(\mod_index, [0, 5, 2]);
+~modulator = { |mod_freq = 5, mod_index = 0|
+   SinOsc.ar(mod_freq, 0, mod_index);
+};
+
+~carrier = { |amp = 0.1|
+   SinOsc.ar(~freq * (~modulator.ar + 1), 0, amp).dup
+};
+~carrier.play;
+#+end_src
+
+*** The experiment
+    1. To hear the modulation, raise the \ci{mod\textunderscore index}.
+    2. Now, slowly, bring up \ci{mod\textunderscore freq}.\\
+       What happens when you can't hear individual frequency sweeps anymore? \pause
+**** The sound's \egls{spectrum} changes!
+     General observations you can make:
+     - What's the effect of raising or lowering the modulation index?
+     - What happens when the modulator's frequency is an exact multiple of the carrier frequency?
+
+*** Note on linear vs. exponential			    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+You might recall from the discussion of \glspl{LFO} that frequency is
+an exponential scale. But, in Listing [[fm1]], we are adding the modulator
+signal to the frequency, instead of multiplying. This is important to
+the way FM synthesis works. As written above, when the modulation
+index is > 1, the carrier frequency will sometimes be negative. The
+distortion of the waveshape that comes from the negative frequency is
+part of the distinctive color of FM synthesis.
+
+In fact, if you rewrite Listing [[fm1]] to convert the modulator into an
+exponential range and multiply directly by the modulator (not the
+modulator + 1 as above), you'll find that it pushes the perceived
+pitch higher.
+
+A variant on frequency modulation, called \egls{phase modulation}
+avoids this problem of frequency deviation.
+
+*** Modulator frequency
+**** Integer multiples of the main frequency produce "harmonic" \glspl{spectrum}.
+     - A harmonic spectrum is what we typically call a "musical" sound.
+     - This is so important that we usually write the modulator frequency as a /ratio/ (multiplier).
+     - Then you get harmonic spectra with ratio = 1, 2, 3 etc.
+**** Now you can change \ci{\textasciitilde freq} in the GUI, and the modulator moves with it.
+#+name: fm2
+#+caption: Convert the modulator to use a frequency ratio instead of a direct frequency.
+#+begin_src {} -i
+~modulator.addSpec(\ratio, [0.1, 8, 2]);
+~modulator = { |ratio = 1, mod_index = 0|
+   SinOsc.ar(~freq * ratio, 0, mod_index);
+};
+#+end_src
+
+** Refining FM synthesis
+*** FM synthesis in practice
+**** One \gls{modulator}-\gls{carrier} pair is boring.
+     Refinements:
+     - More modulators and carriers, connected in various arrangements.\\
+       Yamaha FM synthesizers called the arrangements "algorithms."
+     - Detuning modulators and carriers.
+     - More complex waveforms.\\
+       Introducing: \egls{wavetable} oscillators.
+     - Envelopes and LFOs applied to modulator and carrier parameters.
+
+*** Modulator and carrier layout
+**** Lots of room for creativity here.
+     Three main techniques:
+#     #+attr_latex: :options [A.]
+     1. Stack of modulators.
+     2. Multiple carriers, mixed together.
+     3. Feedback modulation.
+     #+begin_center
+     #+attr_latex: :height 1.25in
+     [[../02-synth/img/fm-algorithm-chart.pdf]]
+     #+end_center
+**** All are easy to implement using ProxySpace modules.
+
+*** Stack of modulators
+    - First modulator, exactly as in Listing [[fm1]].
+    - Second modulator includes the first as a modulation expression.
+    - You can keep going three or four deep.
+#+name: fm3
+#+caption: Add another modulator to the chain.
+#+begin_src {} -i
+~mod2.addSpec(\ratio, [0.1, 8, 2]);
+~mod2.addSpec(\mod_index, [0, 25, 2]);
+~mod2 = { |ratio = 2, mod_index = 0|
+   SinOsc.ar(~freq * ratio, 0, mod_index);
+};
+~modulator = { |ratio = 1, mod_index = 0|
+   SinOsc.ar(~freq * ratio * (~mod2.ar + 1), 0, mod_index);
+};
+#+end_src
+
+*** Multiple carriers
+**** No code example---this one is pretty simple.
+     - The \ci{amp} parameter is important.
+     - Controls the balance between different components.
+
+*** Feedback modulation
+**** Feedback makes some fantastic ugly noises!
+     - For feedback, simply refer to the module that should be fed back:
+       \ci{\textasciitilde modulator.ar} in the example.
+     - You can also use \ugen{LocalIn} and \ugen{LocalOut}, but this is limited to one module.
+     - By reference, you can create longer feedback chains.
+     - *Note:* Add a new 0--1 parameter for feedback.
+#+name: fm4
+#+caption: Feedback modulation.
+#+begin_src {} -i
+~modulator.addSpec(\feedback, [0, 1]);
+~modulator = { |mod_freq = 5, mod_index = 0, feedback = 0|
+   SinOsc.ar(mod_freq * ((~modulator.ar * feedback) + 1),
+      0, mod_index);
+};
+#+end_src
+
+*** Detuning, Envelopes and LFOs
+**** Detuning the modulator adds richness to the sound.
+     - You can add an offset in Hz.
+     - Or multiply by a detune factor, like we did before.
+**** Envelopes and LFOs
+     Very useful trick: \Gls{envelope} on the \gls{modulation index}.
+     - As the modulation index goes up, the sound gets brighter.
+     - Envelopes can produce lots of shapes and colors for a note's attack.
+     - This is one of the best features of FM synthesis.
+
+** Wavetable oscillators
+*** Modulating more complex wave shapes
+**** Wavetables give you more interesting sound, "for free."
+     - Essentially no CPU cost.
+**** Steps:
+     1. Make the wavetable in a server \clss{Buffer}.\\
+	The buffer must be in \egls{wavetable format}.
+     2. Provide the buffer number to a wavetable oscillator.\\
+	\ugen{Osc} and \ugen{COsc} for now.
+
+*** Wavetable buffers
+**** \clsspl{Buffer} hold audio data in the server.
+     - Wavetables, audio samples, recordings.
+**** Steps for using wavetable buffers:
+     1. Allocate memory for the buffer (\mth{alloc}).
+	- Put the buffer object in a variable.
+	- It's helpful to \mth{free} whatever was in the variable, to avoid leaking memory.
+     2. Fill the buffer with a sum of sinewaves:\\
+	\mth{sine1}, \mth{sine2}, \mth{sine3}
+#+name: wt1
+#+caption: A few partials of a sawtooth wave, in a wavetable buffer. Run these statements one by one.
+#+begin_src {} -i
+b.free;
+b = Buffer.alloc(s, 2048, 1);
+b.sine1((1 .. 3).reciprocal);
+b.plotWavetable;
+#+end_src
+
+*** Wavetable oscillators
+**** Use wavetable \glspl{oscillator} in place of other oscillators.
+     - \ugen{Osc} :: A simple wavetable oscillator.
+     - \ugen{COsc} :: A chorusing wavetable oscillator: Two waves at slightly different frequencies.
+**** *Note:* \ugen{COsc} is not a good idea for FM synthesis.
+     Detuning means that the frequency ratio between \gls{carrier} and \gls{modulator} will no longer be an integer.
+#+name: wt2
+#+caption: Substitute a wavetable oscillator in the carrier, in place of the earlier SinOsc.
+#+begin_src {} -i
+~carrier = { |amp = 0.1|
+   Osc.ar(b, ~freq * (~modulator.ar + 1), 0, amp).dup
+};
+
+// Run these statements alternately, and hear the result.
+b.sine1([1]);
+b.sine1((1 .. 3).reciprocal);
+#+end_src
+
+*** Symmetrical modulator waveform				   :noexport:
+*** Asynchronous buffer ops					   :noexport:
+
+* Sample playback and manipulation				   :noexport:
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus

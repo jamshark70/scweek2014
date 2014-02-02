@@ -16,6 +16,7 @@
 | block calculation      |               | A way to make signal processing more efficient, by calculating several samples of audio in one cycle and eliminating many flow-of-control instructions                                |
 | breakpoint             |               | The endpoint of a line segment in an envelope                                                                                                                                         |
 | Brownian motion        |               | A ``random walk'': Imagine a particle that moves a random amount in each step. The trace it leaves behind is Brownian motion                                                          |
+| carrier                |               | In frequency or phase modulation synthesis, the signal being modulated. The carrier is connected to the audio output                                                                  |
 | chaotic                |               | Chaotic functions are dynamic systems with large differences in the results based on small differences in the inputs. They sound like something between normal waves and random noise |
 | class                  |               | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                                            |
 | clock                  |               | A scheduler. Functions or Routines scheduled on the clock will wake up at the given time, and they will reschedule if the return value is a number                                    |
@@ -39,6 +40,7 @@
 | feedback-delay filter  |               | A filter based on delay a signal, and feeding the delayed copy back to the input. Comb and Allpass filters are feedback-delay types                                                   |
 | filter                 |               | A signal processor that changes a sound's spectrum                                                                                                                                    |
 | formant                |               | A formant is one of the resonances in the vocal cavity, coloring the ``buzz'' coming from the vocal cords. The right combination of formants can produce vowel sounds                 |
+| frequency modulation   |               | A type of synthesis that produces complex spectra by modulating the frequency of a simple waveform                                                                                    |
 | frequency response     |               | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                                        |
 | gate                   |               | Related to triggers. The gate is ``open'' when > 0, and closed when $\le$ 0. Used with sustaining envelopes such as ADSR                                                              |
 | global                 |               | Referring to a variable that is available everywhere in the system. Interpreter variables a--z are global                                                                             |
@@ -65,12 +67,15 @@
 | mode                   |               | In a vibrating body, a mode is one of the consistent patterns of vibration. Real objects vibrate in many modes at once, producing many frequencies                                    |
 | modular                |               | This workshop presents a modular approach to synthesis: Each component performs a small part of the work, and you can replace components freely                                       |
 | modulation             |               | Using a signal to control a synthesis parameter. Adds variety to simple synthesis techniques                                                                                          |
+| modulation index       |               | In frequency or phase modulation synthesis, the amplitude of the modulator. A higher index produces a more complex spectrum                                                           |
+| modulator              |               | In frequency or phase modulation synthesis, the signal that controls the carrier's behavior                                                                                           |
 | multichannel expansion |               | Math operators and UGens ``expand'' an array of inputs into an array of results: [1, 2] * 2 = [2, 4]. Convenient for stereo processing                                                |
 | Nyquist                |               | In digital sampling, the highest possible frequency is $\frac{sr}{2}$, where $sr$ is the sampling rate                                                                                |
 | ordered                |               | Of a collection, indicates that the collection remembers the order of items, e.g., Array, List                                                                                        |
 | OSC                    |               | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                                   |
 | oscillator             |               | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                                            |
 | pattern                |               | An object that describes a stream of values without requiring the programming logic to be repeated. The pattern object makes Streams that perform the calculations                    |
+| phase modulation       |               | Similar to frequency modulation, but the modulator is applied to the oscillator's phase input. This avoids a problem of FM, in which the frequency may deviate off center             |
 | pitch class            | pitch classes | A pitch number, without considering the octave. Usually C = 0, going up to B = 11                                                                                                     |
 | polymorphism           |               | In Object-Oriented Programming, a single method name can do different things to different objects. Functions and Events both \ci{play}, but not the same way                          |
 | proxy                  | proxies       | A placeholder that allows you to define connections between modules independent of each module's content                                                                              |
@@ -92,12 +97,15 @@
 | scsynth                |               | SuperCollider synthesis server. Receives OSC messages and produces audio                                                                                                              |
 | segment                |               | In an envelope, a breakpoint consisting of a target value, time and curve                                                                                                             |
 | selector               |               | In a method call, the method's name                                                                                                                                                   |
+| spectrum               | spectra       | The frequency content of a sound, measured as the amount of energy at different frequencies                                                                                           |
 | square wave            |               | A pulse wave with a width of 50\%                                                                                                                                                     |
 | triangle wave          |               | A waveform made of straight, diagonal lines up and down                                                                                                                               |
 | trigger                |               | In the server, a trigger happens when a signal crosses 0: i.e., when the previous sample was $\le$ 0 and the current sample is > 0                                                    |
 | UGen                   |               | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                                |
 | unordered              |               | Of a collection, indicates that the collection may rearrange the items' order for faster lookup, e.g., Set, Dictionary                                                                |
 | variable               |               | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                                       |
+| wavetable              |               | A single cycle of a waveform stored in a sampling buffer, or an oscillator that plays back the wavetable at a given frequency                                                         |
+| wavetable format       |               | A way of storing repeating waveforms to make wavetable oscillators more efficient. A wavetable buffer needs twice as many numbers as audio samples in the waveform                    |
 
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
@@ -124,6 +132,7 @@
 | IdentitySet        |                      | Like Set, but restricts the types of items for faster membership testing                                                                                           |
 | List               |                      | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                                                         |
 | NodeProxy          | NodeProxies          | A hot-swappable placeholder for a Synth on the server                                                                                                              |
+| OutputProxy        | OutputProxies        | One channel of a multichannel UGen. The SynthDef builder has to track connections to individual channels. OutputProxy is the individual connection                 |
 | Pbind              |                      | An Event Pattern that collects values from child patterns under their names                                                                                        |
 | Pdef               |                      | Global storage for pattern proxies, where the patterns produce sequencing events                                                                                   |
 | Pdefn              |                      | Global storage for pattern proxies, where the patterns produce simple values                                                                                       |
@@ -142,6 +151,7 @@
 | Scale              |                      | A repository of scale and mode patterns. \cd{Scale.ionian} gives you a major scale, [0, 2, 4, 5, 7, 9, 11]                                                         |
 | ServerOptions      |                      | Configuration options for scsynth, including soundcard, are variables in this class. \cd{s.options} controls the bootup options for \ci{s}                         |
 | Set                |                      | An unordered collection of items, optimized for iteration and testing membership: \cd{set.do}, \cd{set.includes(item)}                                             |
+| Signal             |                      | A special-purpose array that can hold only numbers. It supports some methods that are valid only for audio data                                                    |
 | SoundFile          |                      | Read and write audio files from the language (no server involvement). See \ci{Buffer} for reading and writing files in the server                                  |
 | Stream             |                      | A category of classes representing sequences of values, of which \ci{Routine} is the most common. One value is returned by calling \ci{next} on the stream         |
 | String             |                      | A list of characters that behaves like text                                                                                                                        |
@@ -153,7 +163,7 @@
 | Tdef               |                      | Global storage for Tasks. Give the task function a name, and Tdef will treat the function as a Task                                                                |
 | TdefAllGui         |                      | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
 | TempoClock         |                      | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
-| OutputProxy        | OutputProxies        | One channel of a multichannel UGen. The SynthDef builder has to track connections to individual channels. OutputProxy is the individual connection                 |
+| Wavetable          |                      | Very much like Signal, but it's data should be in wavetable format                                                                                                 |
 
 
 * Methods							   :noexport:
@@ -165,7 +175,9 @@
 | adsr          |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                      |
 | ar            |        | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
 | asr           |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                       |
+| asSignal      |        | Convert a Wavetable object back into a Signal                                                                                                                     |
 | asStream      |        | Produce a Stream from another object (usually a Pattern)                                                                                                          |
+| asWavetable   |        | Given a single cycle of a waveform, as a \ci{Signal} object, convert it to wavetable format. The resulting Wavetable will be twice as big as the Signal           |
 | at            |        | Retrieve an item from an indexed collection (e.g. Array or Dictionary) by its index. Shortcut syntax: \cd{collection[index]}                                      |
 | atKlank       |        | Get filter parameters from FormantTable, suitable for use in Klank                                                                                                |
 | blockSize     |        | A variable in \ci{ServerOptions}, setting the number of samples in one control block. The default is 64                                                           |
@@ -224,6 +236,11 @@
 | while         |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                         |
 | wrap          |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                             |
 | yield         |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                              |
+| sine1         |        | Fill a Buffer with a waveform based on harmonic amplitudes, in wavetable format                                                                                   |
+| sine2         |        | Fill a Buffer with a waveform based on harmonic frequencies and amplitudes, in wavetable format                                                                   |
+| sine3         |        | Fill a Buffer with a waveform based on harmonic frequencies, amplitudes and phases, in wavetable format                                                           |
+| alloc         |        | \cd{Buffer.alloc(server, numFrames, numChannels)} reserves memory in the server for a new buffer                                                                  |
+| free          |        | Removes a resource that was previously allocated, including Buffers and MIDI or OSC responders                                                                    |
 
 
 * UGens								   :noexport:
@@ -283,6 +300,10 @@
 | Info  | SampleDur    | \cd{SampleDur.ir} in a synthesis function provides the duration of one sample = $\frac{1}{sr}$                                                                 | none                                                             |
 | Info  | ControlRate  | \cd{ControlRate.ir} in a synthesis function provides the server's control rate = $\frac{sr}{blocksize}$                                                        | none                                                             |
 | Info  | ControlDur   | \cd{ControlDur.ir} in a synthesis function provides the duration of one control block = $\frac{blocksize}{sr}$                                                 | none                                                             |
+| Osc   | Osc          | The most basic wavetable oscillator                                                                                                                            | bufnum, freq, phase                                              |
+| Osc   | COsc         | A chorusing wavetable oscillator, which detunes two frequencies by the given number of beats                                                                   | bufnum, freq, beats                                              |
+| Osc   | VOsc         | A ``variable'' wavetable oscillator, which transitions smoothly between adjacent wavetable buffers                                                             | bufpos, freq, phase                                              |
+| Osc   | VOsc3        | A three-frequency detuned wavetable oscillator, like VOsc. Very useful to simulate band-limited waveforms at lower CPU cost                                    | bufpos, freq1, freq2, freq3                                      |
 
 
 * src blocks 							   :noexport:
