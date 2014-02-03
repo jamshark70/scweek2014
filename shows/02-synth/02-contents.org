@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Events and Sequencing
+* Events and Sequencing						   :noexport:
 ** Events and synthesis control
 *** What are Events?
 **** \clsspl{Event} represent a pre-defined action.
@@ -346,7 +346,7 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
      5. With \ci{\textbackslash psSet}, what's the difference between
         \ci{\textbackslash legato} < 1 and > 1?
 
-* Subtractive synthesis
+* Subtractive synthesis						   :noexport:
 ** Overview
 *** Subtractive synthesis
 **** One of the most basic techniques
@@ -774,7 +774,7 @@ Close the old GUI window, and try different \ci{rq} values.
      - Modulation means that the parameters are not constant.
      - We'll talk about that next.
 
-* Modulation: Low-Frequency Oscillators
+* Modulation: Low-Frequency Oscillators				   :noexport:
 ** Modulation: Low-Frequency Oscillators
 *** Modulation
 **** Little secret: Synthesis techniques are sometimes /really simple/.
@@ -1180,7 +1180,7 @@ ffreq = 2300
     3. The pitches don't slide. Look up \ugen{Lag}'s help file, and
        apply it to the oscillator's frequency.
 
-* Modal synthesis
+* Modal synthesis						   :noexport:
 ** Ringing filters
 *** What's a \egls{ringing filter}?
     Let's compare a bandpass filter (\ugen{BPF}) against a ringing filter (\ugen{Ringz}).
@@ -1302,7 +1302,7 @@ p.gui;
 **** Exercises for you:
     - Rewrite \cd{\textasciitilde exciter} to use a noise generator.
     - Multiply by a percussive envelope.
-    - Also add a trigger \ci{t \textunderscore trig} argument.
+    - Also add a trigger \ci{t\textunderscore trig} argument.
     - Drive the trigger argument with a \ci{\textbackslash psSet} pattern.
 **** These exercises prepare for the next topic.
 
@@ -1907,7 +1907,6 @@ avoids this problem of frequency deviation.
 *** Modulator and carrier layout
 **** Lots of room for creativity here.
      Three main techniques:
-#     #+attr_latex: :options [A.]
      1. Stack of modulators.
      2. Multiple carriers, mixed together.
      3. Feedback modulation.
@@ -1966,6 +1965,17 @@ avoids this problem of frequency deviation.
      - Envelopes can produce lots of shapes and colors for a note's attack.
      - This is one of the best features of FM synthesis.
 
+*** FM exercises
+    1. Use envelopes on the carrier and modulator to make a sound like an electric piano.
+       - The carrier envelope controls volume.\\
+	 What's the volume curve of an electric piano?
+       - The modulator envelope controls brightness.\\
+	 What's the brightness curve of an electric piano?
+    2. Try different modulator frequency ratios.
+       - What do different integers sound like?
+       - What about non-integers?
+       - What happens when the ratio is exactly 0.5?
+
 ** Wavetable oscillators
 *** Modulating more complex wave shapes
 **** Wavetables give you more interesting sound, "for free."
@@ -2012,8 +2022,155 @@ b.sine1([1]);
 b.sine1((1 .. 3).reciprocal);
 #+end_src
 
-*** Symmetrical modulator waveform				   :noexport:
-*** Asynchronous buffer ops					   :noexport:
+*** Prefer simpler wavetables
+**** For FM synthesis, use simpler waveforms.
+     - FM synthesis adds more frequencies to the carrier.
+     - If the carrier is already complex, the result may be too noisy.
+     - I recommend 3--5 partials at most.
+**** Extra partials in the \egls{carrier}.
+     Like adding partials to a simple waveform. Good for organ sounds.
+**** Extra partials in the \egls{modulator}.
+     Oddly, this seems to soften the tone color (make it less harsh).
+
+*** Symmetrical modulator waveform
+**** A wavetable for a \gls{modulator} should be /symmetrical/.
+     - The modulator controls the \gls{carrier}'s deviation above the central pitch.
+     - If the modulator is symmetrical, the deviation is equal, above and below.
+     - If it's asymmetrical, the carrier goes further above than below, or vice versa.
+       You'll hear a different pitch.
+#+latex: \glsadd{sine2}
+#+name: wtSymm
+#+caption: A plot of symmetrical vs. asymmetrical waveforms. Run the lines one by one.
+#+begin_src {} -i
+b.sine1((1 .. 3).reciprocal);
+b.plotWavetable;
+
+b.sine2([1, 2, 5.5], (1 .. 3).reciprocal);
+b.plotWavetable;
+#+end_src
+
+*** Notes on symmetry					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+In fact, the spectrum doesn't have to look symmetrical. The only
+requirement is that its energy must be equally distributed above and
+below 0: mathematically, $\sum_{i=0}^{n-1}{y_i} = 0$.
+
+For example, shifting the \eglspl{phase} of a symmetrical wavetable
+produces an asymmetrical graph. But the sum of the samples is
+still 0. (It might not be exactly 0 because of floating-point rounding
+error, but it will be very close.) If you use this wavetable as a
+modulator, the carrier's pitch will not drift.
+
+#+begin_src {} -i
+y = Signal.sineFill(512,
+	(1..3).reciprocal,
+	Array.fill(3, { 2pi.rand })
+);
+
+y.plot;  // Looks asymmetrical
+y.sum;   // very close to 0
+#+end_src
+
+*** Listen to an asymmetrical modulator
+**** Two things happen with the asymmetrical \gls{modulator}:
+     - The \gls{spectrum} becomes \gls{inharmonic}.
+     - The main pitch drifts away from center.
+     - To hear the pitch drift, set \ci{mod\textunderscore ratio} to 1.04.
+     - The spectrum becomes more \gls{harmonic}.\\
+       So, the actual average pitch of the carrier is 4\% higher than given.
+#+name: wtSymm2
+#+caption: Switch the carrier back to SinOsc, and the modulator to the asymmetrical wavetable.
+#+begin_src {} -i
+(
+~carrier = { |amp = 0.1|
+   SinOsc.ar(~freq * (~modulator.ar + 1), 0, amp).dup
+};
+~modulator = { |ratio = 1, mod_index = 0|
+   Osc.ar(b, ~freq * ratio, 0, mod_index);
+};
+)
+#+end_src
+
+*** Asynchronous buffer ops
+**** *IMPORTANT:* Buffer operations are not instantaneous!
+     - When you allocate or fill a \clss{Buffer}, it will take a little time.
+     - You have to wait until it's finished before using the buffer.
+     - This is why the earlier examples said to run one statement at a time.
+**** In bigger code blocks, \mth{sync} the buffer operations.
+     - Prepare the buffers in a \clss{Routine} or \clss{Task}.\\
+       Shortcut method: \mth{fork}.
+     - Write \cd{s.sync;} before operations that depend on previous operations.\\
+       That is, \mth{alloc} $\to$ \mth{sync} $\to$ \mth{sine1}.
+
+*** Example: Filling a wavetable in one shot
+    If you need to fill a buffer at one go, do it like this.
+#+name: wtAsync1
+#+caption: Using sync for buffer operations.
+#+begin_src {} -i
+fork {
+   b = Buffer.alloc(s, 2048, 1);
+   s.sync;
+   b.sine1((1..3).reciprocal);
+};
+#+end_src
+
+*** Other methods					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+For simplicity, the presentation slides cover just one way to handle
+\gls{asynchronous} buffer operations. The \mth{sync} approach is
+reliable in all cases for buffer preparation. It works for other
+asynchronous actions, like sending \clsspl{SynthDef}.
+
+SC has two other mechanisms for asynchronous behaviors.
+
+*Completion messages.* Some server messages, such as buffer
+allocation, allow another message to be attached. This message will
+execute after the main message finishes. This is another shortcut for
+filling a wavetable.
+
+#+begin_src {} -i
+b = Buffer.alloc(s, 2048, 1, completionMessage: { |buf|
+   buf.sine1Msg((1..3).reciprocal);
+});
+#+end_src
+
+The \ci{completionMessage} is usually written as a function. In this
+example, the \ci{sine1Msg} needs to know the buffer number, but you
+don't know the buffer number until code execution enters
+\mth{alloc}. The \ci{completionMessage} function receives the buffer
+object, with the buffer number; then the function can build the
+message.
+
+Note also that you must use \ci{sine1Msg} in this case, to get the
+message. If you use \mth{sine1} instead, it will try to fill the
+buffer before allocating the buffer---which obviously will fail.
+
+*Action functions.* These are necessary to receive information from
+the server. To get values from a buffer, the language must send a
+request to the server and wait for the reply. After the reply comes
+in, it will run a function that you choose. Assuming \ci{b} has
+already been filled:
+
+#+begin_src {} -i
+b.getn(0, 10, { |data| data.postln });
+#+end_src
+
+*** Summary: FM synthesis
+**** Basic formulas:
+     - \eGls{modulator}: \cd{oscil.ar(freq * ratio, mul: mod\textunderscore index)}.
+     - \eGls{carrier}: \cd{oscil.ar(freq * (mod + 1))}.
+**** Parameters:
+     - Ratio :: Determines the type of \gls{spectrum}. Integer ratios
+                produce \egls{harmonic} spectra; non-integers produce
+                \egls{inharmonic} spectra.
+     - Modulation index :: Brightness, or complexity, of the resulting
+          sound. An envelope on the index can produce many types of
+          attacks.
+**** Wavetable oscillators can enrich the sound, at no CPU cost.
 
 * Sample playback and manipulation				   :noexport:
 

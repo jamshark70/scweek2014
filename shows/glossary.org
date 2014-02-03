@@ -10,6 +10,7 @@
 | array                  |               | One type of collection, consisting of an ordered list of items, enclosed in square brackets \cd{[ ]}                                                                                  |
 | arrayed control        |               | An array of control inputs to a synth, grouped under one name. You can send flat (one-dimensional) arrays of values to that name                                                      |
 | assignment             |               | To replace a variable's current value with a new object. Written \cd{name = value}                                                                                                    |
+| asynchronous           |               | An operation that finishes after the program has already moved on. SC handles asynchronous actions by completion functions or syncing                                                 |
 | audio rate             |               | The UGen rate that produces one output value for every sample going to the audio hardware. Use for audio signals                                                                      |
 | band-limited           |               | A spectrum containing a finite range of frequencies. Important because digital audio cannot represent infinite frequencies                                                            |
 | beat                   |               | The unit of time in a TempoClock. A beat's duration depends on the clock's tempo, given in beats per second. If the tempo is 2 bps, 1 beat = 0.5 seconds                              |
@@ -42,12 +43,15 @@
 | formant                |               | A formant is one of the resonances in the vocal cavity, coloring the ``buzz'' coming from the vocal cords. The right combination of formants can produce vowel sounds                 |
 | frequency modulation   |               | A type of synthesis that produces complex spectra by modulating the frequency of a simple waveform                                                                                    |
 | frequency response     |               | Of a filter, the relative change of amplitude at different frequencies. Usually plotted as gain over frequency                                                                        |
+| fundamental            |               | The lowest frequency of a harmonic series. In a pitched sound, the fundamental is the main pitch you hear                                                                             |
 | gate                   |               | Related to triggers. The gate is ``open'' when > 0, and closed when $\le$ 0. Used with sustaining envelopes such as ADSR                                                              |
 | global                 |               | Referring to a variable that is available everywhere in the system. Interpreter variables a--z are global                                                                             |
+| harmonic               |               | (n) An integer multiple of a fundamental frequency. (adj) Describes a spectrum where the frequencies are in harmonic (integer) relationships                                          |
 | imperative             |               | A style of programming focusing on precise instructions---commands---that the computer should execute. Compare ``declarative'' programming                                            |
 | impulse                |               | In theory, an infinitely short burst of sound. In practice, a single non-zero sample (shortest possible digital sound) surrounded by silence                                          |
 | impulse response       |               | A filter's output when given a single-sample impulse in the input. This is one way to describe a filter's behavior                                                                    |
 | infinite loop          |               | A programming error in which a loop never stops. The loop will try to execute forever, blocking all other activities in sclang                                                        |
+| inharmonic             |               | In an inharmonic spectrum, the frequencies are not integer multiples of a fundamental. Noisy and metallic sounds often have inharmonic components                                     |
 | initial rate           |               | The UGen rate that calculates one output value at the beginning of the synth, and holds it as a constant                                                                              |
 | interpreter            |               | Referring to the single-letter variables a--z                                                                                                                                         |
 | IOI                    |               | ``Inter-Onset Interval'': The amount of time between successive note beginnings. SuperCollider Events refer to this as \ci{delta}                                                     |
@@ -75,6 +79,7 @@
 | OSC                    |               | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                                   |
 | oscillator             |               | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                                            |
 | pattern                |               | An object that describes a stream of values without requiring the programming logic to be repeated. The pattern object makes Streams that perform the calculations                    |
+| phase                  |               | The starting angle, usually given in radians, of a sine wave or any cyclical waveform---effectively, a horizontal shift that doesn't affect the wave's shape                          |
 | phase modulation       |               | Similar to frequency modulation, but the modulator is applied to the oscillator's phase input. This avoids a problem of FM, in which the frequency may deviate off center             |
 | pitch class            | pitch classes | A pitch number, without considering the octave. Usually C = 0, going up to B = 11                                                                                                     |
 | polymorphism           |               | In Object-Oriented Programming, a single method name can do different things to different objects. Functions and Events both \ci{play}, but not the same way                          |
@@ -84,6 +89,7 @@
 | pulse width            |               | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                                              |
 | Q                      |               | Short for a filter's \emph{quality}                                                                                                                                                   |
 | quality                |               | The ``precision'' of a filter. High Q produces sharp slopes in the frequency response, narrower bandwidth and higher resonance. Mathematically, $\frac{f_c}{\Delta f}$                |
+| radian                 |               | A measure of angle. $2\pi$ radians = $360$\textdegree. Much of audio theory is based on trigonometry, where radians are more convenient                                               |
 | rate                   |               | Of a UGen, its calculation rate: audio rate, control rate or initial rate                                                                                                             |
 | receiver               |               | In a method call, the object that determines which method definition is used                                                                                                          |
 | releaseNode            |               | In an envelope, the breakpoint where the envelope generator will pause (or loop back) as long as ``gate'' > 0                                                                         |
@@ -173,6 +179,7 @@
 | add           |        | For SynthDefs, add the definition into the server so that it can be played. For Collections, add a new item                                                       |
 | addSpec       |        | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
 | adsr          |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                      |
+| alloc         |        | \cd{Buffer.alloc(server, numFrames, numChannels)} reserves memory in the server for a new buffer                                                                  |
 | ar            |        | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
 | asr           |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                       |
 | asSignal      |        | Convert a Wavetable object back into a Signal                                                                                                                     |
@@ -197,6 +204,8 @@
 | fill          |        | \cd{Array.fill(size, item)} makes a new Array of \ci{size} elements based on \ci{item}. Functions are evaluated (good for random numbers)                         |
 | flat          |        | Convert any nested array into a single array, e.g. \cd{[[0, 1, 2], [3, 4]].flat} returns \cd{[0, 1, 2, 3, 4]}                                                     |
 | fold          |        | Constrain a number within a range. The boundaries are like mirrors: A value above the maximum gets reflected back into the range                                  |
+| fork          |        | \cd{\{ ... \}.fork} or \cd{fork \{ ... \}} is a convenient shortcut syntax for \cd{Routine(\{ ... \}).play}                                                       |
+| free          |        | Removes a resource that was previously allocated, including Buffers and MIDI or OSC responders                                                                    |
 | if            |        | A branching structure common in many programming languages. If the condition is true, do the ``true'' branch; otherwise, the ``false'' branch                     |
 | integrate     |        | Given an array, return a new array where each item is the sum of all the previous original items                                                                  |
 | kr            |        | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
@@ -230,17 +239,16 @@
 | set           |        | On a synth node or NodeProxy, set a new value for a control input: \cd{n.set(\textbackslash name, value...)}                                                      |
 | setEvent      |        | Called on a ProxySpace, setEvent returns an event prepared to set controls within that ProxySpace                                                                 |
 | sine          |        | \cd{Env.sine} makes an attack-decay envelope with sine-shaped segments. More or less a bell curve                                                                 |
+| sine1         |        | Fill a Buffer with a waveform based on harmonic amplitudes, in wavetable format                                                                                   |
+| sine2         |        | Fill a Buffer with a waveform based on harmonic frequencies and amplitudes, in wavetable format                                                                   |
+| sine3         |        | Fill a Buffer with a waveform based on harmonic frequencies, amplitudes and phases, in wavetable format                                                           |
 | stop          |        | Stop a process that was previously started by \ci{play}                                                                                                           |
+| sync          |        | In a Routine, call \ci{sync} on a server to wait for any pending asynchronous operations to finish                                                                |
 | value         |        | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
 | wait          |        | In a Routine, same as \ci{yield}, but works only for numbers. Used for deltas (wait times).                                                                       |
 | while         |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                         |
 | wrap          |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                             |
 | yield         |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                              |
-| sine1         |        | Fill a Buffer with a waveform based on harmonic amplitudes, in wavetable format                                                                                   |
-| sine2         |        | Fill a Buffer with a waveform based on harmonic frequencies and amplitudes, in wavetable format                                                                   |
-| sine3         |        | Fill a Buffer with a waveform based on harmonic frequencies, amplitudes and phases, in wavetable format                                                           |
-| alloc         |        | \cd{Buffer.alloc(server, numFrames, numChannels)} reserves memory in the server for a new buffer                                                                  |
-| free          |        | Removes a resource that was previously allocated, including Buffers and MIDI or OSC responders                                                                    |
 
 
 * UGens								   :noexport:
