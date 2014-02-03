@@ -1818,7 +1818,7 @@ of control goes down.
     4. Try different envelopes on the noise generator.
        - Shorter and longer.
 
-* Frequency modulation (FM) synthesis
+* Frequency modulation (FM) synthesis				   :noexport:
 ** John Chowning's experiment
 *** John Chowning's discovery of FM
 **** Let's replicate a famous 1967 experiment by John Chowning.
@@ -2172,7 +2172,208 @@ b.getn(0, 10, { |data| data.postln });
           attacks.
 **** Wavetable oscillators can enrich the sound, at no CPU cost.
 
-* Sample playback and manipulation				   :noexport:
+* Sample playback and manipulation
+** Loading and playing samples
+*** Buffers for audio samples
+**** \clsspl{Buffer} can hold audio data, not only wavetables.
+     - Loaded from disk files.
+     - Recorded within the server.
+**** Playback the audio in many ways.
+     - Simple playback, at any rate: one shot, or cut into fragments.
+     - Sampler-style instruments.
+     - \eGls{granular} synthesis for time stretching or pitch shifting.
+
+*** Loading sound files from disk
+**** Methods to read sound files:
+     - \mth{read} :: Read all or part of a sound file. Arguments: /server, path, startFrame, numFrames, action, bufnum/.
+     - \mth{readChannel} :: Read some channels from the file, but not all. Same arguments, plus /channels/.
+**** As before, release buffers before loading.
+     - If you don't, eventually memory will run out.
+#+name: sf1
+#+caption: Read SuperCollider's classic Apollo 11 example sound into a buffer.
+#+begin_src {} -i
+b.free;
+b = Buffer.read(s,
+   Platform.resourceDir +/+ "sounds/a11wlk01.wav",
+   action: { "done".postln; b.postln; }
+);
+#+end_src
+
+*** Buffer loading is asynchronous
+**** Look carefully at the output from that command.
+#+begin_src {} -i
+Buffer(0, nil, nil, nil, 
+   /usr/local/share/SuperCollider/sounds/a11wlk01.wav)
+done
+Buffer(0, 188893, 1, 44100, 
+   /usr/local/share/SuperCollider/sounds/a11wlk01.wav)
+#+end_src
+     - First \clss{Buffer} line: \mth{read} must return something.\\
+       The buffer object exists in the language, but isn't ready yet. So we see \ci{nil}.
+     - Second \clss{Buffer}: After reading is finished.\\
+       Now the buffer knows how many \glspl{frame} and channels, and the sample rate.
+**** You must \mth{sync} before using a buffer loaded from disk.
+
+*** Frames
+**** What's a \egls{frame}?
+     - A mono sound file is just a stream of samples:\\
+       \cd{s$_0$, s$_1$, s$_2$, ... s$_n$}
+     - A stereo sound file has two samples at every instant:
+       - @@latex:\cd{[s$_{0a}$, s$_{0b}$]}@@,
+       - @@latex:\cd{[s$_{1a}$, s$_{1b}$]}@@,
+       - @@latex:\ldots{}@@
+       - @@latex:\cd{[s$_{na}$, s$_{nb}$]}@@
+     - Each one of those lines is a \egls{frame}.\\
+       One sample per channel, at a given time.
+
+*** Loading sound file fragments by frames
+**** \Glspl{frame} are another time measure for sound files or buffers.
+     - \cd{frames = seconds * sampleRate}.
+     - It doesn't matter how many channels.
+**** Example:
+     To read 0.5 seconds starting at 1 second:
+     - \ci{startFrame} = 1 sec * 44100 frames/sec = 44100 frames
+     - \ci{numFrames} = 0.5 sec * 44100 frames/sec = 22050 frames
+
+*** Buffer playback
+**** Easiest UGen for buffer playback: \ugen{PlayBuf}.
+     *IMPORTANT:* The first argument must be a real number.
+     - The language must know the number of channels when processing the synthesis function.
+     - You can use \cd{b.numChannels}---this is an actual number.
+#+name: playbuf1
+#+caption: PlayBuf, with rate control.
+#+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+
+(
+~playbuf = { |rate = 1|
+   (PlayBuf.ar(1, b, rate, 1, loop: 1)
+      * 0.1).dup
+};
+~playbuf.addSpec(\rate, [0.1, 10, \exp]);
+~playbuf.play;
+)
+
+p.gui;
+#+end_src
+
+*** Notes (numChannels)					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Why does \ci{numChannels} have to be an actual number?
+The server and process audio only in a \clss{SynthDef}. The language
+builds SynthDefs out of synthesis functions by arranging \glspl{UGen}
+and their connections. Once the language lays out the UGens, /the
+server cannot change the arrangement in any way/. The only way to
+change the layout is for the language to build a new SynthDef.
+
+The arrangement of the UGens depends on the number of channels coming
+from \clss{PlayBuf}. Compare a mono \clss{PlayBuf} with an amplifier,
+against a stereo one.
+
+#+begin_center
+#+attr_latex: :width 0.3\textwidth
+[[../02-synth/img/playbuf-1chan.png]]
+#+attr_latex: :width 0.3\textwidth
+[[../02-synth/img/playbuf-2chan.png]]
+#+end_center
+
+The server cannot convert one arrangement into the other. The language
+can produce them. The server can only do what the language specifies.
+
+It's possible, in the server, to get the number of channels in a
+buffer using one of the buffer-info \glspl{UGen}:
+\ugen{BufChannels}. But you /may not/ use this in the \ci{numChannels}
+input. If you do, you'll get this error: "ERROR: Primitive
+'\textunderscore BasicNew' failed. Index not an Integer."
+\cd{b.numChannels} is valid because it uses information already
+available in the language.
+
+*** PlayBuf inputs
+    - \ci{numChannels} :: This must match the buffer's channels.
+    - \ci{bufnum} :: The buffer number or object.
+    - \ci{rate} :: Playback rate scaling. 2 = twice as fast.
+    - \ci{trigger} :: Causes \clss{PlayBuf} to jump back to \ci{startPos}.
+    - \ci{startPos} :: Frame number to start playing from.
+    - \ci{loop} :: If > 0, playback loops to the beginning or end.
+    - \ci{doneAction} :: Don't use, for now.
+
+*** Rate correction
+**** What if the buffer is not at the server's audio rate?
+     - \ci{rate} = 1 will play at the /server's/ sample rate.
+     - If the buffer's rate is different, it will play too fast or slow.
+**** \ugen{BufRateScale} corrects for this.
+     - \cd{BufRateScale = bufferRate / sampleRate}.\\
+     - Multiply your desired rate by \ugen{BufRateScale}, and it will play as expected.\\
+       \cd{rate * BufRateScale.kr(bufnum)}
+
+** Triggering sound file fragments
+*** Triggering sound file fragments
+**** The \ci{trigger} and \ci{startPos} inputs control playback position.
+     *Note:* \ci{setEvent} and \ci{psSet} include a trigger automatically.
+#+name: playseg1
+#+caption: Using startPos with a trigger to play different fragments.
+#+begin_src {} -i
+~playbuf = { |rate = 1, t_trig = 0, start = 0|
+   (PlayBuf.ar(1, b, rate, t_trig, start)
+      * 0.1).dup
+};
+
+p.setEvent((start: rrand(0, 100000))).play;
+
+~player = \psSet -> Pbind(
+   \start, Pwhite(0, 100000, inf),
+   \dur, Pwhite(0.25, 1.0, inf)
+);
+#+end_src
+
+*** Problem: Clicking
+**** Every so often, there's an ugly click in the sound.
+     Why do you think that is? \pause
+**** Jumping from one part of the wave to another.
+#+begin_center
+#+attr_latex: :height 1.5in
+[[../02-synth/img/click.png]]
+#+end_center
+
+*** Envelopes are mandatory
+**** No. 1 rule of audio: /Everything/ needs an envelope.
+     - Listing [[playseg1]] clicked because there is no envelope on the transitions.
+     - To make a smooth transition, you need to \egls{crossfade} the segments.
+**** \eGls{crossfade}: Fade out the old, fade in the new.
+#+begin_center
+#+attr_latex: :height 1.4in
+[[../02-synth/img/crossfade.png]]
+#+end_center
+
+*** Easiest crossfade: Canonical
+**** \eGlspl{crossfade} are tricky in a single synth function.
+     But they are very easy using "canonical" style!
+     - One synth plays one segment.
+     - One synth can envelope itself easily.
+     - Two synths with a slight overlap make a crossfade.
+**** We just need a template:
+     - Play any buffer (with matching \ci{numChannels});
+     - Start at any point;
+     - Play for any duration.
+
+*** Buffer segment player
+**** The template is a \clss{SynthDef}.
+     ... with arguments for buffer, position and duration.
+#+name: segxf1
+#+caption: A SynthDef that plays one segment of any duration from a mono buffer, starting anywhere.
+#+begin_src {} -i
+SynthDef(\bufseg1, { |out = 0, bufnum, start, rate = 1,
+      time = 1, fade = 0.05, pan = 0, amp = 0.1|
+   var sig = PlayBuf.ar(1, bufnum,
+      rate * BufRateScale.kr(bufnum),
+      1, start),
+   eg = EnvGen.kr(Env.linen(fade, time - fade, fade),
+      doneAction: 2);
+   Out.ar(out, Pan2.ar(sig * eg, pan, amp));
+}).add;
+#+end_src
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
