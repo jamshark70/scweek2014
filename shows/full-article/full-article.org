@@ -36,7 +36,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "none" "results") :results value latex
 #+results: ugengloss_art
 
-#+include: "../01-intro/01-contents.org" :minlevel 1
+# #+include: "../01-intro/01-contents.org" :minlevel 1
 
 * Part 2						      :ignoreheading:
 #+latex: \part{Sequencing with Patterns; Synthesis Techniques}

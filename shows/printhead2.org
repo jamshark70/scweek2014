@@ -1,0 +1,92 @@
+#+bind: org-latex-title-command "\\maketitle"
+#+bind: org-beamer-outline-frame-title ""
+#+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
+
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:nil pri:nil tags:not-in-toc
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+#+startup: beamer
+#+LaTeX_CLASS: article
+# #+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: default
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
+
+#+LATEX_HEADER: \usepackage{beamerarticle}
+#+LATEX_HEADER: \setcounter{tocdepth}{2}
+#+LATEX_HEADER: \setcounter{secnumdepth}{3}
+
+#+LATEX_HEADER: \usepackage{fontspec}
+#+LATEX_HEADER: \setmainfont[Ligatures={Common,TeX}]{CharisSIL}
+#+LATEX_HEADER: \setmonofont{Inconsolata}
+
+# #+LATEX_HEADER: \usepackage{enumitem}
+# # unused: ,labelwidth=0.49cm,labelsep=0cm,align=left,leftmargin=1cm,rightmargin=1cm,before=\small\raggedright,after=\normalsize
+# #+LATEX_HEADER: \setlist{noitemsep}
+
+#+LATEX_HEADER: \usepackage[indentfirst=false]{xeCJK}
+#+LATEX_HEADER: \setCJKmainfont{WenQuanYi Zen Hei}
+#+LATEX_HEADER: \setCJKsansfont{WenQuanYi Zen Hei}
+#+LATEX_HEADER: \setCJKmonofont{WenQuanYi Zen Hei}
+
+#+LATEX_HEADER: \usepackage{caption}
+#+LATEX_HEADER: \captionsetup[lstlisting]{font={it,footnotesize},labelfont={it,footnotesize},singlelinecheck=false}
+
+#+LATEX_HEADER: \usepackage{listings}
+
+# some slides now use codecolor directly
+# for print, define it as black
+#+LATEX_HEADER: \usepackage{color}
+#+LATEX_HEADER: \definecolor{codecolor}{RGB}{0,0,0}
+#+LATEX_HEADER: \newcommand{\cd}[1]{\texttt{#1}}
+#+LATEX_HEADER: \newcommand{\ci}[1]{\mbox{\texttt{#1}}}
+#+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
+#+LATEX_HEADER: \newcommand{\ks}[1]{\framebox[1.05\width]{\texttt{#1}}}
+
+#+LATEX_HEADER: \usepackage{glossaries}
+#+LATEX_HEADER: \newglossary[ugi]{ugen}{ugn}{ugo}{Unit Generators}
+#+LATEX_HEADER: \newglossary[cls]{class}{cla}{clo}{Classes}
+#+LATEX_HEADER: \newglossary[met]{mth}{mth}{mto}{Methods}
+#+LATEX_HEADER: \makeglossaries
+
+#+LATEX_HEADER: \newcommand{\egls}[1]{\emph{\gls{#1}}}
+#+LATEX_HEADER: \newcommand{\eGls}[1]{\emph{\Gls{#1}}}
+#+LATEX_HEADER: \newcommand{\eglspl}[1]{\emph{\glspl{#1}}}
+#+LATEX_HEADER: \newcommand{\eGlspl}[1]{\emph{\Glspl{#1}}}
+#+LATEX_HEADER: \newcommand{\clss}[1]{\ci{\gls{#1}}}
+#+LATEX_HEADER: \newcommand{\clsspl}[1]{\ci{\glspl{#1}}}
+#+LATEX_HEADER: \newcommand{\mth}[1]{\ci{\gls{#1}}}
+#+LATEX_HEADER: \newcommand{\ugen}[1]{\ci{\gls{#1}}}
+
+# http://en.wikibooks.org/wiki/LaTeX/List_Structures#Customizing_manually
+#+LATEX_HEADER: \let\olditemize\itemize
+#+LATEX_HEADER: \renewcommand{\itemize}{
+#+LATEX_HEADER:   \olditemize
+#+LATEX_HEADER:   \setlength{\itemsep}{1pt}
+#+LATEX_HEADER:   \setlength{\parskip}{0pt}
+#+LATEX_HEADER:   \setlength{\parsep}{0pt}
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \let\oldenumerate\enumerate
+#+LATEX_HEADER: \renewcommand{\enumerate}{
+#+LATEX_HEADER:   \oldenumerate
+#+LATEX_HEADER:   \setlength{\itemsep}{1pt}
+#+LATEX_HEADER:   \setlength{\parskip}{0pt}
+#+LATEX_HEADER:   \setlength{\parsep}{0pt}
+#+LATEX_HEADER: }
+
+# sectsty manual
+#+LATEX_HEADER: \makeatletter
+#+LATEX_HEADER: \def\@seccntformat#1{\protect\makebox[0pt][r]{\csname
+#+LATEX_HEADER: the#1\endcsname\quad}}
+#+LATEX_HEADER: \makeatother
+
+
+#+BEGIN_LaTeX
+\mode<article>{\setbeamertemplate{frametitle}{%
+       \subsubsection{\insertframetitle\\%
+       \scriptsize\insertframesubtitle}}}
+\frenchspacing
+#+END_LaTeX
