@@ -113,6 +113,12 @@ Ideally before defining BEAMER-CLASS-P.
 
 * Content
 ** TODO Exercises
+** TODO Notes on play/stop? (Finish later, move to day one)
+*** What's actually going on with \mth{play}/\mth{stop} in \clss{ProxySpace}?
+In \clss{ProxySpace}, assigning a function or pattern to a \ci{\textasciitilde name} creates a \clss{NodeProxy}. The proxy is always running. If it's a function, the server is running the UGens; if a pattern, the language is generating events and playing them.
+
+For both, the signal
+
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?

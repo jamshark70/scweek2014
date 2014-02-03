@@ -2358,9 +2358,15 @@ p.setEvent((start: rrand(0, 100000))).play;
      - Start at any point;
      - Play for any duration.
 
+*** Overlapping envelopes
+
 *** Buffer segment player
 **** The template is a \clss{SynthDef}.
      ... with arguments for buffer, position and duration.
+     New elements:
+     - \ugen{Pan2} instead of \mth{dup} to get a stereo signal.\\
+       --1 $\le$ \ci{pan} $\le$ +1 locates the sound left--right.
+     - Timed envelope, tuned for \gls{crossfade}.
 #+name: segxf1
 #+caption: A SynthDef that plays one segment of any duration from a mono buffer, starting anywhere.
 #+begin_src {} -i
@@ -2374,6 +2380,26 @@ SynthDef(\bufseg1, { |out = 0, bufnum, start, rate = 1,
    Out.ar(out, Pan2.ar(sig * eg, pan, amp));
 }).add;
 #+end_src
+
+*** Sequencing canonical-style in ProxySpace
+**** How to run a SynthDef-based pattern in \clss{ProxySpace}?
+     - Easy: Just omit \ci{\textbackslash psSet ->}.
+     - Then play the resulting proxy.
+#+name: segxf2
+#+caption: A canonical-style pattern in ProxySpace.
+#+begin_src {} -i
+~player = Pbind(
+	\instrument, \bufseg1,
+	\bufnum, b,
+	\start, Pwhite(0, 88200, inf),
+	\dur, Pexprand(0.1, 0.5, inf),
+	\time, Pkey(\dur)
+);
+~player.play;
+
+~player.clear;
+#+end_src
+
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
