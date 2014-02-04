@@ -2178,7 +2178,7 @@ b.getn(0, 10, { |data| data.postln });
 **** \clsspl{Buffer} can hold audio data, not only wavetables.
      - Loaded from disk files.
      - Recorded within the server.
-**** Playback the audio in many ways.
+**** Play back the audio in many ways.
      - Simple playback, at any rate: one shot, or cut into fragments.
      - Sampler-style instruments.
      - \eGls{granular} synthesis for time stretching or pitch shifting.
@@ -2432,7 +2432,7 @@ of the envelope generator.
 
 You can see the effect for yourself. Don't worry for now about how
 this function is handling the envelopes---you can always come back and
-work it out later, using some help files. (Multichannel expansion is
+work it out later, using some help files. (\Gls{multichannel expansion} is
 the key to this example.)
 
 #+begin_src {} -i
@@ -2505,26 +2505,218 @@ SynthDef(\bufseg1, { |out = 0, bufnum, start, rate = 1,
      - \cd{doneAction: 2} in the \ugen{EnvGen} does this.
      - Not needed in modular style.
 
+*** Stereo segment player
+**** Two changes for stereo.
+     - \ugen{PlayBuf}'s number of channels must be 2.
+     - Use \ugen{Balance2} instead of \ugen{Pan2}.
+       - \ugen{Pan2} is /only/ for mono input.
+       - Note the separate left/right inputs for \ugen{Balance2}.
+#+name: segxf1b
+#+caption: A SynthDef that plays one segment from a stereo buffer.
+#+begin_src {} -i
+SynthDef(\bufseg2, { |out = 0, bufnum, start, rate = 1,
+      time = 1, fade = 0.05, pan = 0, amp = 0.1|
+   var sig = PlayBuf.ar(2, bufnum,
+      rate * BufRateScale.kr(bufnum),
+      1, start);
+   sig = sig * EnvGen.kr(Env.linen(fade, time - fade, fade),
+      doneAction: 2);
+   Out.ar(out, Balance2.ar(sig[0], sig[1], pan, amp));
+}).add;
+#+end_src
+
 *** Sequencing canonical-style in ProxySpace
 **** How to run a SynthDef-based pattern in \clss{ProxySpace}?
      - Easy: Just omit \ci{\textbackslash psSet ->}.
      - Then play the resulting proxy.
+     - Note \clss{Pkey}. It reads a value that was put into the event before.\\
+       Here, it makes sure \cd{\textbackslash time == \textbackslash dur}.
 #+name: segxf2
 #+caption: A canonical-style pattern in ProxySpace.
 #+begin_src {} -i
-~player = Pbind(
+~bufsegs = Pbind(
    \instrument, \bufseg1,
    \bufnum, b,
    \start, Pwhite(0, 88200, inf),
    \dur, Pexprand(0.1, 0.5, inf),
    \time, Pkey(\dur)
 );
-~player.play;
+~bufsegs.play;
 
-~player.clear;
+~bufsegs.stop;
 #+end_src
 
 *** Modular use of a regular pattern
+**** Now, the /really/ cool thing about \clss{ProxySpace}.
+     - In Listing [[segxf2]], the pattern runs inside a \clss{NodeProxy}.
+     - We already saw how to plug one \clss{NodeProxy}'s output into another.
+     - The same applies to \ci{\textasciitilde bufsegs}!
+**** Remember when we started with modular synthesis.
+     - After we created an oscillator, it was running in the server.
+     - It was silent because it was disconnected from the output.
+     - Same with regular patterns:
+       - The pattern is always running.
+       - You only hear it when it's connected to the output, or another proxy.
+
+*** Apply a filter
+**** We can filter the pattern's audio, just like any oscillator.
+     \cd{\textasciitilde bufsegs.ar} here is no different from
+     \cd{\textasciitilde oscil.ar} earlier.
+#+name: segxf3
+#+caption: Plug the pattern's proxy into a filter's input.
+#+begin_src {} -i
+~filter = {
+   var ffreq = LFNoise1.kr(5).exprange(200, 1000);
+   RLPF.ar(~bufsegs.ar, ffreq, 0.05)
+};
+
+~filter.play;
+
+~filter.stop;
+#+end_src
+
+*** Doing weird things
+**** SC lets you do some strange things...
+     - With commercial VSTs, you have a sampler and an FM plug-in.
+     - With SC, you can plug the sampler (\ci{\textasciitilde bufsegs}) into an FM oscillator!
+     - That's not "normal" synthesis... but it's fun!
+**** Exercise for you
+     - Recall the formula for an FM \egls{carrier}.
+     - Substitute the buffer player.
+     - *Hint:* The modulator doesn't have an \ci{index} anymore.\\
+       Write it into the new carrier instead.
+
+*** Musical uses: Percussion
+**** Drum machines
+     - Load drum hits into separate buffers.
+     - Write separate patterns for kick, snare etc.
+**** Breakbeats
+     - Load a drum loop into a buffer.
+     - Use a soundfile editor (e.g., Audacity) to find where the drum hits begin (\gls{frame} indices).
+     - Keep the frame indices in a data structure.
+       - \clss{Event} is nice because you can name the drum types.
+     - Choose the right type of hit for each time point.
+
+*** Breakbeat example: Preparation
+**** We need to store the information somewhere.
+     - Can't do it inside \clss{ProxySpace}.
+     - Choose an \egls{interpreter} variable (\ci{a}--\ci{z}).
+     - Put an empty \clss{Event} in it.
+#+name: break1Prep
+#+caption: Preparation for a breakbeat: the buffer, and frame numbers within the buffer.
+#+begin_src {} -i
+q = ();
+q[\buf] = Buffer.read(s, thisProcess.nowExecutingPath
+   .dirname.dirname.dirname +/+ "samples/rider.wav");
+q[\hits] = (
+   kick: [64, 50670],
+   snare: [25410, 75844],
+   tamb: [12818, 38360, 63146, 89028],
+   offkick: [69445, 82436],
+   offsnare: [44700, 56908, 95421]
+);
+#+end_src
+
+*** Breakbeat example: Pattern
+**** Very simple to start:
+     Kick on 1 and 3, snare on 2 and 4.
+**** Accessing the frame numbers from \cd{q[\textbackslash hits]}:
+     - Use a pattern to produce the hit type's name.
+     - \mth{collect} over the names to choose the actual frame.
+#+name: break1Prep
+#+caption: The breakbeat pattern.
+#+begin_src {} -i
+~break = Pbind(
+   \instrument, \bufseg1, \buffer, q[\buf],
+   \start, Pseq([\kick, \snare], inf).collect { |hit|
+      q[\hits][hit].choose
+   },
+   \rate, 1.14588,  // match loop to 120 bpm
+   \dur, 0.5, \time, 0.5,
+   \amp, 0.5
+);
+~break.play;
+#+end_src
+
+*** Going further with breakbeats
+**** Mostly: Wait until the discussion of musical use of patterns.
+     Some hints for now:
+     - Set the clock's tempo to the real tempo you want:\\
+       \cd{TempoClock.tempo = beatsPerSec;} or
+       \cd{TempoClock.tempo = beatsPerMin / 60;}.
+     - Divide by the tempo for \ci{\textbackslash time}:\\
+       \cd{timePattern / Ptempo()}\glsadd{Ptempo}
+     - Use \clss{Ptime} to know where you are in the measure.
+
+*** Summary: Buffer segments
+**** \eGlspl{crossfade} are absolutely essential!
+     Easiest way: Canonical style.
+     - \clss{SynthDef} to play one segment with an envelope.
+     - \cd{doneAction: 2}\glsadd{doneAction} to remove old synths.
+     - Normal pattern (without \ci{\textbackslash psSet}).
+**** Regular patterns in \clss{ProxySpace}.
+     - Plug into other \clsspl{NodeProxy}, just like any signal.
+
+** Sampled instrument players -- ALWAYS NOEXPORT 		   :noexport:
+*** Too much for now
+*** Buffers for instrument samples
+**** If we can load drums into buffers, why not notes?
+     No problem!
+**** Techniques we need:
+     - Handling pitch.
+     - Overlap and crossfade across pitch ranges.
+     - Not covered in this workshop:
+       - Sample looping;
+       - Streaming samples from disk ("DFD" in Kontakt).
+
+
+** Granular synthesis
+*** Granular synthesis: Extremely powerful
+**** Many common effects are based on \egls{granular} synthesis.
+     - Notably, time stretching and pitch shifting.
+     - Also good for long, complex drones.
+**** A form of /microsound/.
+     - Typically, sounds between 10 and 100 ms duration.
+     - Rhodes, Curtis (2001). /Microsound/.
+
+*** What is granular synthesis?
+**** \eGls{granular} synthesis composes sounds from clouds of very short \eglspl{grain}.
+     - When you have enough grains, you hear only the cloud.
+     - As in these graphics: The more grains, the harder to see the individuals.
+#+begin_center
+#+attr_latex: :width 0.3\textwidth
+[[../02-synth/img/grains100.png]]
+#+attr_latex: :width 0.3\textwidth
+[[../02-synth/img/grains200.png]]
+#+attr_latex: :width 0.3\textwidth
+[[../02-synth/img/grains500.png]]
+#+end_center
+
+*** Characteristics of grains and clouds
+**** Important things about a \gls{grain}:
+     - *Duration:* How long it is.
+     - *Envelope:* Its shape.\\
+       Sine-shaped envelopes work especially well.
+     - *Spectral content.*
+**** Important things about grain clouds:
+     - *Overlap:* How many grains simultaneously. (May vary.)
+     - *Time distribution:* Are the grains evenly spaced in time?
+
+*** Sine-shaped envelopes
+**** Sine envelopes work well because they are complementary.
+     - /Complementary/: Add them together, with the right offset, and you get a constant.
+     - So, the individual envelopes blend together into a consistent volume.
+#+begin_center
+#+attr_latex: :height 1.5in
+[[../02-synth/img/sinusoidal-envelopes.png]]
+#+end_center
+
+*** Plan							   :noexport:
+    - Parameters, one by one:
+      - Advance thru buffer (Phasor)
+      - Trigger freq vs. graindur
+      - Grain rate
+      - Speed of advance
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
