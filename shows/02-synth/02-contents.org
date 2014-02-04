@@ -2347,6 +2347,124 @@ p.setEvent((start: rrand(0, 100000))).play;
 [[../02-synth/img/crossfade.png]]
 #+end_center
 
+*** Overlapping envelopes
+**** O1: Envelopes						  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 1
+      :END:
+#+begin_center
+#+attr_latex: :height 1.4in
+[[../02-synth/img/crossfade-envelopes-1-time.pdf]]
+#+end_center
+***** \cd{Env.linen}\glsadd{Env}\glsadd{linen} makes a fade-in/out shape.
+       - It's a timed envelope.
+       - The \clss{SynthDef} will have a \ci{time} argument.
+       - If \ci{time == delta}\glsadd{delta}, the envelopes will overlap as shown.
+**** O2: Fade time						  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 2
+      :END:
+#+begin_center
+#+attr_latex: :height 1.4in
+[[../02-synth/img/crossfade-envelopes-2-time-fade.pdf]]
+#+end_center
+***** We can also have an argument for \ci{fade} time.
+       - *Note:* In envelopes, levels and times don't have to be fixed numbers.
+       - Control inputs (arguments) and other UGens are OK.
+**** O3: Fade time + calc					  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 3
+      :END:
+#+begin_latex
+\only<presentation>{
+\begin{center}
+\includegraphics[height=1.4in]{../02-synth/img/crossfade-envelopes-2-time-fade.pdf}
+\end{center}
+}
+#+end_latex
+# #+begin_center
+# #+attr_latex: :height 1.4in
+# [[../02-synth/img/crossfade-envelopes-2-time-fade.pdf]]
+# #+end_center
+***** \cd{Env.linen} takes these arguments:
+       - \ci{attackTime} = fade
+       - \ci{sustainTime} = \textbf{??}
+       - \ci{releaseTime} = fade
+***** What should \ci{sustainTime} be?
+**** O4: All							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 4
+      :END:
+#+begin_center
+#+attr_latex: :height 1.4in
+[[../02-synth/img/crossfade-envelopes-3-all.pdf]]
+#+end_center
+***** Subtract \ci{fade} from \ci{time}.
+      - \cd{Env.linen(fade, time - fade, fade)}
+      - The total synth duration will be \cd{time + fade}.
+      - This is OK, because we want the overlap.
+
+*** Note: Equal power					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** \eGls{linear} vs. \egls{equal-power} crossfades
+If we want to fuss over the details, the above graphs are not exactly
+right.
+
+If you add the /linear/ fade-out and fade-in segments together, the
+sum will be 1. But, the way we /hear/ the simultaneous fades makes it
+seem like the volume drops slightly (about --3 dB) in the middle.
+
+An /equal-power/ crossfade makes sure that the separate signals fade
+in or out according to human perception. To make an equal-power
+crossfade, use a linear envelope and take the square root (\mth{sqrt})
+of the envelope generator.
+
+#+begin_center
+#+attr_latex: :height 1.1in
+[[../02-synth/img/xfade-equal-power.png]]
+#+end_center
+
+You can see the effect for yourself. Don't worry for now about how
+this function is handling the envelopes---you can always come back and
+work it out later, using some help files. (Multichannel expansion is
+the key to this example.)
+
+#+begin_src {} -i
+p = ProxySpace.new; p.push;
+
+(
+~test = {
+   var sig = SinOsc.ar([220, 440], 0, 0.1),
+   trig = Impulse.kr(0.5),
+   trigs = PulseDivider.kr(trig, 2, [1, 0]),
+   // linear xfade at first
+   egs = EnvGen.kr(Env.linen(0.5, 1.5, 0.5), trigs);
+   Mix(sig * egs).dup
+};
+~test.play;
+)
+#+end_src
+
+Open the server's volume meter (/Language/ menu or \ks{Ctrl-M}) and
+watch the green bar. You'll see that it drops a little bit when the
+synth crossfades between the two pitches. Now, add \cd{.sqrt} after
+\ci{egs}: \cd{Mix(sig * egs.sqrt).dup} and rerun the
+\cd{\textasciitilde test = ...} block. This takes the square root of the
+linear envelopes, making equal-power curves. Now the meter shows a
+steady level.
+
+Make sure to \cd{\textasciitilde test.clear;} before continuing.
+
+The envelopes we will use here are so short that you won't notice the
+flaw of linear crossfades. But, you should be aware of equal-power
+fades and use them when needed.
+
 *** Easiest crossfade: Canonical
 **** \eGlspl{crossfade} are tricky in a single synth function.
      But they are very easy using "canonical" style!
@@ -2358,15 +2476,9 @@ p.setEvent((start: rrand(0, 100000))).play;
      - Start at any point;
      - Play for any duration.
 
-*** Overlapping envelopes
-
 *** Buffer segment player
 **** The template is a \clss{SynthDef}.
      ... with arguments for buffer, position and duration.
-     New elements:
-     - \ugen{Pan2} instead of \mth{dup} to get a stereo signal.\\
-       --1 $\le$ \ci{pan} $\le$ +1 locates the sound left--right.
-     - Timed envelope, tuned for \gls{crossfade}.
 #+name: segxf1
 #+caption: A SynthDef that plays one segment of any duration from a mono buffer, starting anywhere.
 #+begin_src {} -i
@@ -2381,6 +2493,18 @@ SynthDef(\bufseg1, { |out = 0, bufnum, start, rate = 1,
 }).add;
 #+end_src
 
+*** New elements
+**** \ugen{Pan2} instead of \mth{dup} to get a stereo signal.
+     --1 $\le$ \ci{pan} $\le$ +1 locates the sound left $\longleftrightarrow$ right.
+**** \ugen{Out}: In \clss{SynthDef}, you have to output the signal explicitly.
+     - \clsspl{NodeProxy} create the \ugen{Out} for you.
+     - More about \ugen{Out} and \eglspl{bus} later.
+     - For now, note the \ci{out} argument for the target bus.
+**** \mth{doneAction} to remove the synth automatically.
+     - Canonical style assumes the synth will remove itself.
+     - \cd{doneAction: 2} in the \ugen{EnvGen} does this.
+     - Not needed in modular style.
+
 *** Sequencing canonical-style in ProxySpace
 **** How to run a SynthDef-based pattern in \clss{ProxySpace}?
      - Easy: Just omit \ci{\textbackslash psSet ->}.
@@ -2389,17 +2513,18 @@ SynthDef(\bufseg1, { |out = 0, bufnum, start, rate = 1,
 #+caption: A canonical-style pattern in ProxySpace.
 #+begin_src {} -i
 ~player = Pbind(
-	\instrument, \bufseg1,
-	\bufnum, b,
-	\start, Pwhite(0, 88200, inf),
-	\dur, Pexprand(0.1, 0.5, inf),
-	\time, Pkey(\dur)
+   \instrument, \bufseg1,
+   \bufnum, b,
+   \start, Pwhite(0, 88200, inf),
+   \dur, Pexprand(0.1, 0.5, inf),
+   \time, Pkey(\dur)
 );
 ~player.play;
 
 ~player.clear;
 #+end_src
 
+*** Modular use of a regular pattern
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
