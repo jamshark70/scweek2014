@@ -1,0 +1,659 @@
+#+startup: beamer
+
+* Test
+** Test
+*** Test
+#+name: makegloss
+#+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
+#+results: makegloss
+
+#+name: classgloss
+#+call: makegloss(tbl=class,glosstype="class") :exports (if hjh-exporting-slides "results" "none") :results value latex
+#+results: classgloss
+
+#+name: mthgloss
+#+call: makegloss(tbl=mth,glosstype="mth") :exports (if hjh-exporting-slides "results" "none") :results value latex
+#+results: mthgloss
+
+#+name: ugengloss
+#+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
+#+results: ugengloss
+
+* Modal synthesis
+** Ringing filters
+*** What's a \egls{ringing filter}?
+    Let's compare a bandpass filter (\ugen{BPF}) against a ringing filter (\ugen{Ringz}).
+    - \cd{10.dbamp} in the filter: \ugen{BPF} is a quiet UGen, needs to be boosted.
+#+name: ringz1a
+#+caption: Noise into a bandpass filter: sounds like filtered noise.
+#+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+
+(
+~exciter = { |freq = 440, amp = 1|
+   PinkNoise.ar(amp)
+   * EnvGen.kr(Env.perc(0.01, 0.3), Impulse.kr(2))
+};
+~filter = { |ffreq = 2000, rq = 0.1|
+   BPF.ar(~exciter.ar, ffreq, rq, 10.dbamp).dup
+};
+~filter.play;
+~filter.addSpec(\ffreq, \freq).addSpec(\rq, [1, 0.05, \exp]);
+p.gui;
+)
+#+end_src
+
+*** Substitute the ringing filter
+    - *Note:* \ugen{Ringz} can be /very/ loud!\\
+      0.01 = --40 dB.
+    - Also, we control the \gls{ring time}, not \ci{rq}.
+**** Switch back and forth between \ugen{BPF} and \ugen{Ringz}.
+#+name: ringz1b
+#+caption: Noise into a ringing filter: pitch is much stronger.
+#+begin_src {} -i
+~filter.addSpec(\ringtime, [0.01, 2, \exp]);
+~filter = { |ffreq = 2000, ringtime = 0.5|
+   Ringz.ar(~exciter.ar, ffreq, ringtime, 0.01).dup
+};
+#+end_src
+
+*** Impulse response
+**** What if we use impulses?
+#+name: ringz1c
+#+caption: Impulse into a ringing filter.
+#+begin_src {} -i
+~exciter = { Impulse.ar(2) };
+#+end_src
+     - Suddenly much quieter. (Change 0.01 to 0.1 in the filter.)
+     - Now you're hearing the filter's \egls{impulse response}.
+     - What does it sound like?\\
+       Use the oscilloscope (/Language/ menu) for more detail.
+
+*** Ringz impulse response, plotted
+**** Plot code							   :noexport:
+{ Ringz.ar(Impulse.ar(0.025.reciprocal), 440, 0.05) }.plot(0.05, minval: -1.2, maxval: 1.2);
+**** This is a \ugen{Ringz}'s response to two impulses.
+     - Note especially the spike when the second impulse comes in.
+     - This will make a slight click in the output---not clean.
+#+begin_center
+#+attr_latex: :height 1.5in
+[[../02-synth/img/ringz-impulse-responses.png]]
+#+end_center
+
+*** Modal synthesis, in a nutshell
+**** Simplest explanation of \egls{modal synthesis}:
+     - \Gls{exciter} :: A short burst of noise, like a hammer striking a bell.
+     - Filter :: A ringing filter simulates one vibrational \egls{mode}.
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :END:
+***** Vibrational modes
+      - When you hit an object---``excite'' it---it starts to vibrate.
+      - It vibrates in many different ways at the same time.
+      - Each one of these consistent patterns is a \egls{mode}.
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.35
+     :END:
+#+begin_center
+#+name: modejpg
+#+caption: Vibrational modes in a cup of coffee. Image credit: Natural Philo, http://en.wikipedia.org/wiki/File:A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg.
+#+attr_latex: :height 1in
+[[../02-synth/img/A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg]]
+#+end_center
+
+** Banks of ringing filters
+*** More modes: Klank
+**** \ugen{Klank} is an easy way to get lots of ringing filters.
+     The example shows how to write it.
+     - Wrap the filter parameters inside @@latex:\textcolor{codecolor}{$^{\backprime}$}\cd{[...]}@@.\\
+       The backtick @@latex:\textcolor{codecolor}{$^{\backprime}$}@@ is important!
+     - This should contain three arrays:
+       - Filter frequencies;
+       - Amplitudes;
+       - Ring times.
+#+name: klank1
+#+caption: Klank gives you several vibrating modes. Integer multiples sound like a synthetic oscillator. Randomized frequencies produce various percussive sounds.
+#+begin_src {} -i
+~filter = {
+   Klank.ar(`[
+      [220, 440, 660, 880, 1100],
+      [0.1, 0.1, 0.1, 0.1, 0.1],
+      Array.fill(5, { rrand(0.25, 0.75) })
+   ], ~exciter.ar).dup
+};
+#+end_src
+
+*** Array.fill
+**** Note \cd{Array.fill(size, item)}.\glsadd{fill}\glsadd{Array}
+     - In the example, it makes five random ring times.
+     - For random numbers, the expression should be in a function (curly braces).
+**** Exercise for you:
+     - Write \cd{Array.fill} expressions for frequency and amplitude.
+     - Experiment with different random boundaries.
+     - (Remember, frequency is exponential: \mth{exprand}.)
+
+*** Exciters
+**** The \gls{exciter} is usually a noise generator, with a short envelope.
+     - Remember three noise types: \ugen{WhiteNoise}, \ugen{PinkNoise}, \ugen{BrownNoise}.
+     - \cd{Env.perc}\glsadd{perc} is a good envelope choice.
+**** Exercises for you:
+    - Rewrite \cd{\textasciitilde exciter} to use a noise generator.
+    - Multiply by a percussive envelope.
+    - Also add a trigger \ci{t\textunderscore trig} argument.
+    - Drive the trigger argument with a \ci{\textbackslash psSet} pattern.
+**** These exercises prepare for the next topic.
+
+*** Klank, Ringz, DynKlank
+**** \ugen{Klank}'s filter parameters are the same as in \ugen{Ringz}.
+     - \ugen{Klank} sounds like one \ugen{Ringz} per array item, mixed.
+     - *Good:* \ugen{Klank} is more efficient.
+     - *Bad:* You can't change the filters after starting the Synth.\\
+       This is a big problem for this style of modular synthesis.
+**** \ugen{DynKlank} takes the same kind of input.
+     - But it makes lots of \ugen{Ringz} filters.
+     - So you /can/ change the filter parameters (but, higher CPU cost).
+
+*** DynKlank to play pitches
+**** Both \ugen{Klank} and \ugen{DynKlank} have /scaling/ inputs.
+     - The actual filter frequencies are \cd{freqArray * freqscale}.
+     - So, to play a specific pitch:
+       - Write the frequency array so that 1.0 is the fundamental pitch.
+       - Plug the desired frequency into \ci{freqscale}.
+     - (Read the help file for details on \ci{freqoffset} and \ci{decayscale}.)
+**** In modular style, you have to use \ugen{DynKlank} for this.
+     Otherwise, the pitch can't change.
+
+*** Pitched DynKlank example
+#+name: dkpitch1
+#+caption: Using DynKlank in modular style to play pitches by modal synthesis.
+#+begin_src {} -i
+~filter = { |freq = 440|
+   DynKlank.ar(`[
+      Array.fill(5, { |i| (i+1) * rrand(0.97, 1.03) }),
+      Array.fill(5, 0.1),
+      Array.fill(5, { rrand(0.25, 0.75) })
+   ], ~oscil.ar, freqscale: freq).dup
+};
+#+end_src
+**** Exercise for you:
+     - Change the pattern to play other pitches.\\
+       You can use \ci{degree}, \ci{midinote} or \ci{freq}.
+
+*** Graphical editor for ringing filters
+**** SC includes a graphical way to play with \ugen{Ringz} filters.
+     - It's "hidden" in the code examples directory.
+     - When finished, it will print an Array to use directly in \ugen{Klank}.
+     - This code snippet will access the editor, in any OS.
+       - \clss{Platform} contains many file paths that are different depending on the OS.
+       - \mth{resourceDir} points to examples and sounds, among other things.
+#+name: klankEditor
+#+caption: Open, or run, the GUI example of editing up to 10 Ringz filters.
+#+begin_src {} -i :var extract='t
+(Platform.resourceDir +/+
+   "examples/GUI examples/analog-drum-tuner.scd").openDocument;
+
+(Platform.resourceDir +/+
+   "examples/GUI examples/analog-drum-tuner.scd").load;
+#+end_src
+
+** Formant synthesis
+*** What are formants?
+**** \eGlspl{formant} are the way sounds resonate in the vocal cavity.
+     - The formants change for different vowels and voice types.
+**** FOF (/fonctions d'ondes formantiques/) (X. Rodet, 1979/1984).
+     - One FOF is a decaying sine wave, triggered by impulses at the desired pitch.
+     - Decaying sine wave... isn't that the \ugen{Ringz} impulse response?
+**** We can use ringing filters to do this!
+     But, the impulse response also had a nasty click in it.
+
+*** Controlling the "click"
+**** What if we subtract a shorter \ugen{Ringz} from a longer one?
+#+begin_center
+#+attr_latex: :height 1.8in
+[[../02-synth/img/ringz-minus-ringz.png]]
+#+end_center
+**** This changes the impulse response's envelope.
+     - Smoother at the beginning.
+
+*** Formant synthesis
+**** \ugen{Formlet} does this for you.
+     - It's the same as @@latex:\cd{Ringz.ar(in, freq, decay) - Ringz.ar(in, freq, attack)}@@.
+**** This is one way to do \egls{formant} synthesis.
+     - The \gls{exciter} gives the main pitch.
+     - The \ugen{Formlet} resonates at another frequency.
+     - In the GUI, move \ci{ringtime} down to 0.02 or 0.03.
+     - Then move \ci{ffreq} around in the midrange.
+#+name: fmlet1
+#+caption: Create one formant around a train of impulses, using Formlet.
+#+begin_src {} -i
+~filter = { |ffreq = 2000, ringtime = 0.5|
+   Formlet.ar(~exciter.ar, ffreq, ringtime * 0.1, ringtime, 0.1).dup
+};
+
+~exciter = { |freq = 220| Impulse.ar(freq) };
+#+end_src
+
+*** Producing vowels
+**** Real vowels have two or three main formants.
+     Plus a couple of others that are weaker.
+**** So, we need a bank of \ugen{Formlet}s.
+     - \ugen{Formlet} = \cd{Ringz(decay) - Ringz(attack)}.
+     - \ugen{Klank} or \ugen{DynKlank} = bank of \ugen{Ringz}.
+     - So, a bank of \ugen{Formlet}s = \cd{Klank(decay) - Klank(attack)}!
+
+*** Example: FormantTable and Klank
+    - The result of \mth{atKlank} is used directly where the filter array should appear.
+    - One \ugen{Klank} minus another (like \ugen{Formlet}).
+      - The second one uses \ci{decayscale} to make the attack shorter than the real ring time.
+**** Turn down the volume before running this!
+     It may be very loud.
+#+name: formants1
+#+caption: Formant synthesis with FormantTable and Klank
+#+begin_src {} -i
+~filter = {
+   var in = ~exciter.ar,
+   formant = FormantTable.atKlank(\tenorU);
+   (Klank.ar(`formant, in)
+      - Klank.ar(`formant, in, decayscale: 0.1)).dup
+};
+#+end_src
+
+*** Exercises for you
+**** On your own:
+     - With \ugen{Impulse} as the exciter, it could be too buzzy.
+       - Add a lowpass filter to the \ci{\textasciitilde filter} module.
+       - Also add a \ci{ffreq} argument, with spec, so that you can find a good cutoff frequency in the GUI.
+     - Try other voice types and vowels.
+     - Try detuning the exciter.
+
+*** Changing vowels by arguments: Filter
+**** Up to now, we can't slide from one vowel to another.
+     - \ugen{Klank} can't change parameters!
+     - Change to another filter.\\
+       \ugen{DynKlank} works, but each one makes five \ugen{Ringz}.\\
+       10 filters for five formants!
+     - We could get the same with just five \ugen{Formlet}s.
+#+begin_src {} -i
+sig = DynKlank.ar(`formant, in) -
+   DynKlank.ar(`formant, in, decayscale: 0.1);
+
+// or
+Mix(Formlet.ar(in, formant[0],
+   formant[2] * 0.1, formant[2], formant[1]));
+#+end_src
+
+*** Notes (filter)					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** What's \cd{formant[0]}?
+It happens that \mth{atKlank} returns exactly the array that
+\ugen{Klank} expects: @@latex:\cd{[[frequencies], [amplitudes], [ring
+times]]}@@. \cd{formant[0]} accesses the first item: the array of
+frequencies. When we put this into the frequency input of
+\ugen{Formlet}, we have multichannel expansion. The five frequencies,
+five amplitudes and five ring times cause \ugen{Formlet} to expand
+into an array of five \ugen{Formlet}s. Then, all we have to do is
+\ugen{Mix} them together.
+
+*** Changing vowels by arguments 2: Arrayed controls
+**** We also need a way to send arrays to an argument.
+     - Regular arguments have some limitations for this.
+     - Remember that arguments turn into \egls{control inputs}.
+     - We can make control inputs explicitly, using \ugen{NamedControl}.
+     - An array for the default value makes an \egls{arrayed control}.
+#+begin_src {} -i
+formant = NamedControl.kr(\formant,
+   FormantTable.atKlank(\tenorE).flat);
+#+end_src
+**** This is often used to send envelope definitions.
+
+*** Arrayed control example
+    Not related to formant synthesis; just to show \glspl{arrayed control}.
+    - Also note the \ci{\textbackslash dur} pattern.\\
+      Can you figure out why it makes the rhythm you hear?
+#+name: arrayctl1
+#+caption: An arrayed control, to make three pitches from one oscillator module. Assumes you are already in a ProxySpace.
+#+begin_src {} -i :var extract='t
+~arrayarg = { |amp = 0.1|
+   var freq = NamedControl.kr(\freq, 55 * [4, 5, 6]);
+   (Mix(SinOsc.ar(freq)) * amp).dup
+};
+~arrayarg.play;
+
+~arrayarg.set(\freq, 82.5 * [4, 5, 6]);
+
+~player = \psSet -> Pbind(
+   \degree, Pwhite(-7, 7, inf) + [0, 2, 4],
+   \dur, Pseq([
+      Pn(0.15, { rrand(3, 8) }),
+      0.15 * Pwhite(3, 6, 1)
+   ], inf)
+);
+
+~player.clear; ~arrayarg.clear;
+#+end_src
+
+*** Changing vowels by arguments 3: Array geometry
+**** Small complication: Array dimensions
+     - \clss{FormantTable} gives a two-dimensional array (5x3).
+     - The filters expect the two-dimensional array (5x3).
+     - The \ugen{NamedControl} must be one-dimensional!
+**** Solution:
+     - One-dimensional array for messaging: use \mth{flat}.
+     - Two dimensions in the synth function: use \mth{clump}.
+       - \mth{clump}'s argument is a number, saying how big each row should be.
+       - \clss{FormantTable} gives five filters, so \cd{clump(5)}.
+#+name: flat1
+#+caption: Try these to see the effect of flat and clump.
+#+begin_src {} -i
+a = FormantTable.atKlank(\tenorE).flat;
+
+a.clump(5);
+#+end_src
+
+*** Changing vowels: Put it all together
+**** Also note the \ugen{Lag}.
+     - We want the vowels to slide, not jump.
+#+name: formant2
+#+caption: All the pieces of the "changing vowels" puzzle: Formlet rather than DynKlank, the arrayed control (NamedControl), fixing the array geometry (flat, clump).
+#+begin_src {} -i
+~filter = { |ffreq = 6000|
+   var sig, in = ~exciter.ar,
+   formant = NamedControl.kr(\formant,
+      FormantTable.atKlank(\tenorE).flat);
+   formant = Lag.kr(formant, 1).clump(5);
+   sig = Mix(Formlet.ar(in, formant[0],
+      formant[2] * 0.1, formant[2], formant[1]));
+   LPF.ar(sig, ffreq).dup;
+};
+
+~filter.set(\formant, FormantTable.atKlank(\tenorO).flat);
+
+~filter.set(\formant, FormantTable.atKlank(\tenorU).flat);
+#+end_src
+
+*** Exercise for you
+    Write a \ci{\textbackslash psSet} pattern to play different
+    pitches, and send a different vowel for each note.
+    - Look back at the list patterns. Which ones let you choose
+      randomly from a list?
+    - If this random pattern returns the names from
+      \clss{FormantTable}, how to get the filter specs?
+      - \mth{collect} can run a function on every one of the names.
+      - @@latex:\cd{.collect \{ |name| FormantTable.atKlank(name).flat \}}@@.
+
+*** Notes (arrays in SynthDef)				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Array geometry in synthesis functions
+One of the hardest things to understand in SuperCollider is:
+
+- What is the server's responsibility?
+- What is the language's responsibility?
+
+The server runs the UGens, and passes signals between them based on
+the kinds of connections we have already discussed. That's all it
+does. It doesn't know anything about language structures. Functions,
+patterns, loops, arrays---all are completely unknown to the server.
+
+\mth{clump}, therefore, is the language's job. But what is it actually
+doing in this case?
+
+1. We're initializing the \ugen{NamedControl} with an array of 15
+   items. The language needs to have 15 objects, so that it can keep
+   track of UGen connections. These 15 objects are
+   \clsspl{OutputProxy}. Using "op" as an abbreviation for
+   \clss{OutputProxy}:
+
+   #+latex: \cd{[op$_0$, op$_1$, op$_2$, ... op$_{14}$]}
+
+2. \mth{clump} separates the \clsspl{OutputProxy} into groups of five.
+
+   - \cd{[op$_0$, op$_1$, ... op$_4$]},
+   - \cd{[op$_5$, op$_6$, ... op$_9$]},
+   - @@latex:\cd{[op$_{10}$, op$_{11}$, ... op$_{14}$]}@@.
+
+3. Then, \cd{formant[0]} allows any other UGen (here, \ugen{Formlet})
+   to connect back to the first five items from the
+   \ugen{NamedControl}. \cd{formant[1]} connects to the second five,
+   and so on.
+
+The language can do whatever you need to these array structures while
+building a \clss{SynthDef}. But this is only working on the
+arrangement of the /signal placeholders/. The language produces the
+arrangement while creating the \clss{SynthDef} only once. Then, the
+server works only with the UGens, placeholders and their connections,
+without worrying about /how/ the connections were arranged in the
+first place.
+
+** Karplus-Strong
+*** Karplus-Strong
+**** Related to modal synthesis:
+     - An \egls{exciter} feeds into a filter.
+     - The exciter is noisy.
+     - The filter shapes it into pitch.
+**** Different type of filter.
+     - Modal synthesis uses ringing filters.
+     - Karplus-Strong uses feedback-delay filters.
+
+*** Feedback-delay filters
+**** \eGlspl{feedback-delay filter} include:
+     - \eGlspl{comb filter} :: Uses a simple delay line. The spectrum looks like teeth of a comb.
+     - \eGlspl{allpass filter} :: Passes all input frequencies at the original volume (hence "allpass"), but changes the phases.
+#+latex: \glsadd{CombL}\glsadd{AllpassL}
+#+name: fbdelay1
+#+caption: Compare the effects of the two types of feedback-delay filters.
+#+begin_src {} -i
+(
+~noise = { WhiteNoise.ar(0.1) };
+~filter = {
+   CombL.ar(~noise.ar, 0.1, 1/220, 1).dup
+};
+~filter.play;
+)
+
+~filter = {
+   AllpassL.ar(~noise.ar, 0.1, 1/220, 1).dup
+};
+#+end_src
+
+*** Allpass filters and phases
+**** The \gls{allpass filter} didn't sound like it was doing much.
+     - It doesn't change the frequencies' strengths.\\
+       So, the output sounds like the original.
+     - It does affect the frequencies' phases.\\
+       You don't hear the phase shifts until you the original and filtered signals.
+     - The result is like a \gls{comb filter}, but with a softer edge.
+#+name: fbdelay2
+#+caption: Mix the original with the allpass-filtered signal.
+#+begin_src {} -i
+~filter = {
+   var sig = ~noise.ar;
+   sig + AllpassL.ar(sig, 0.1, 1/220, 1).dup
+};
+#+end_src
+
+*** Short exciter
+**** We can excite feedback filters with short noise bursts.
+     Just like \gls{modal synthesis}.
+**** Exercise for you
+     - Add a percussive envelope to the \ci{\textasciitilde noise} module.
+     - What does it sound like?
+**** Code :noexport:
+~noise = {
+   WhiteNoise.ar(0.1)
+   * EnvGen.ar(Env.perc(0.01, 0.08), Impulse.ar(2))
+};
+
+*** Karplus-Strong plucked string synthesis
+**** This sounds a lot like a plucked string! Except...
+     - In a real string, energy leaks away from the high frequencies first.
+     - To model this: Put a lowpass filter in the middle of the feedback loop.
+     - The \ugen{Pluck} UGen does this automatically.
+
+*** Pluck.ar example
+#+name: pluck1
+#+caption: The Pluck UGen. Experiment with the parameters in p.gui.
+#+begin_src {} -i
+~pluck = { |freq = 220, decay = 1, coef = 0.5|
+   Pluck.ar(
+      in: WhiteNoise.ar(0.3),
+      trig: Impulse.ar(2),
+      maxdelaytime: 0.2,
+      delaytime: freq.reciprocal,
+      decaytime: decay,
+      coef: coef
+   ).dup
+};
+~pluck.addSpec(\decay, [0.1, 2, \exp]);
+~pluck.addSpec(\coef, [0, 1]);
+~pluck.play;
+
+~pluck.clear;
+#+end_src
+
+*** Custom feedback
+**** \ugen{Pluck} includes only a very simple filter.
+     - Doesn't control the cutoff frequency directly.
+     - The control is just the amount of damping.
+**** For different filters, write the feedback loop explicitly.
+     This introduces a number of new server concepts.
+     - Feedback with \ugen{LocalIn} and \ugen{LocalOut}.
+     - Server \eglspl{control cycle}, delay and frequency.
+
+*** Feedback within a synth
+**** Signal flow is always UGen /input/ $\to$ /output/.
+     - UGens are ordered. Input UGens must calculate first.
+     - For feedback, an earlier UGen needs to get a signal from a later UGen.
+     - The normal mechanism cannot do this.
+**** \ugen{LocalIn} and \ugen{LocalOut} /can/ do it.
+     - Early in the synth: \ugen{LocalIn} says how many channels.
+     - Later: \ugen{LocalOut} receives that many channels as input.
+     - \ugen{LocalOut} passes the signal back to \ugen{LocalIn}.
+
+*** LocalIn/LocalOut example
+    - For now, concentrate on the \ugen{LocalIn} and \ugen{LocalOut}.
+    - On your own, puzzle out what the \ugen{SinOsc} is doing.
+#+latex: \glsadd{DelayL}\glsadd{TExpRand}\glsadd{Dust}
+#+name: localfb1
+#+caption: An echo delay, implemented by a LocalIn/LocalOut pair.
+#+begin_src {} -i
+~feedback = {
+   var delay, trig = Dust.kr(0.75),
+   sig = SinOsc.ar(TExpRand.kr(300, 600, trig), 0, 0.15)
+      * EnvGen.kr(Env.perc(0.01, 0.1), trig),
+   feedback = LocalIn.ar(1) * 0.9;  // decay
+   sig = sig + feedback;
+   delay = DelayL.ar(sig, 0.5, 0.5);
+   LocalOut.ar(delay);
+   sig.dup
+};
+~feedback.play;
+
+~feedback.clear;
+#+end_src
+
+*** Simplified signal flow
+    - This graphic removes the envelope and random frequencies.
+    - Imagine a connection from \ugen{LocalOut} to \ugen{LocalIn}.
+#+begin_center
+#+attr_latex: :height 2.1in
+[[../02-synth/img/localin-out-dot.png]]
+#+end_center
+
+*** Insert filtering
+**** This exposes a place to insert filtering.
+     - You need to filter before feeding back.
+     - \ugen{LocalOut} supplies the signal being fed back.
+     - So, filter before \ugen{LocalOut}.\\
+       (Or any other kind of processing.)
+#+begin_src {} -i
+   feedback = LocalIn.ar(1) * 0.9;  // decay
+   sig = sig + feedback;
+   delay = DelayL.ar(sig, 0.5, 0.5);
+   delay = LPF.ar(sig, 2000);  // <-- NEW
+   LocalOut.ar(delay);
+#+end_src
+**** Also try substituting \ugen{HPF}.
+
+*** Feedback and pitch
+**** If the delay time is short enough, you hear pitch.
+     - $f = \frac{1}{t}$ and $t = \frac{1}{f}$
+     - So you can set the delay time to \cd{1 / freq}.
+**** Change the \ci{\textasciitilde feedback} example for a pitch of 110 Hz.
+     - You might not hear much pitch at first. Why? \pause
+     - Try changing back to \ugen{LPF}.
+     - What should you change to make the pitch sustain longer?
+
+*** Feedback and tuning
+**** But... the pitch sounds too low.
+     - If the pitch is too low, the delay time must be too long.
+     - What would add extra delay time? \pause
+**** \eGls{block calculation} in the server.
+     - To save CPU time, the server calculates several audio samples in one block.
+     - It must finish the whole block before feeding back into \ugen{LocalIn}.
+     - \ugen{LocalIn}'s output is one block's duration late.
+
+*** Notes (blocks)					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** How does block calculation save CPU time?
+UGens process their signals in C++ functions. When the server needs
+the output from a particular UGen, it must call into the appropriate
+\ci{\textunderscore next} function. Every function call and return
+takes a little CPU time. This time is extremely short, but if hundreds
+or thousands of UGens are active, the time multiplies dramatically.
+
+Without block calculation, you would need a function call and return
+for every UGen, /every audio sample/. That ends up being a lot of time
+spent only on flow of control, in addition to the actual signal
+processing.
+
+Block calculation reduces the UGen function calls to happen only once
+per block. By default, the block size is 64 samples. The server calls
+into an audio rate UGen and gets 64 samples instead of just one, and
+it can issue the function calls $\frac{1}{64}$ as often. Signal
+processing still takes the same amount of time, but CPU time for flow
+of control goes down.
+
+*** Frequency limit from block size
+**** The control duration sets the upper limit on frequency.
+     - When using \ugen{LocalIn}/\ugen{LocalOut} to make pitch, the shortest possible delay is \ugen{ControlDur}.
+     - Maximum frequency is $\frac{1}{t} = \frac{samplerate}{blocksize}$.
+     - With default settings, $\frac{44100}{64}$ = 689.0625 Hz $\approx$ MIDI note 76 (E).
+     - That's not a very high note.
+
+*** Higher frequencies
+**** How to raise the frequency limit?
+     - Start the server with a smaller block size.
+       - Must be a power of two: 1, 2, 4, 8, 16, 32, 64...
+       - \cd{s.options.blockSize = 16} before booting the server, to get two more octaves.
+       - The server will start using more CPU.
+     - Or, use a trick for single-sample feedback.
+       - No time to discuss the details. See the example files.
+#+name: ssfeedback1
+#+caption: Code snippet to open the single-sample feedback example files.
+#+begin_src {} -i :var extract='t
+(Platform.resourceDir +/+
+   "examples/demonstrations/single_sample_feedback.scd"
+).openDocument;
+(Platform.resourceDir +/+
+   "examples/demonstrations/single_sample_feedback_02.scd"
+).openDocument;
+#+end_src
+
+*** Karplus-Strong exercises
+    1. Start with a feedback-delay plucked string synth.\\
+       - You may model it after Listing [[localfb1]].
+       - Replace the \ci{SinOsc} with a noise generator, and use a \ci{t\textunderscore trig} argument.
+       - Add a filter into the chain.
+    2. Run a \ci{\textbackslash psSet} pattern to play notes.
+    3. Try different noise generators. How does it change the sound?
+    4. Try different envelopes on the noise generator.
+       - Shorter and longer.
+
