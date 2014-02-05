@@ -35,11 +35,11 @@
      - As in these graphics: The more grains, the harder to see the individuals.
 #+begin_center
 #+attr_latex: :width 0.3\textwidth
-[[../02-synth/img/grains100.png]]
+[[../03-control/img/grains100.png]]
 #+attr_latex: :width 0.3\textwidth
-[[../02-synth/img/grains200.png]]
+[[../03-control/img/grains200.png]]
 #+attr_latex: :width 0.3\textwidth
-[[../02-synth/img/grains500.png]]
+[[../03-control/img/grains500.png]]
 #+end_center
 
 *** Characteristics of grains and clouds
@@ -58,7 +58,7 @@
      - So, the individual envelopes blend together into a consistent volume.
 #+begin_center
 #+attr_latex: :height 1.5in
-[[../02-synth/img/sinusoidal-envelopes.png]]
+[[../03-control/img/sinusoidal-envelopes.png]]
 #+end_center
 
 *** Start simple: Individual grains
@@ -250,7 +250,7 @@ p.clear;
      :BEAMER_col: 0.4
      :END:
      #+attr_latex: :height 1in
-     [[../02-synth/img/randomized-line.png]]
+     [[../03-control/img/randomized-line.png]]
 
 *** Glitchy sounds
 **** Glitchy sounds also use random \glspl{LFO}, but wider range.
