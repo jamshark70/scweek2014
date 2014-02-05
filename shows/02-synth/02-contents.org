@@ -2059,7 +2059,7 @@ q[\hits] = (
      - *Duration:* How long it is.
      - *Envelope:* Its shape.\\
        Sine-shaped envelopes work especially well.
-     - *Spectral content.*
+     - *Spectral content.* Usually comes from sampled audio in a \clss{Buffer}.
 **** Important things about grain clouds:
      - *Overlap:* How many grains simultaneously. (May vary.)
      - *Time distribution:* Are the grains evenly spaced in time?
@@ -2073,12 +2073,52 @@ q[\hits] = (
 [[../02-synth/img/sinusoidal-envelopes.png]]
 #+end_center
 
+*** Start simple: Individual grains
+**** \Gls{granular} UGens have a number of parameters.
+     - If we do too many at once, it's confusing.
+**** Parameters needed for single \glspl{grain}:
+     - *Trigger:* We'll use \ugen{Impulse}, controlled by frequency.
+     - *Duration*.
+     - *Position* within the buffer, as a \egls{normalize}d range.
+       - 0 = buffer start, 1 = buffer end.
+       - Why? \Glspl{Buffer} may be of different sizes.
+       - If it's normalized, the position input can be the same for any buffer.
+
+*** GrainBuf UGen
+**** All-purpose granulator: \ugen{GrainBuf}.
+     - You can control trigger frequency, grain duration and buffer position.
+     - Raise the trigger frequency until the grains blend together.
+#+name: grain1
+#+caption: Granular synthesis: first step.
+#+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+
+(
+~grains.addSpec(\tfreq, [1, 20, \exp]);
+~grains.addSpec(\pos, [0, 1]);
+~grains = { |tfreq = 5, graindur = 0.2, pan = 0, pos = 0.5,
+   amp = 0.2|
+   var trig = Impulse.ar(tfreq);
+   GrainBuf.ar(2, trig, graindur, b, 1, pos, 2, pan) * amp;
+};
+~grains.play;
+)
+
+p.gui;  // if it's not already open
+#+end_src
+
+*** Automating buffer position
+
+*** Speed of buffer movement
+
+*** Grain rate
+
 *** Plan							   :noexport:
     - Parameters, one by one:
-      - Advance thru buffer (Phasor)
       - Trigger freq vs. graindur
-      - Grain rate
+      - Advance thru buffer (Phasor)
       - Speed of advance
+      - Grain rate
 
 * Effects common in subtractive synthesis 			   :noexport:
 ** Chorus
