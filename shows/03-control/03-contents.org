@@ -1,0 +1,284 @@
+#+startup: beamer
+
+* Test
+** Test
+*** Test
+#+name: makegloss
+#+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
+#+results: makegloss
+
+#+name: classgloss
+#+call: makegloss(tbl=class,glosstype="class") :exports (if hjh-exporting-slides "results" "none") :results value latex
+#+results: classgloss
+
+#+name: mthgloss
+#+call: makegloss(tbl=mth,glosstype="mth") :exports (if hjh-exporting-slides "results" "none") :results value latex
+#+results: mthgloss
+
+#+name: ugengloss
+#+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
+#+results: ugengloss
+
+* Granular synthesis
+** Granular synthesis parameters
+*** Granular synthesis: Extremely powerful
+**** Many common effects are based on \egls{granular} synthesis.
+     - Notably, time stretching and pitch shifting.
+     - Also good for long, complex drones.
+**** A form of /microsound/.
+     - Typically, sounds between 10 and 100 ms duration.
+     - Rhodes, Curtis (2001). /Microsound/.
+
+*** What is granular synthesis?
+**** \eGls{granular} synthesis composes sounds from clouds of very short \eglspl{grain}.
+     - When you have enough grains, you hear only the cloud.
+     - As in these graphics: The more grains, the harder to see the individuals.
+#+begin_center
+#+attr_latex: :width 0.3\textwidth
+[[../02-synth/img/grains100.png]]
+#+attr_latex: :width 0.3\textwidth
+[[../02-synth/img/grains200.png]]
+#+attr_latex: :width 0.3\textwidth
+[[../02-synth/img/grains500.png]]
+#+end_center
+
+*** Characteristics of grains and clouds
+**** Important things about a \gls{grain}:
+     - *Duration:* How long it is.
+     - *Envelope:* Its shape.\\
+       Sine-shaped envelopes work especially well.
+     - *Spectral content.* Usually comes from sampled audio in a \clss{Buffer}.
+**** Important things about grain clouds:
+     - *Overlap:* How many grains simultaneously. (May vary.)
+     - *Time distribution:* Are the grains evenly spaced in time?
+
+*** Sine-shaped envelopes
+**** Sine envelopes work well because they are complementary.
+     - /Complementary/: Add them together, with the right offset, and you get a constant.
+     - So, the individual envelopes blend together into a consistent volume.
+#+begin_center
+#+attr_latex: :height 1.5in
+[[../02-synth/img/sinusoidal-envelopes.png]]
+#+end_center
+
+*** Start simple: Individual grains
+**** \Gls{granular} UGens have a number of parameters.
+     - If we do too many at once, it's confusing.
+**** Parameters needed for single \glspl{grain}:
+     - *Trigger:* We'll use \ugen{Impulse}, controlled by frequency.
+     - *Duration*.
+     - *Position* within the buffer: for now, in seconds.
+#        , as a \egls{normalize}\emph{d} range.
+#        - 0 = buffer start, 1 = buffer end.
+#        - Why? \Glspl{Buffer} may be of different sizes.
+#        - If it's normalized, the position input can be the same for any buffer.
+
+*** TGrains UGen
+**** Basic granulator: \ugen{TGrains}.
+     - You can control trigger frequency, grain duration and buffer position.
+     - Raise the trigger frequency until the grains blend together.
+#+name: grain1
+#+caption: Granular synthesis: first step.
+#+begin_src {} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+
+(
+~grains.addSpec(\tfreq, [1, 20, \exp]);
+~grains.addSpec(\pos, [0, b.duration]);
+~grains = { |tfreq = 5, graindur = 0.2, pan = 0, pos = 0.5,
+   amp = 0.2|
+   var trig = Impulse.ar(tfreq);
+   GrainBuf.ar(2, trig, graindur, b, 1, pos, 2, pan) * amp;
+};
+~grains.play;
+)
+
+p.gui;  // if it's not already open
+#+end_src
+
+*** Automating buffer position
+**** Let's move forward through the buffer.
+     Constant rate---what do you think will be the result?
+**** Replace the \ci{pos} argument with a \ugen{Phasor}.
+     - \ugen{Phasor} is a looping line segment, with a rate control.
+     - \ci{rate} is in units per sample.\\
+       At audio rate, \cd{rate = 1} will increase by 44100 in one second.
+     - We want to increase by 1.0 per second.\\
+       See \ugen{SampleDur}, which outputs $\frac{1}{samplerate}$.
+     - What's the upper boundary?\\
+       \Gls{Buffer} duration: \cd{b.duration} or \ugen{BufDur}\cd{.kr(b)}.
+**** Exercise for you: Write the \ugen{Phasor}.
+# #+name: grain2
+# #+caption: Use a Phasor to move through the buffer in real time.
+#+begin_src {} -i :exports none
+~grains = { |tfreq = 5, graindur = 0.2, pan = 0, amp = 0.2|
+   var trig = Impulse.ar(tfreq),
+   pos = Phasor.ar(0, SampleDur.ir, 0, b.duration);
+   TGrains.ar(2, trig, b, 1, pos, graindur, pan, amp)
+};
+#+end_src
+
+*** Speed of buffer movement
+**** What if we move through the buffer at different speeds?
+     - Add a new argument, \ci{speed}.
+     - Set its range, using \mth{addSpec}, to \cd{[0.25, 4, \textbackslash exp]}.
+     - How to incorporate \ci{speed} into the \ugen{Phasor}?\\
+       *Hint:* \ci{speed} should /scale/ (multiply) the \ugen{Phasor} rate that is already there.
+**** Exercise: Write this yourself.
+     What is the result?
+# #+name: grain3
+# #+caption: Adjust the buffer movement speed by a synth argument.
+#+begin_src {} -i :exports none
+~grains.addSpec(\speed, [0.25, 4, \exp]);
+~grains = { |tfreq = 5, graindur = 0.2, pan = 0, amp = 0.1,
+   speed = 1|
+   var trig = Impulse.ar(tfreq),
+   centerPos = Phasor.ar(0, speed * SampleDur.ir, 0, b.duration);
+   TGrains.ar(2, trig, b, 1, centerPos, graindur, pan, amp)
+};
+#+end_src
+
+*** Grain rate
+**** What about the \ci{rate} argument in \ugen{TGrains}?
+     - We adjusted the \ugen{Phasor} rate, and got a time effect.
+     - What do you think \ugen{TGrains}'s rate will do?
+**** Let's find out: Write the change yourself.
+     - Add a new \ci{rate} argument.
+     - Give it a similar exponential range.
+     - Plug it into \ugen{TGrains}.
+# #+name: grain4
+# #+caption: Adjust the grain playback rate by a synth argument.
+#+begin_src {} -i :exports none
+~grains.addSpec(\rate, [0.25, 4, \exp]);
+~grains = { |tfreq = 5, graindur = 0.2, pan = 0, amp = 0.1,
+   rate = 1, speed = 1|
+   var trig = Impulse.ar(tfreq),
+   centerPos = Phasor.ar(0, speed * SampleDur.ir, 0, b.duration);
+   TGrains.ar(2, trig, b, rate, centerPos, graindur, pan, amp)
+};
+#+end_src
+
+*** Grain duration vs. overlap
+**** Sometimes better to control how many overlapping \glspl{grain}.
+     - That is, adjust the grain duration along with trigger frequency.
+     - If you want 4 overlapping grains, and 1 trigger/sec, how long should each grain be?\pause\\
+       4 seconds.\pause
+     - If you have 2 triggers/sec, how long should the grains be?\pause\\
+       2 seconds.\pause
+     - What, then, is the formula?\pause\\
+       \cd{overlap / trigfreq}\pause
+**** Exercise, on your own time:
+     Edit the synth to use an \ci{overlap} argument instead of \ci{graindur}.
+
+*** Summary: Granular synthesis parameters
+**** \Gls{granular} synthesis gives you independent control over:
+     - Time (buffer position's rate of change);
+     - Pitch (playback rate of each \gls{grain});
+     - Continuity (frequency of triggers, grain duration, overlap).
+**** Tone color comes from whatever is in the buffer.
+
+** Usage of granular synthesis
+*** Sustaining sounds
+**** Sustaining sounds need:
+     - Fast grain triggers;
+     - Relatively high overlap (at least 5).
+**** Important to avoid too much regularity.
+#      If the trigger frequency, buffer position and grain rate are all constant, then you hear sonic features repeating exactly.
+#+name: grain5
+#+caption: Granular synthesis, sustaining sound, with constant triggers, buffer position and grain rate.
+#+begin_src {} -i
+p.clear;
+
+~grains.addSpec(\tfreq, [1, 40, \exp]);
+~grains.addSpec(\overlap, [0.1, 10, \exp]);
+~grains.addSpec(\pos, [0, b.duration]);  // 3.43 is nice!
+~grains.addSpec(\rate, [0.5, 2, \exp]);
+~grains = { |tfreq = 25, overlap = 6, pan = 0, amp = 0.2, pos = 3.43,
+   rate = 1|
+   var trig = Impulse.ar(tfreq);
+   TGrains.ar(2, trig, b, rate, pos, overlap / tfreq, pan, amp)
+};
+~grains.play;
+#+end_src
+
+*** Solution: Randomize
+**** It sounds boring because the pattern is too obvious.
+     - The ear latches onto the repeating features, not the sustained feel.
+     - So, break up the pattern by adding a small random offset.
+**** Add random \egls{LFO} modules.
+     - \ugen{LFNoise1} is good for random numbers.
+     - The LFO module should convert to the right range (as we covered earlier).
+     - Then, modulate the input within \ci{\textasciitilde grains}.
+
+*** Randomize buffer position
+**** What's a good range?
+     - A random range in seconds is OK.
+     - You don't need much: 0.1--0.2 seconds is enough.
+**** Exercises for you:
+     1. Write an \gls{LFO} module with \ugen{LFNoise1}:
+	- Fairly high frequency (at least 50).
+	- Include an argument for the amount of modulation, ranging 0--maximum seconds.
+	- Give that argument an appropriate range spec.
+     2. Edit \ci{\textasciitilde grains} to apply the LFO.
+     3. Adjust the LFO amount and listen to the different effects.
+
+*** Randomize grain playback rate
+**** What's a good range?
+     - \ci{rate} is a multiplier---so the range should be \egls{exponential}.
+     - Do you remember how to convert to an exponential range?
+     - You need only a few cents (cent = 0.01 semitone).
+     - The ratio for 1 cent = 1.0005777895066.\\
+       \cd{0.01.midiratio}
+     - 20 cents = \cd{0.2.midiratio} = 1.0116194403019.
+**** Exercises for you.
+     Same as for buffer position, except with a different range, and exponential usage.
+
+*** Small vs. large scale modulation
+**** You can also combine two kinds of modulation:
+     - Small range, fast modulation.
+     - Larger range, slower modulation.
+**** For instance, moving through a buffer.
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :END:
+     - \ugen{Phasor} in a straight line.
+     - \ugen{LFNoise1}, low amplitude.
+     - It still sounds like moving through the buffer, but with some variation.
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.4
+     :END:
+     #+attr_latex: :height 1in
+     [[../02-synth/img/randomized-line.png]]
+
+*** Glitchy sounds
+**** Glitchy sounds also use random \glspl{LFO}, but wider range.
+     - Take grains from any part of the buffer at any time.
+     - Much shorter \ci{graindur} (can randomize this too).\\
+       When dur < 0.015, the envelope changes the tone color!
+     - Also, randomize the time between triggers (e.g., \ugen{Dust}).
+     - See also the \ugen{GrainBuf} UGen.\\
+       Allows you to choose a different envelope. Percussive envelopes can be really noisy!
+**** Exercises: Edit the granular synth to try these techniques.
+
+*** Granulating live input
+**** What if you want to do this on a real-time signal?
+     - Tricky if you want to play it faster than real time.
+       - Grain rate > 1.
+       - Buffer movement speed > 1.
+     - Much slower is also a problem.
+**** Shortcut: \ugen{PitchShift} UGen.
+     - Can raise or lower pitch of a live signal up to two octaves.
+**** Using \clsspl{Buffer} and \ugen{TGrains}:
+     - Beyond the scope of this class.
+
+*** Summary: Synthesis techniques
+**** Techniques:
+     - Subtractive synthesis ("analog"): \egls{oscillator} $\to$ \egls{filter}.
+     - Frequency modulation: \egls{modulator} $\to$ \egls{carrier}.
+     - Granular synthesis: Clouds of short, enveloped \eglspl{grain}.
+**** Next steps:
+     - Build more complex, compositional patterns.
+     - Bring external control data into SC, and plug into synthesis and composition parameters.
+

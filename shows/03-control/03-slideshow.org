@@ -1,0 +1,17 @@
+#+name: set-slide-flag
+#+begin_src emacs-lisp :exports results :results value latex
+(setq hjh-exporting-slides 't)
+""
+#+end_src
+
+#+startup: beamer
+
+#+TITLE: SuperCollider Week, Day 3 \\ Musical and External Control
+#+DATE: \today
+#+AUTHOR: H. James Harkins
+#+EMAIL:
+
+#+INCLUDE: "../slidehead.org"
+#+include: "../glossary.org"
+
+#+include: "./03-contents.org" :minlevel 1
