@@ -77,7 +77,7 @@ p.gui;
      - This will make a slight click in the output---not clean.
 #+begin_center
 #+attr_latex: :height 1.5in
-[[../02-synth/img/ringz-impulse-responses.png]]
+[[../06-appendix/img/ringz-impulse-responses.png]]
 #+end_center
 
 *** Modal synthesis, in a nutshell
@@ -100,7 +100,7 @@ p.gui;
 #+name: modejpg
 #+caption: Vibrational modes in a cup of coffee. Image credit: Natural Philo, http://en.wikipedia.org/wiki/File:A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg.
 #+attr_latex: :height 1in
-[[../02-synth/img/A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg]]
+[[../06-appendix/img/A_cup_of_black_coffee_vibrating_in_normal_modes.jpeg]]
 #+end_center
 
 ** Banks of ringing filters
@@ -212,7 +212,7 @@ p.gui;
 **** What if we subtract a shorter \ugen{Ringz} from a longer one?
 #+begin_center
 #+attr_latex: :height 1.8in
-[[../02-synth/img/ringz-minus-ringz.png]]
+[[../06-appendix/img/ringz-minus-ringz.png]]
 #+end_center
 **** This changes the impulse response's envelope.
      - Smoother at the beginning.
@@ -562,7 +562,7 @@ first place.
     - Imagine a connection from \ugen{LocalOut} to \ugen{LocalIn}.
 #+begin_center
 #+attr_latex: :height 2.1in
-[[../02-synth/img/localin-out-dot.png]]
+[[../06-appendix/img/localin-out-dot.png]]
 #+end_center
 
 *** Insert filtering
