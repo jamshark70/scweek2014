@@ -1632,7 +1632,9 @@ change the layout is for the language to build a new SynthDef.
 
 The arrangement of the UGens depends on the number of channels coming
 from \clss{PlayBuf}. Compare a mono \clss{PlayBuf} with an amplifier,
-against a stereo one.
+against a stereo one. The only difference between the
+\clsspl{SynthDef} is \cd{PlayBuf(1, ...)} vs. \cd{PlayBuf(2, ...)},
+but the resulting graphs are quite different.
 
 #+begin_center
 #+attr_latex: :width 0.3\textwidth
@@ -1646,11 +1648,11 @@ can produce them. The server can only do what the language specifies.
 
 It's possible, in the server, to get the number of channels in a
 buffer using one of the buffer-info \glspl{UGen}:
-\ugen{BufChannels}. But you /may not/ use this in the \ci{numChannels}
-input. If you do, you'll get this error: "ERROR: Primitive
-'\textunderscore BasicNew' failed. Index not an Integer."
-\cd{b.numChannels} is valid because it uses information already
-available in the language.
+\ugen{BufChannels}. But you /may not/ use this, or a synth argument,
+in the \ci{numChannels} input. If you do, you'll get this error:
+"ERROR: Primitive '\textunderscore BasicNew' failed. Index not an
+Integer."  (\cd{b.numChannels} would be valid because it uses
+information already available in the language.)
 
 *** PlayBuf inputs
     - \ci{numChannels} :: This must match the buffer's channels.
@@ -2079,7 +2081,7 @@ q[\hits] = (
 **** Parameters needed for single \glspl{grain}:
      - *Trigger:* We'll use \ugen{Impulse}, controlled by frequency.
      - *Duration*.
-     - *Position* within the buffer, as a \egls{normalize}d range.
+     - *Position* within the buffer, as a \egls{normalize}\emph{d} range.
        - 0 = buffer start, 1 = buffer end.
        - Why? \Glspl{Buffer} may be of different sizes.
        - If it's normalized, the position input can be the same for any buffer.
