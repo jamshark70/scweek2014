@@ -19,6 +19,15 @@
 #+LATEX_HEADER: \usepackage{titlesec}
 #+LATEX_HEADER: \titleformat{\section}{}{\Large\textbf\thesection.}{1ex}{\filcenter\Large\textbf}
 
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancy}
+#+LATEX_HEADER: \fancyhead{} % clear all header fields
+#+LATEX_HEADER: \fancyhead[LO]{\nouppercase{\leftmark}}
+#+LATEX_HEADER: \fancyhead[RO]{\thepage}
+#+LATEX_HEADER: \fancyhead[LE]{\thepage}
+#+LATEX_HEADER: \fancyhead[RE]{\nouppercase{\rightmark}}
+#+LATEX_HEADER: \fancyfoot{} % clear all footer fields
+
 #+LATEX_HEADER: \usepackage{beamerarticle}
 #+LATEX_HEADER: \setcounter{tocdepth}{2}
 #+LATEX_HEADER: \setcounter{secnumdepth}{3}
