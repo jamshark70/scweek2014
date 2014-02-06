@@ -208,6 +208,36 @@ For both, the signal
    - Related
      - Formant synthesis (Formlet)
      - Banded waveguides (feedback delays)
+** Developing synths
+   - Interactive, experimental process
+   - Begin with a simple idea.
+   - What's it missing?
+   - Add a module to help with that.
+   - Repeat.
+   - One simple idea, boring. Many simple ideas together, exciting.
+   - Pick a technique that interests you. Focus on it for the rest of the workshop.
+
+** Group composition
+   - Composition: Unity and contrast.
+     - Unity: Collectively decide what will hold the piece together.
+       - Harmony (tonality)?
+       - Rhythm (tempo, meter)?
+       - Tone color? (Many sounds derived from the same source material?)
+     - Contrast: Balance of components
+       - If something is rhythmic, what will be sustained?
+       - High vs. low
+       - Short vs. long
+       - Smooth vs. jagged or angular
+     - Decide on musical components
+     - Start making them!
+
+** Live control
+   - Buttons and faders
+   - Receiving
+   - Central hub
+   - Turning faders into buttons
+     - Thresholds
+ 
 * Glossary decisions [0/14]
   - [ ] range
   - [ ] Nyquist
