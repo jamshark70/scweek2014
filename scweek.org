@@ -27,6 +27,9 @@
 *** DONE Changing number doesn't update proxy's source
 *** INPROG Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
+*** DONE Page breaks before parts
+*** DONE Left/right margins and header
+*** DONE Center section headings in text
 *** TODO Email bug: Failed export left temp buffer behind
 Error recovery issue in org-babel-exp
 
@@ -52,9 +55,9 @@ Debugger entered--Lisp error: (wrong-type-argument stringp nil)
   (if (org-string-nw-p (org-element-property :value src-block)) (progn (let* ... ...)))
   (when (org-string-nw-p (org-element-property :value src-block)) (let* (... ... ... ... ... ... ... ...) (cond ... ... ... ...)))
   org-latex-src-block((src-block (:language nil :switches nil :parameters nil :begin 211858 :end 212288 :number-lines nil :preserve-indent nil :retain-labels t :use-labels t :label-fmt nil :hiddenp nil :value "p.clear;  // or p = ProxySpace.new; p.push;\n\n(\n~grains.addSpec(\\tfreq, [1, 20, \\exp]);\n~grains.addSpec(\\pos, [0, b.duration]);\n~grains = { |tfreq = 5, graindur = 0.2, pan = 0, pos = 0.5,\n   amp = 0.2|\n   var trig = Impulse.ar(tfreq);\n   GrainBuf.ar(2, trig, graindur, b, 1, pos, 2, pan) * amp;\n};\n~grains.play;\n)\n\np.gui;  // if it's not already open\n" :post-blank 0 :post-affiliated 211916 :name "grain1" :caption (...) :parent (section ... ... #0))) nil (:export-options nil :input-file "/home/dlm/Documents/conferences/scweek2013/shows/02-synth/02-slideshow.org" :title ("SuperCollider Week, Day 2 \\\\ Sequencing with Patterns, Synthesis Techniques") :beamer-theme "default" :headline-levels 3 :latex-class "beamer" :latex-hyperref-p t :date ((latex-fragment ...)) :author ("H. James Harkins") :creator "Emacs 23.3.1 (Org mode 8.2.5f)" :email "" :exclude-tags ("noexport") :language "en" :preserve-breaks nil :section-numbers t :select-tags ("export") :time-stamp-file t :with-archived-trees headline :with-author t :with-clocks nil :with-creator comment :with-date t :with-drawers nil :with-email nil :with-emphasize t ...))
-*** TODO [#A] Relative paths to graphics
-*** TODO [#A] Section numbering in full article
-*** TODO [#C] Reference to frame ID "undefined"
+*** DONE [#A] Relative paths to graphics
+*** DONE [#A] Section numbering in full article
+*** DONE [#C] Reference to frame ID "undefined"
 *** POSTPONED Filter to remove non-frame text
 *** TODO [#C] Listings numbering problem with onlyenv
 *** DONE Extract code examples					    :getcode:

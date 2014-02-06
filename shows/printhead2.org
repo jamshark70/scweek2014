@@ -10,10 +10,14 @@
 
 #+startup: beamer
 #+LaTeX_CLASS: article
+#+LaTeX_CLASS_OPTIONS: [a4paper,twoside,11pt]
 # #+LaTeX_CLASS_OPTIONS: [presentation]
 #+BEAMER_THEME: default
 #+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
 #+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
+
+#+LATEX_HEADER: \usepackage{titlesec}
+#+LATEX_HEADER: \titleformat{\section}{}{\Large\textbf\thesection.}{1ex}{\filcenter\Large\textbf}
 
 #+LATEX_HEADER: \usepackage{beamerarticle}
 #+LATEX_HEADER: \setcounter{tocdepth}{2}
@@ -83,10 +87,10 @@
 #+LATEX_HEADER: the#1\endcsname\quad}}
 #+LATEX_HEADER: \makeatother
 
-
 #+BEGIN_LaTeX
 \mode<article>{\setbeamertemplate{frametitle}{%
        \subsubsection{\insertframetitle\\%
        \scriptsize\insertframesubtitle}}}
 \frenchspacing
+\pagestyle{headings}
 #+END_LaTeX

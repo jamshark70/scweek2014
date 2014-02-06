@@ -18,7 +18,7 @@
 # note, you must always have a top-level heading for each #+latex: \part{}
 
 * Part 1 						      :ignoreheading:
-#+latex: \part{Introductory SC, Synthesis and Sequencing}
+#+latex: \clearpage\part{Introductory SC, Synthesis and Sequencing}
 
 #+name: makegloss_art
 #+call: makegloss :exports (if hjh-exporting-slides "none" "results") :results value latex
@@ -36,13 +36,22 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "none" "results") :results value latex
 #+results: ugengloss_art
 
-# #+include: "../01-intro/01-contents.org" :minlevel 1
+#+include: "../01-intro/01-contents.org" :minlevel 1
 
 * Part 2						      :ignoreheading:
-#+latex: \part{Sequencing with Patterns; Synthesis Techniques}
+#+latex: \clearpage\part{Sequencing with Patterns; Synthesis Techniques}
 #+include: "../02-synth/02-contents.org" :minlevel 1
 
-* Glossary
+* Part 3 						      :ignoreheading:
+#+latex: \clearpage\part{Musical and External Control}
+#+include: "../03-control/03-contents.org" :minlevel 1
+
+* Appendix						      :ignoreheading:
+#+latex: \clearpage\part{Appendix: Modal Synthesis}
+#+include: "../06-appendix/06-contents.org" :minlevel 1
+
+* Glossary						      :ignoreheading:
+#+latex: \clearpage\part{Glossary}
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
