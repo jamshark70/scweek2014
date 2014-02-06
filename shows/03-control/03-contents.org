@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis
+* Granular synthesis						   :noexport:
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -282,3 +282,62 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
+* Toward complex synthesis
+** Simple ideas
+*** You take the lead
+    From here, we will move away from guided explanation of techniques, toward your creativity.
+    - Larger modular synths;
+    - Pattern sequences with more musicality;
+    - Control in performance by external devices.
+
+*** The trick
+**** The trick to making music by programming:
+**** quote							:B_quotation:
+     :PROPERTIES:
+     :BEAMER_env: quotation
+     :END:
+     A simple idea by itself is boring.\\<all>
+     Lots of simple ideas working together make music.
+
+*** Workflow
+**** A typical way to develop interesting musical element:
+     1. Start with a basic idea of this element's role in the piece.
+     2. Write a simple synth and/or pattern that seems related.
+     3. Listen carefully. What is missing from the simple idea?\\
+	Think of /small/ adjustments.
+     4. Write a new component:
+	- A second or third \gls{oscillator} (or \gls{granular} node);
+	- An \gls{LFO} or \gls{envelope} module to control some parameter;
+	- A more complex child pattern in \clss{Pbind};
+	- Another GUI or external control.
+     5. Go back to step 3.
+
+*** Experience
+**** That almost makes it sound easy...
+     /Experience/ is what's missing from that picture.
+     - What techniques work for what kinds of sounds?\\
+       E.g., FM synthesis with ratio = 0.5 makes great basslines.
+     - *Dos* and *don'ts* of modulation.
+     - When to control an input by \clss{Pbind} vs. modulation units?
+**** No way to learn, except to /try/ and /make mistakes/.
+     Here in the workshop, I can help steer you in the right direction.
+
+*** Try it together, as a group
+**** Let's take 20--40 minutes to do this as a group.
+     Questions to get you started thinking:
+     - What kind of sound or texture do you want?\\
+       Pitched or noisy? High, low or middle frequencies?
+     - What kind of musical behavior?\\
+       Rhythmic or not? Tonal or not?
+     - Any sound effect you heard somewhere, that we can try?
+**** If none of those spark any ideas---
+     - Which synthesis technique would you like to explore more?
+
+*** Working...
+#+begin_center
+Switch over to SuperCollider and start building...
+#+end_center
+
+* Considerations for group composition
+
+* External control
