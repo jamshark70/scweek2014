@@ -1,12 +1,22 @@
 # Planning for SC week-long workshop
 
 * Technical
-** TODO Distributing extensions [0/5]
-   - [ ] JIT extensions
-   - [ ] ddwlib
-   - [ ] crucial
-   - [ ] psSet
-   - [ ] Write slides about this
+** DONE Distributing extensions [6/6]
+   - [X] JIT extensions
+   - [X] ddwlib
+   - [X] crucial
+   - [X] psSet
+   - [X] startup file
+#+begin_example
+s.startAliveThread;
+ServerBoot.add({
+	s.initTree;
+	s.slotPut(\serverInterface, ServerShmInterface(s.addr.port));
+}, s);
+
+(Platform.userExtensionDir +/+ "psSet-event-type.scd").load;
+#+end_example
+   - [X] Write slides about this
 ** Patterns + ProxySpace
 *** Notes for documentation
 **** NodeProxy play/stop semantics

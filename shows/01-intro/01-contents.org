@@ -247,9 +247,32 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
-* SC language: Beginning steps
-** Making noise
-*** Before making noise: Set up audio
+** Preparing the environment
+*** Installing workshop extensions
+**** Extensions are for extra features.
+     Not part of the base installation.
+     - *Note:* This assumes you're starting with no extensions.
+**** To install:
+     1. In SC, run \cd{Platform.userExtensionDir;}.\\
+	This tells you where to put the files.
+     2. Extract the =extensions.zip= file.
+     3. Copy or move the extracted files into the extension directory.
+
+*** Startup file
+**** SC needs to run an extra code file during startup.
+     1. In the IDE, /File/ menu $\to$ /Open startup file/.
+     2. Copy and paste the line below:
+	#+name: startup
+	#+caption: Add this line to the startup file.
+	#+begin_src {}
+	(Platform.userExtensionDir +/+ "psSet-event-type.scd").load;
+	#+end_src
+     3. Save. Make sure the filename is =startup.scd=.
+**** Now, recompile the class library.
+     - "Recompiling" resets everything in the language.
+     - \ks{Ctrl-Shift-L}
+
+*** Audio setup
 **** OSX
      - Can choose the device within SC. See below.
      - Or, choose the device in OSX's audio control panel.
@@ -283,6 +306,8 @@ s.options.device = "Device Name";
      - If your soundcard installed an ASIO driver, use it.
      - For the built-in soundcard, use ASIO4ALL.
 
+* SC language: Beginning steps
+** Making noise
 *** Boot the server
 **** Boot the audio server.
      - Code: \cd{s.boot}.
