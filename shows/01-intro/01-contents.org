@@ -37,7 +37,7 @@
     :END:
 #+name: smalltalk
 #+caption: 25% coin toss in SmallTalk.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 (1 to: 100) atRandom <= 25
    ifTrue:
       [Transcript show: "heads"]
@@ -50,7 +50,7 @@
     :END:
 #+name: sccoin
 #+caption: 25% coin toss in SuperCollider.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 if(0.25.coin) {
    "heads".postln
 } {
@@ -226,7 +226,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
       Convenient to run several lines at once.
 #+name: codeblock
 #+Caption: A block of code, in parentheses.
-#+Begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 (
 (1..10).do { |i|
    i.postln;
@@ -264,7 +264,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      2. Copy and paste the line below:
 	#+name: startup
 	#+caption: Add this line to the startup file.
-	#+begin_src {}
+	#+begin_src {SuperCollider}
 	(Platform.userExtensionDir +/+ "psSet-event-type.scd").load;
 	#+end_src
      3. Save. Make sure the filename is =startup.scd=.
@@ -290,7 +290,7 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - *Windows:* Boot the server. Then look for the device list.
 **** Set the device in \clss{ServerOptions}.
      - You must quote the device name exactly.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 s.options.device = "Device Name";
 #+end_src
 **** Reboot the server.
@@ -317,7 +317,7 @@ s.options.device = "Device Name";
 *** "Canonical" SC synthesis
 #+name: canonical
 #+caption: SuperCollider's "native" style of synthesis.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 // A synthesis definition
 (
 SynthDef(\varsaw, { |out = 0, freq = 440, width = 0.5,
@@ -363,7 +363,7 @@ width: rrand(0.2, 0.5), sustain: 2).play;
 #+latex: \glsadd{play}\glsadd{release}\glsadd{dup}\glsadd{SinOsc}
 #+name: sound1
 #+Caption: A very simple synth.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 a = { SinOsc.ar(440, 0, 0.1).dup }.play;
 
 // To make it stop:
@@ -393,7 +393,7 @@ a.release;
       @@latex:\glsadd{ProxySpace}\glsadd{VarSaw}\glsadd{dup}\glsadd{SinOsc}\glsadd{play}\glsadd{stop}@@
 #+name: ps1
 #+caption: Basic use of ProxySpace.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = ProxySpace.new;
 p.push;
 
@@ -443,7 +443,7 @@ p.push;
        \cd{sqrt(9 + 16)} $\to$ \cd{sqrt(25)} $\to$ 5@@.
 #+name: func1
 #+caption: A function to calculate a hypotenuse.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 f = { arg a, b; sqrt(a.squared + b.squared) };
 
 f.value(3, 4);   // prints "5"
@@ -458,7 +458,7 @@ f.value(5, 12);  // prints "13"
      - Expression :: \cd{name(value)}.
 #+name: func2
 #+caption: Default values for a and b in the hypotenuse function.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 f = { arg a = 3, b = 4; sqrt(a.squared + b.squared) };
 
 f.value         // prints "5"
@@ -473,7 +473,7 @@ f.value(b: 5);  // prints "5.830..."; a is still 3
 **** Why two ways?
      - \cd{arg...} is traditional from SC2.
      - \cd{|...|} came later, to make looping structures prettier.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 10.do { arg i; i.postln };
 
 // or
@@ -511,7 +511,7 @@ f.value(b: 5);  // prints "5.830..."; a is still 3
      - \eGls{arguments} are variables, but get values from outside.
 #+name: declarevars
 #+caption: A function that declares a variable.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 f = {
    var random;
    random = 10.rand;
@@ -561,7 +561,7 @@ f = {
      - To test equality, use \ci{==}.
 #+name: varassg1
 #+caption: Variable assignment.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 x = 0;
 y = x;
 x == y;  // prints true
@@ -665,7 +665,7 @@ In \cd{SinOsc.ar(440)}:
       In \cd{1 + 2}: Receiver = 1, Selector = '+', Argument = 2
 #+Name: callstyles
 #+Caption: Three styles of method calls. They all answer with the same result, because the receiver, selector and argument are the same.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 [2.pow(3), pow(2, 3), 2 pow: 3]
 // answers: [ 8, 8, 8 ]
 #+end_src
@@ -680,7 +680,7 @@ In \cd{SinOsc.ar(440)}:
 **** In all cases, the \egls{receiver} chooses the method definition that's right for the object.
 #+name: polymath
 #+caption: Polymorphism with math operators. Try these one by one.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 1 + 2;
 Point(3, 4) + 2;
 [1, 2, 3, 4, 5] + 10;
@@ -751,7 +751,7 @@ SinOsc.ar + 1;
        2. Binary operators.
 #+name: opPrecedence
 #+caption: The difference between traditional operator grouping and SC's left-to-right precedence.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 a = 10;
 5 + a * 2;  // 30; most languages, 25
 (5 + a) * 2;  // 30
@@ -828,7 +828,7 @@ a = 10;
 #+latex: \glsadd{ProxySpace}\glsadd{Saw}
 #+name: mod1
 #+caption: Within a ProxySpace, create an oscillator module.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = ProxySpace.new; p.push;
 
 ~oscil = { |freq = 440, amp = 0.1|
@@ -863,7 +863,7 @@ p.gui;
 #+latex: \glsadd{LPF}
 #+name: mod2
 #+caption: Within a ProxySpace, create a filter module.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = { |ffreq = 2000|
    LPF.ar(~oscil.ar, ffreq)
 };
@@ -907,7 +907,7 @@ p.gui;
 #+latex: \glsadd{Saw}\glsadd{Mix}\glsadd{Pulse}\glsadd{fadeTime}
 #+name: mod3
 #+caption: Switch between different oscillators.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter.play;
 
 // Thicker sound
@@ -981,7 +981,7 @@ p.gui;
      :END:
 #+Name: env1
 #+Caption: Plotting a breakpoint envelope.
-#+Begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 Env(
    levels: [0, 1, 0.2, 0.6, 0],
    times: [0.1, 0.3, 0.8, 0.25],
@@ -1035,7 +1035,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
 #+latex: \glsadd{EnvGen}\glsadd{Impulse}
 #+Name: ampenv1
 #+Caption: Apply an evenly-triggered amplitude envelope.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~eg = { EnvGen.kr(
    envelope: Env([0, 1, 0], [0.01, 0.6], -4),
    gate: Impulse.kr(1)
@@ -1048,7 +1048,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
 
 *** Envelope generator UGen
 # deliberately no caption: Don't want this numbered or collated
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~eg = { EnvGen.kr(
    envelope: Env([0, 1, 0], [0.01, 0.6], -4),
    gate: Impulse.kr(1)
@@ -1082,7 +1082,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
 
 *** Envelope generator as amplifier
 **** Amplifier is multiplication (\ci{*}).
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~out = { (~filter.ar * ~eg).dup }; ~out.play;
 #+End_src
      The envelope's amplifier is usually last in the chain.
@@ -1101,7 +1101,7 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
      - Long decay > 1, medium trigger rate $\approx$ 3.5.
 #+Name: ampenv2
 #+Caption: Add parameters to the envelope generator.
-#+Begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 ~eg = { |tfreq = 1, decay = 0.6|
    EnvGen.kr(
       Env([0, 1, 0], [0.01, decay], -4),
@@ -1200,7 +1200,7 @@ p.gui;
 
 # #+Name: ampenv2
 # #+Caption: Add parameters to the envelope generator.
-# #+Begin_src {} -i
+# #+begin_src {SuperCollider} -i
 # {
 #    [
 #       EnvGen.ar(Env.perc(0.01, 0.6), Impulse.ar(300), timeScale: 1/300),
@@ -1218,7 +1218,7 @@ p.gui;
     - \mth{sine} :: Sine-shaped attack and decay, no sustain.
 #+name: tryEnv1
 #+caption: Try plotting these timed envelope shapes. Modify the example to try the other methods. Use auto-completion to see the parameter names and defaults.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 Env.linen(0.1, 1, 0.1).plot;
 #+end_src
 
@@ -1231,7 +1231,7 @@ Env.linen(0.1, 1, 0.1).plot;
 		   portion.
 #+name: tryEnv2
 #+caption: Try plotting these sustaining envelope shapes.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
 #+end_src
 
@@ -1275,7 +1275,7 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
      - Use \mth{set} to open and close the gate.
 #+name: susEnv
 #+caption: Plug a sustaining envelope into the analog-style synth.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~eg = { |gt = 0|
    EnvGen.kr(
       envelope: Env.adsr(0.01, 0.15, 0.4, 0.1),
@@ -1329,7 +1329,7 @@ Env.adsr(0.1, 0.25, 0.5, 0.2).plot;
      - The next \mth{next} call will advance from there.
 #+name: routine1
 #+caption: A simple routine. Run r.next four times. How would you explain the results?
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 (
 r = Routine {
    1.yield;
@@ -1362,7 +1362,7 @@ r.next;
      - The array could be 100 items, but the \mth{do} function can stay the same.
 #+name: do1
 #+caption: A do loop.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 [1, 3, 5].do { |item|
    item.postln;
 };
@@ -1371,7 +1371,7 @@ r.next;
 *** Do loop output
 **** Let's look at the printed output from Listing [[do1]].
      - 1, 3 and 5 are easy enough to understand.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 1
 3
 5
@@ -1403,7 +1403,7 @@ r.next;
      Or any other kind of loop.
 #+name: routine2_do
 #+caption: A simple routine with a do loop. Run r.next four times.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 r = Routine {
    [1, 3, 5].do { |item|
       item.yield;
@@ -1425,7 +1425,7 @@ r.next;
 #+latex: \glsadd{rrand}
 #+name: routine2_do
 #+caption: A simple routine with a infinite loop. Run r.next as many times as you like.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 r = Routine {
    loop {
       rrand(1, 10).yield;
@@ -1470,7 +1470,7 @@ r.next;
      which one went into the scheduler first.
 #+name: sched1
 #+caption: Scheduling simple actions. Run the blocks and watch the post window.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 (
 "Right now".postln;
 TempoClock.sched(1, { "one".postln });
@@ -1496,7 +1496,7 @@ TempoClock.sched(1, { "one".postln });
        last expression.
 #+name: resched1
 #+caption: Automatic rescheduling. You'll have to use ctrl-. to stop it.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 (
 var x = 0;
 TempoClock.sched(1, {
@@ -1514,7 +1514,7 @@ TempoClock.sched(1, {
      - You can \mth{stop} a Routine without \ks{Ctrl-.}: \cd{r.stop}.
 #+name: resched2
 #+caption: Automatic rescheduling of a Routine with ``wait.''
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 (
 r = Routine {
    var x = 0;
@@ -1550,7 +1550,7 @@ r.stop;
      - Note \mth{play} here: More convenient than \cd{TempoClock.sched}.
 #+name: noteseq1
 #+caption: Note sequencing in a Routine.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p.clear;  // or p = ProxySpace.new; p.push;
 
 ~out = { |freq = 440, width = 0.5, t_trig = 1|
@@ -1585,7 +1585,7 @@ r.stop;
 *** Graphical control of Tdef
 #+name: tdef1
 #+caption: Using Tdef for graphical control and replacing sequencing functions on-the-fly.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 Tdef(\player, {
    loop {
       ~out.set(\t_trig, 1, \freq, exprand(110, 440));
@@ -1612,7 +1612,7 @@ Tdef(\player, {
        specific \clss{NodeProxy} objects.
 # #+name: tdefEvent
 # #+caption: Replace out.set with Events.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 Tdef(\player, {
    loop {
       p.setEvent((t_trig: 1, freq: exprand(110, 440))).play;
@@ -1635,7 +1635,7 @@ Tdef(\player, {
     - Remember, \mth{do} over the \clss{Array} reads out the array's items one by one.
 #+name: noteseq2
 #+caption: Get a deterministic sequence of pitches from an array.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 (
 var midi = [59, 61, 66, 68, 69, 61, 59, 68, 66, 61, 69, 68];
 
@@ -1662,7 +1662,7 @@ Tdef(\reich).stop;  // if you want
 *** Non-random example: Two arrays
 #+name: noteseq3
 #+caption: Get deterministic sequences of note information from multiple arrays.
-#+begin_src {} -i :extract=t
+#+begin_src {SuperCollider} -i :extract=t
 (
 var midi = [59, 61, 66, 68, 69, 61, 59, 68, 66, 61, 69, 68],
 sawWidth = [0.1, 0.5, 0.2, 0.5, 0.5, 0.5,
@@ -1706,7 +1706,7 @@ Tdef(\reich).stop;  // if you want
      - *Very common strategy:* Make a function for code you need to reuse.
 #+name: seqfunc
 #+caption: A function that converts an array into a stream.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 f = { |array|
    Routine {
       loop {
@@ -1721,7 +1721,7 @@ f = { |array|
     - The \clss{Tdef} function is a lot simpler.
 #+name: noteseq4
 #+caption: Use the array-stream function in the sequence.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 (
 var midi = f.value([59, 61, 66, 68, 69, 61,
    59, 68, 66, 61, 69, 68]),
@@ -1771,7 +1771,7 @@ Tdef(\reich, {
     - But, \clss{Pseq} is more descriptive than \cd{f.value}.
 #+name: noteseq5
 #+caption: Use patterns to make the streams in the sequence.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 (
 var midi = Pseq([59, 61, 66, 68, 69, 61,
    59, 68, 66, 61, 69, 68], inf).asStream,
@@ -1803,7 +1803,7 @@ Tdef(\reich, {
 **** You can change the notes/widths by changing the \clsspl{Pdefn}!
 #+name: noteseq6
 #+caption: Use pattern proxies to make the streams in the sequence.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 (
 Pdefn(\midi, Pseq([59, 61, 66, 68, 69, 61,
    59, 68, 66, 61, 69, 68], inf));
@@ -1882,7 +1882,7 @@ Tdef(\reich, {
      - It changes immediately to a changing frequency.
 # #+name: ps2
 # #+caption: Modularity in ProxySpace.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~freq = 110;
 ~width = 0.5;
 

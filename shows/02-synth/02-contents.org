@@ -41,7 +41,7 @@
 **** An "empty" event can \mth{play}.
 #+name: event1
 #+caption: The simplest possible event.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ().play;
 #+end_src
 
@@ -67,7 +67,7 @@
      - Pan :: \ci{\textbackslash pan} = 0 (center).
 #+name: eventDefaults
 #+caption: Print a list of events of default values.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 Event.default.parent.postSorted; ""
 #+end_src
 A little trick: Add an empty string after printing a collection, for cleaner output.
@@ -79,7 +79,7 @@ A little trick: Add an empty string after printing a collection, for cleaner out
        - (Written differently in \clss{Dictionary}.)
 #+name: event2
 #+caption: Put your own values into events, and play them.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 (freq: 330, amp: 0.5, sustain: 2, pan: 0.5).play;
 #+end_src
 
@@ -94,7 +94,7 @@ A little trick: Add an empty string after printing a collection, for cleaner out
        - \ci{stretch} :: Multiplies all time values. Can make a sequence play faster or slower.
 #+name: event2
 #+caption: Sustain is calculated automatically from "dur" and "legato."
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 (freq: 330, amp: 0.5, dur: 3, legato: 0.5).play;
 #+end_src
 
@@ -109,7 +109,7 @@ A little trick: Add an empty string after printing a collection, for cleaner out
        - \ci{octave}: An octave number. 5 is the octave from middle C to the B above.
 #+name: event3
 #+caption: Different ways of writing pitch.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 (freq: [220, 275, 330]).play;
 (midinote: [57, 61, 64], sustain: 1.5).play;
 (degree: [0, 2, 4], root: 9, octave: 4, sustain: 1.5).play;
@@ -152,7 +152,7 @@ A little trick: Add an empty string after printing a collection, for cleaner out
     - \ci{gt} arguments will be closed automatically after \ci{sustain} beats.
 #+name: gateEvent
 #+caption: Hold a gate open for a given amount of time using an Event.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = ProxySpace.new; p.push;
 
 ~out = { |freq = 440, width = 0.5, gt|
@@ -186,7 +186,7 @@ p.setEvent((freq: exprand(200, 400), sustain: 3)).play;
      - \mth{next} needs an empty \clss{Event} as a container for the new values.
 #+name: pbind1
 #+caption: Pbind collects child patterns' return values under given names.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = Pbind(
    \freq, Pexprand(100, 400, inf),
    \dur, Pwhite(1, 4, inf) * 0.125
@@ -196,7 +196,7 @@ p.next(Event.new);
 #+end_src
 
 *** What does Pbind actually do?
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = Pbind(
    \freq, Pexprand(100, 400, inf),
    \dur, Pwhite(1, 4, inf) * 0.125
@@ -250,7 +250,7 @@ Result event: ( 'dur': 0.125, 'freq': 133.24577125341 )
      - Other notes hold over, into the next note.
 #+name: pbind2
 #+caption: A "canonical" Pbind, playing notes in the default SynthDef.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 a = Pbind(
    \degree, Pwhite(-7, 7, inf),
    \dur, Pwhite(1, 4, inf) * 0.125,
@@ -309,7 +309,7 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
 #      - But using it---playing notes automatically---is convenient.
 #+name: rVsPbind
 #+caption: A Pbind, controlling NodeProxies in a ProxySpace.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~player = \psSet -> Pbind(
    \freq, Pexprand(110, 440, inf),
    \dur, 0.5
@@ -364,7 +364,7 @@ This has a somewhat complex flow, wrapped up in a simple expression. It divides 
 *** Simple translation into SC
 #+Name: sub1
 #+Caption: Oscillator and filter, the basis of subtractive synthesis.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = ProxySpace.new;
 p.push;
 
@@ -439,7 +439,7 @@ p.clear;
 #+latex: \glsadd{LFSaw}\glsadd{Saw}
 #+Name: bandlim1
 #+Caption: Compare geometric vs. band-limited waves, visually. LFSaw parameters are to match the Saw plot more closely. Maximize the window after running.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 { [LFSaw.ar(440, 1, -0.7), Saw.ar] }.plot;
 #+End_src
 
@@ -453,7 +453,7 @@ p.clear;
 #+latex: \glsadd{LFSaw}\glsadd{Saw}
 #+Name: bandlim2
 #+Caption: Compare geometric vs. band-limited waves, aurally.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 p.clear;
 ~oscil = { LFSaw.ar(2400, 0, 0.05).dup };
 ~oscil.play;
@@ -484,7 +484,7 @@ sc3-plugins package.
 #+latex: \glsadd{Pulse}\glsadd{VarSaw}
 #+Name: bandlim2
 #+Caption: Hear the effect of changing the pulse width.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = ProxySpace.new.push;
 
 (
@@ -506,7 +506,7 @@ p.clear;
      - We can do the same in a synth.
 #+name: detune
 #+caption: Detuning: Make several oscillators and mix (add) them.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = ProxySpace.new; p.push;
 
 ~oscil = { |freq = 220, detun = 1.003|
@@ -525,7 +525,7 @@ p.clear;
 #+end_src
 
 *** Detuning, explained
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
       Saw.ar(freq)
       + Saw.ar(freq * detun)
       + Saw.ar(freq / detun)
@@ -546,7 +546,7 @@ p.clear;
      - \ugen{Mix} will find the most efficient way to add them.
 #+name: detune2
 #+caption: Mix an array of oscillators, instead of explicitly adding them.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~oscil = { |freq = 220, detun = 1.003|
    (0.1 * Mix([
       Saw.ar(freq),
@@ -577,7 +577,7 @@ p.clear;
      - The \ugen{Saw}s are in an array, which we can give to \ugen{Mix}.
 #+name: mc-exp1
 #+caption: Multichannel expansion: An array of frequencies turns into an array of oscillators.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 Saw.ar([1, 2, 3]);  // prints: [ a Saw, a Saw, a Saw ]
 
 ~oscil = { |freq = 220, detun = 1.003|
@@ -594,7 +594,7 @@ Saw.ar([1, 2, 3]);  // prints: [ a Saw, a Saw, a Saw ]
       Get the \mth{reciprocal} of \ci{detun}.
 #+name: detune4
 #+caption: Mix an array of oscillators, instead of explicitly adding them.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~oscil = { |freq = 220, detun = 1.003|
    (0.1 * Mix(
       Saw.ar(freq * [1, detun, detun.reciprocal])
@@ -604,7 +604,7 @@ Saw.ar([1, 2, 3]);  // prints: [ a Saw, a Saw, a Saw ]
 
 *** Unpacking multichannel expansion
 **** All three of these expressions are identical
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 // Compact form
 Mix(Saw.ar(220 * [1, detun, detun.reciprocal], 0.1))
 
@@ -656,7 +656,7 @@ for less work.
      - A bass might have a low square wave with higher saws above.
 #+name: multiosc
 #+caption: Multiple oscillator types together.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~oscil = { |freq = 110|
    var freq1 = freq * [0.5, 0.498, 0.503],
    freq2 = freq * [1, 0.997, 1.004];
@@ -687,7 +687,7 @@ p.clear;
 Filters affect some frequencies more than others.
 #+Name: filt1
 #+Caption: Watch and listen to the effect of different filter types.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 (
 s.freqscope;
 ~oscil = { Saw.ar(220, 0.1) };
@@ -730,7 +730,7 @@ Close the old GUI window, and try different \ci{rq} values.
 #+latex: \glsadd{BPF}
 #+Name: filtbw
 #+Caption: Move rq and ffreq, and hear the effect.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = { |ffreq = 2000, rq = 0.1|
    BPF.ar(~oscil.ar, ffreq, rq).dup
 };
@@ -748,7 +748,7 @@ Close the old GUI window, and try different \ci{rq} values.
 #+latex: \glsadd{RLPF}
 #+Name: rlpf
 #+Caption: Move rq and ffreq, and hear the lowpass-filter effect.
-#+Begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = { |ffreq = 2000, rq = 0.1|
    RLPF.ar(~oscil.ar, ffreq, rq).dup
 };
@@ -791,7 +791,7 @@ Close the old GUI window, and try different \ci{rq} values.
 **** Start with an earlier synth, slightly modified.
 #+name: scifi1
 #+caption: Basic detuned synth.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = ProxySpace.new; p.push;
 
 ~oscil = { |freq = 120|
@@ -818,7 +818,7 @@ p.gui;
        frequency.
 #+name: scifi2
 #+caption: Add an LFO to the filter.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~lfreq = 1; ~lfreq.addSpec(\value0, [0.5, 18, \exp]);
 ~depth = 100; ~depth.addSpec(\value0, [0, 1000]);
 ~filtlfo = { SinOsc.kr(~lfreq) * ~depth };
@@ -838,7 +838,7 @@ p.gui;
 #+latex: \glsadd{LFPulse}\glsadd{LFTri}\glsadd{LFSaw}
 #+name: lfoshapes
 #+caption: Play with some other common LFO shapes.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filtlfo = { LFPulse.kr(~lfreq) * ~depth };
 ~filtlfo = { LFTri.kr(~lfreq) * ~depth };
 ~filtlfo = { LFSaw.kr(~lfreq) * ~depth };
@@ -857,7 +857,7 @@ p.gui;
 #+latex: \glsadd{LFGauss}\glsadd{LinCongL}\glsadd{QuadL}
 #+name: lfoshapes2
 #+caption: LFO shapes not commonly found in other software.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filtlfo = { LFNoise1.kr(~lfreq) * ~depth };
 ~filtlfo = { LFNoise2.kr(~lfreq) * ~depth };
 ~filtlfo = { LFGauss.ar(~lfreq) * ~depth };
@@ -922,7 +922,7 @@ Arguments: inMin, inMax, outMin, outMax, clip.
      - \cd{0.5.linexp(0, 1, 55, 880)} is 220.
 #+name: linExpPlot
 #+caption: Plot a line covering four octaves of frequency, first linearly, second exponentially.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 {
    var line = Line.ar(0, 1, 0.01);  // out: 0.0-1.0
    [
@@ -941,7 +941,7 @@ Arguments: inMin, inMax, outMin, outMax, clip.
      - The larger the number, the more extreme the curve.
 #+name: linCurvePlot
 #+caption: Plot a line covering four octaves of frequency with different curve factors.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 {
    var line = Line.ar(0, 1, 0.01);
    [
@@ -960,7 +960,7 @@ Arguments: inMin, inMax, outMin, outMax, clip.
 #+latex: \glsadd{round}\glsadd{differentiate}
 #+name: expscale
 #+caption: Convert modulation ranges for frequency into intervals.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 [1000, 2000, 3000].cpsmidi.round(0.01);
 // prints: [ 83.21, 95.21, 102.23 ]
 
@@ -989,7 +989,7 @@ original array using \mth{integrate}. We aren't interested in the
 first item, so we can ignore it. If you need to get rid of the first
 item, use \mth{drop}:
 
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 [1000, 2000, 3000].cpsmidi.differentiate.drop(1).round(0.01);
 // prints: [ 12, 7.02 ]
 #+end_src
@@ -1039,7 +1039,7 @@ item, use \mth{drop}:
 #+latex: \glsadd{reciprocal}
 #+name: explfo
 #+caption: Replace the linear-scale LFO with an exponential-scale LFO.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filtlfo = {
    var depth = ~depth + 1;  // Add 1
    // Use reciprocal and exprange
@@ -1103,7 +1103,7 @@ synthesis function, assign it to a variable.
 #+latex: \glsadd{clip}
 #+name: filterEg
 #+caption: Apply an envelope to the filter frequency.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~feg = { |gt = 0|
    EnvGen.kr(Env([1, 4, 1], [0.01, 0.15], -4), gt)
 };
@@ -1145,7 +1145,7 @@ p.setEvent((freq: exprand(100, 400), gt: 1,
     Based on Listing [[filterEg]].
 #+name: noiseAtk
 #+caption: Create a noise generator, and an envelope and filter for it.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~noiseEg = { |gt, noiseDur = 0.08|
    EnvGen.kr(Env.perc(0.01, noiseDur), gt)
 };
@@ -1194,7 +1194,7 @@ ffreq = 2300
 *** The FM experiment: Code
 #+name: fm1
 #+caption: The first FM synthesis experiment, translated to SuperCollider.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p.clear;  // or p = ProxySpace.new; p.push;
 
 ~freq = 440;
@@ -1248,7 +1248,7 @@ avoids this problem of frequency deviation.
 **** Now you can change \ci{\textasciitilde freq} in the GUI, and the modulator moves with it.
 #+name: fm2
 #+caption: Convert the modulator to use a frequency ratio instead of a direct frequency.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~modulator.addSpec(\ratio, [0.1, 8, 2]);
 ~modulator = { |ratio = 1, mod_index = 0|
    SinOsc.ar(~freq * ratio, 0, mod_index);
@@ -1284,7 +1284,7 @@ avoids this problem of frequency deviation.
     - You can keep going three or four deep.
 #+name: fm3
 #+caption: Add another modulator to the chain.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~mod2.addSpec(\ratio, [0.1, 8, 2]);
 ~mod2.addSpec(\mod_index, [0, 25, 2]);
 ~mod2 = { |ratio = 2, mod_index = 0|
@@ -1309,7 +1309,7 @@ avoids this problem of frequency deviation.
      - *Note:* Add a new 0--1 parameter for feedback.
 #+name: fm4
 #+caption: Feedback modulation.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~modulator.addSpec(\feedback, [0, 1]);
 ~modulator = { |mod_freq = 5, mod_index = 0, feedback = 0|
    SinOsc.ar(mod_freq * ((~modulator.ar * feedback) + 1),
@@ -1359,7 +1359,7 @@ avoids this problem of frequency deviation.
 	\mth{sine1}, \mth{sine2}, \mth{sine3}
 #+name: wt1
 #+caption: A few partials of a sawtooth wave, in a wavetable buffer. Run these statements one by one.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 b.free;
 b = Buffer.alloc(s, 2048, 1);
 b.sine1((1 .. 3).reciprocal);
@@ -1374,7 +1374,7 @@ b.plotWavetable;
      Detuning means that the frequency ratio between \gls{carrier} and \gls{modulator} will no longer be an integer.
 #+name: wt2
 #+caption: Substitute a wavetable oscillator in the carrier, in place of the earlier SinOsc.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~carrier = { |amp = 0.1|
    Osc.ar(b, ~freq * (~modulator.ar + 1), 0, amp).dup
 };
@@ -1403,7 +1403,7 @@ b.sine1((1 .. 3).reciprocal);
 #+latex: \glsadd{sine2}
 #+name: wtSymm
 #+caption: A plot of symmetrical vs. asymmetrical waveforms. Run the lines one by one.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 b.sine1((1 .. 3).reciprocal);
 b.plotWavetable;
 
@@ -1425,7 +1425,7 @@ still 0. (It might not be exactly 0 because of floating-point rounding
 error, but it will be very close.) If you use this wavetable as a
 modulator, the carrier's pitch will not drift.
 
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 y = Signal.sineFill(512,
 	(1..3).reciprocal,
 	Array.fill(3, { 2pi.rand })
@@ -1444,7 +1444,7 @@ y.sum;   // very close to 0
        So, the actual average pitch of the carrier is 4\% higher than given.
 #+name: wtSymm2
 #+caption: Switch the carrier back to SinOsc, and the modulator to the asymmetrical wavetable.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 (
 ~carrier = { |amp = 0.1|
    SinOsc.ar(~freq * (~modulator.ar + 1), 0, amp).dup
@@ -1470,7 +1470,7 @@ y.sum;   // very close to 0
     If you need to fill a buffer at one go, do it like this.
 #+name: wtAsync1
 #+caption: Using sync for buffer operations.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 fork {
    b = Buffer.alloc(s, 2048, 1);
    s.sync;
@@ -1494,7 +1494,7 @@ allocation, allow another message to be attached. This message will
 execute after the main message finishes. This is another shortcut for
 filling a wavetable.
 
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 b = Buffer.alloc(s, 2048, 1, completionMessage: { |buf|
    buf.sine1Msg((1..3).reciprocal);
 });
@@ -1517,7 +1517,7 @@ request to the server and wait for the reply. After the reply comes
 in, it will run a function that you choose. Assuming \ci{b} has
 already been filled:
 
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 b.getn(0, 10, { |data| data.postln });
 #+end_src
 
@@ -1553,7 +1553,7 @@ b.getn(0, 10, { |data| data.postln });
      - If you don't, eventually memory will run out.
 #+name: sf1
 #+caption: Read SuperCollider's classic Apollo 11 example sound into a buffer.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 b.free;
 b = Buffer.read(s,
    Platform.resourceDir +/+ "sounds/a11wlk01.wav",
@@ -1563,7 +1563,7 @@ b = Buffer.read(s,
 
 *** Buffer loading is asynchronous
 **** Look carefully at the output from that command.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 Buffer(0, nil, nil, nil, 
    /usr/local/share/SuperCollider/sounds/a11wlk01.wav)
 done
@@ -1604,7 +1604,7 @@ Buffer(0, 188893, 1, 44100,
      - You can use \cd{b.numChannels}---this is an actual number.
 #+name: playbuf1
 #+caption: PlayBuf, with rate control.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p.clear;  // or p = ProxySpace.new; p.push;
 
 (
@@ -1678,7 +1678,7 @@ information already available in the language.)
      *Note:* \ci{setEvent} and \ci{psSet} include a trigger automatically.
 #+name: playseg1
 #+caption: Using startPos with a trigger to play different fragments.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~playbuf = { |rate = 1, t_trig = 0, start = 0|
    (PlayBuf.ar(1, b, rate, t_trig, start)
       * 0.1).dup
@@ -1799,7 +1799,7 @@ this function is handling the envelopes---you can always come back and
 work it out later, using some help files. (\Gls{multichannel expansion} is
 the key to this example.)
 
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p = ProxySpace.new; p.push;
 
 (
@@ -1845,7 +1845,7 @@ fades and use them when needed.
      ... with arguments for buffer, position and duration.
 #+name: segxf1
 #+caption: A SynthDef that plays one segment of any duration from a mono buffer, starting anywhere.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 SynthDef(\bufseg1, { |out = 0, bufnum, start, rate = 1,
       time = 1, fade = 0.05, pan = 0, amp = 0.1|
    var sig = PlayBuf.ar(1, bufnum,
@@ -1877,7 +1877,7 @@ SynthDef(\bufseg1, { |out = 0, bufnum, start, rate = 1,
        - Note the separate left/right inputs for \ugen{Balance2}.
 #+name: segxf1b
 #+caption: A SynthDef that plays one segment from a stereo buffer.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 SynthDef(\bufseg2, { |out = 0, bufnum, start, rate = 1,
       time = 1, fade = 0.05, pan = 0, amp = 0.1|
    var sig = PlayBuf.ar(2, bufnum,
@@ -1897,7 +1897,7 @@ SynthDef(\bufseg2, { |out = 0, bufnum, start, rate = 1,
        Here, it makes sure \cd{\textbackslash time == \textbackslash dur}.
 #+name: segxf2
 #+caption: A canonical-style pattern in ProxySpace.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~bufsegs = Pbind(
    \instrument, \bufseg1,
    \bufnum, b,
@@ -1928,7 +1928,7 @@ SynthDef(\bufseg2, { |out = 0, bufnum, start, rate = 1,
      \cd{\textasciitilde oscil.ar} earlier.
 #+name: segxf3
 #+caption: Plug the pattern's proxy into a filter's input.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = {
    var ffreq = LFNoise1.kr(5).exprange(200, 1000);
    RLPF.ar(~bufsegs.ar, ffreq, 0.05)
@@ -1968,7 +1968,7 @@ SynthDef(\bufseg2, { |out = 0, bufnum, start, rate = 1,
      - Put an empty \clss{Event} in it.
 #+name: break1Prep
 #+caption: Preparation for a breakbeat: the buffer, and frame numbers within the buffer.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 q = ();
 q[\buf] = Buffer.read(s, thisProcess.nowExecutingPath
    .dirname.dirname.dirname +/+ "samples/rider.wav");
@@ -1989,7 +1989,7 @@ q[\hits] = (
      - \mth{collect} over the names to choose the actual frame.
 #+name: break1Prep
 #+caption: The breakbeat pattern.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~break = Pbind(
    \instrument, \bufseg1, \buffer, q[\buf],
    \start, Pseq([\kick, \snare], inf).collect { |hit|
@@ -2062,7 +2062,7 @@ q[\hits] = (
      It performs \egls{multichannel expansion}, and makes three \ci{Saw}s.
 #+name: mc-exp1
 # #+caption: Multichannel expansion.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 Saw.ar([1, 2, 3])
 
 // prints: [ a Saw, a Saw, a Saw ]
@@ -2145,7 +2145,7 @@ Saw.ar([1, 2, 3])
     First a synth. Further explanation later today.
 #+name: legato1
 # #+caption: A modular synth, with amplitude and filter frequency envelopes for articulation.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p.clear;  // or p = ProxySpace.new; p.push;
 ~oscil = { |freq = 440|
    Mix(Pulse.ar(
@@ -2176,7 +2176,7 @@ p.clear;  // or p = ProxySpace.new; p.push;
       \ci{sustain} by hand.
 #+name: legato2
 # #+caption: A pattern, to play the previous synth like a mono synth with fingered glides.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~player = \psSet -> Pbind(
    \freq, Pwhite(36, 48, inf),
    \dur, Pwhite(1, 3, inf) * 0.125,

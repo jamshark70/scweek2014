@@ -26,7 +26,7 @@
     - \cd{10.dbamp} in the filter: \ugen{BPF} is a quiet UGen, needs to be boosted.
 #+name: ringz1a
 #+caption: Noise into a bandpass filter: sounds like filtered noise.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p.clear;  // or p = ProxySpace.new; p.push;
 
 (
@@ -50,7 +50,7 @@ p.gui;
 **** Switch back and forth between \ugen{BPF} and \ugen{Ringz}.
 #+name: ringz1b
 #+caption: Noise into a ringing filter: pitch is much stronger.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter.addSpec(\ringtime, [0.01, 2, \exp]);
 ~filter = { |ffreq = 2000, ringtime = 0.5|
    Ringz.ar(~exciter.ar, ffreq, ringtime, 0.01).dup
@@ -61,7 +61,7 @@ p.gui;
 **** What if we use impulses?
 #+name: ringz1c
 #+caption: Impulse into a ringing filter.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~exciter = { Impulse.ar(2) };
 #+end_src
      - Suddenly much quieter. (Change 0.01 to 0.1 in the filter.)
@@ -115,7 +115,7 @@ p.gui;
        - Ring times.
 #+name: klank1
 #+caption: Klank gives you several vibrating modes. Integer multiples sound like a synthetic oscillator. Randomized frequencies produce various percussive sounds.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = {
    Klank.ar(`[
       [220, 440, 660, 880, 1100],
@@ -168,7 +168,7 @@ p.gui;
 *** Pitched DynKlank example
 #+name: dkpitch1
 #+caption: Using DynKlank in modular style to play pitches by modal synthesis.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = { |freq = 440|
    DynKlank.ar(`[
       Array.fill(5, { |i| (i+1) * rrand(0.97, 1.03) }),
@@ -190,7 +190,7 @@ p.gui;
        - \mth{resourceDir} points to examples and sounds, among other things.
 #+name: klankEditor
 #+caption: Open, or run, the GUI example of editing up to 10 Ringz filters.
-#+begin_src {} -i :var extract='t
+#+begin_src {SuperCollider} -i :var extract='t
 (Platform.resourceDir +/+
    "examples/GUI examples/analog-drum-tuner.scd").openDocument;
 
@@ -227,7 +227,7 @@ p.gui;
      - Then move \ci{ffreq} around in the midrange.
 #+name: fmlet1
 #+caption: Create one formant around a train of impulses, using Formlet.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = { |ffreq = 2000, ringtime = 0.5|
    Formlet.ar(~exciter.ar, ffreq, ringtime * 0.1, ringtime, 0.1).dup
 };
@@ -251,7 +251,7 @@ p.gui;
      It may be very loud.
 #+name: formants1
 #+caption: Formant synthesis with FormantTable and Klank
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = {
    var in = ~exciter.ar,
    formant = FormantTable.atKlank(\tenorU);
@@ -275,7 +275,7 @@ p.gui;
        \ugen{DynKlank} works, but each one makes five \ugen{Ringz}.\\
        10 filters for five formants!
      - We could get the same with just five \ugen{Formlet}s.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 sig = DynKlank.ar(`formant, in) -
    DynKlank.ar(`formant, in, decayscale: 0.1);
 
@@ -304,7 +304,7 @@ into an array of five \ugen{Formlet}s. Then, all we have to do is
      - Remember that arguments turn into \egls{control inputs}.
      - We can make control inputs explicitly, using \ugen{NamedControl}.
      - An array for the default value makes an \egls{arrayed control}.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 formant = NamedControl.kr(\formant,
    FormantTable.atKlank(\tenorE).flat);
 #+end_src
@@ -316,7 +316,7 @@ formant = NamedControl.kr(\formant,
       Can you figure out why it makes the rhythm you hear?
 #+name: arrayctl1
 #+caption: An arrayed control, to make three pitches from one oscillator module. Assumes you are already in a ProxySpace.
-#+begin_src {} -i :var extract='t
+#+begin_src {SuperCollider} -i :var extract='t
 ~arrayarg = { |amp = 0.1|
    var freq = NamedControl.kr(\freq, 55 * [4, 5, 6]);
    (Mix(SinOsc.ar(freq)) * amp).dup
@@ -348,7 +348,7 @@ formant = NamedControl.kr(\formant,
        - \clss{FormantTable} gives five filters, so \cd{clump(5)}.
 #+name: flat1
 #+caption: Try these to see the effect of flat and clump.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 a = FormantTable.atKlank(\tenorE).flat;
 
 a.clump(5);
@@ -359,7 +359,7 @@ a.clump(5);
      - We want the vowels to slide, not jump.
 #+name: formant2
 #+caption: All the pieces of the "changing vowels" puzzle: Formlet rather than DynKlank, the arrayed control (NamedControl), fixing the array geometry (flat, clump).
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = { |ffreq = 6000|
    var sig, in = ~exciter.ar,
    formant = NamedControl.kr(\formant,
@@ -447,7 +447,7 @@ first place.
 #+latex: \glsadd{CombL}\glsadd{AllpassL}
 #+name: fbdelay1
 #+caption: Compare the effects of the two types of feedback-delay filters.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 (
 ~noise = { WhiteNoise.ar(0.1) };
 ~filter = {
@@ -470,7 +470,7 @@ first place.
      - The result is like a \gls{comb filter}, but with a softer edge.
 #+name: fbdelay2
 #+caption: Mix the original with the allpass-filtered signal.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~filter = {
    var sig = ~noise.ar;
    sig + AllpassL.ar(sig, 0.1, 1/220, 1).dup
@@ -498,7 +498,7 @@ first place.
 *** Pluck.ar example
 #+name: pluck1
 #+caption: The Pluck UGen. Experiment with the parameters in p.gui.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~pluck = { |freq = 220, decay = 1, coef = 0.5|
    Pluck.ar(
       in: WhiteNoise.ar(0.3),
@@ -541,7 +541,7 @@ first place.
 #+latex: \glsadd{DelayL}\glsadd{TExpRand}\glsadd{Dust}
 #+name: localfb1
 #+caption: An echo delay, implemented by a LocalIn/LocalOut pair.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 ~feedback = {
    var delay, trig = Dust.kr(0.75),
    sig = SinOsc.ar(TExpRand.kr(300, 600, trig), 0, 0.15)
@@ -571,7 +571,7 @@ first place.
      - \ugen{LocalOut} supplies the signal being fed back.
      - So, filter before \ugen{LocalOut}.\\
        (Or any other kind of processing.)
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
    feedback = LocalIn.ar(1) * 0.9;  // decay
    sig = sig + feedback;
    delay = DelayL.ar(sig, 0.5, 0.5);
@@ -638,7 +638,7 @@ of control goes down.
        - No time to discuss the details. See the example files.
 #+name: ssfeedback1
 #+caption: Code snippet to open the single-sample feedback example files.
-#+begin_src {} -i :var extract='t
+#+begin_src {SuperCollider} -i :var extract='t
 (Platform.resourceDir +/+
    "examples/demonstrations/single_sample_feedback.scd"
 ).openDocument;

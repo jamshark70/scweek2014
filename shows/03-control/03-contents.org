@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis						   :noexport:
+* Granular synthesis
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -79,7 +79,7 @@
      - Raise the trigger frequency until the grains blend together.
 #+name: grain1
 #+caption: Granular synthesis: first step.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p.clear;  // or p = ProxySpace.new; p.push;
 
 (
@@ -110,7 +110,7 @@ p.gui;  // if it's not already open
 **** Exercise for you: Write the \ugen{Phasor}.
 # #+name: grain2
 # #+caption: Use a Phasor to move through the buffer in real time.
-#+begin_src {} -i :exports none
+#+begin_src {SuperCollider} -i :exports none
 ~grains = { |tfreq = 5, graindur = 0.2, pan = 0, amp = 0.2|
    var trig = Impulse.ar(tfreq),
    pos = Phasor.ar(0, SampleDur.ir, 0, b.duration);
@@ -128,7 +128,7 @@ p.gui;  // if it's not already open
      What is the result?
 # #+name: grain3
 # #+caption: Adjust the buffer movement speed by a synth argument.
-#+begin_src {} -i :exports none
+#+begin_src {SuperCollider} -i :exports none
 ~grains.addSpec(\speed, [0.25, 4, \exp]);
 ~grains = { |tfreq = 5, graindur = 0.2, pan = 0, amp = 0.1,
    speed = 1|
@@ -148,7 +148,7 @@ p.gui;  // if it's not already open
      - Plug it into \ugen{TGrains}.
 # #+name: grain4
 # #+caption: Adjust the grain playback rate by a synth argument.
-#+begin_src {} -i :exports none
+#+begin_src {SuperCollider} -i :exports none
 ~grains.addSpec(\rate, [0.25, 4, \exp]);
 ~grains = { |tfreq = 5, graindur = 0.2, pan = 0, amp = 0.1,
    rate = 1, speed = 1|
@@ -186,7 +186,7 @@ p.gui;  // if it's not already open
 #      If the trigger frequency, buffer position and grain rate are all constant, then you hear sonic features repeating exactly.
 #+name: grain5
 #+caption: Granular synthesis, sustaining sound, with constant triggers, buffer position and grain rate.
-#+begin_src {} -i
+#+begin_src {SuperCollider} -i
 p.clear;
 
 ~grains.addSpec(\tfreq, [1, 40, \exp]);
