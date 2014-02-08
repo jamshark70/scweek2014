@@ -68,7 +68,7 @@
 #+LATEX_HEADER: }
 #+LATEX_HEADER: 
 #+LATEX_HEADER: \lstdefinelanguage{SuperCollider}
-#+LATEX_HEADER: 	{morekeywords={nil,true,false,var,classvar,this,thisProcess,thisThread,arg,thisFunction,super,currentEnvironment,Plot,Object,Pdefn,LFNoise1,Buffer,Scale,Osc,Saw,Note,Pwhite,LPF,PlayBuf,Synth,Line,LFGauss,LFNoise2,GrainBuf,Point,Play,Feedback,Platform,Mix,QuadL,VarSaw,HPF,BufRateScale,Pseq,SynthDef,Pbind,RLPF,LFPulse,Pkey,EnvGen,PinkNoise,Switch,Impulse,Prand,Pulse,TempoClock,SinOsc,Tdef,LinCongL,TGrains,Env,Out,LFSaw,BPF,Balance2,LFNoise0,Task,Routine,TdefAllGui,Pexprand,Event,ProxySpace,LFTri,Pan2},
+#+LATEX_HEADER: 	{morekeywords={nil,true,false,var,classvar,this,thisProcess,thisThread,arg,thisFunction,super,currentEnvironment,Plot,Object,DynKlank,Formant,Saw,Note,LFGauss,LFNoise2,Dust,Point,Feedback,Pn,NamedControl,Mix,QuadL,VarSaw,HPF,BufRateScale,Pseq,RLPF,LFPulse,EnvGen,Switch,AllpassL,Impulse,Pulse,SinOsc,Tdef,LinCongL,Env,Out,LFSaw,BPF,Balance2,DelayL,Integer,Task,TExpRand,Routine,TdefAllGui,CombL,Event,GUI,LFTri,FormantTable,Pdefn,LFNoise1,Buffer,Scale,WhiteNoise,Array,Osc,Pwhite,PlayBuf,GrainBuf,LPF,Synth,Line,Play,Platform,LocalIn,SynthDef,Pbind,Pkey,PinkNoise,Klank,Prand,TempoClock,TGrains,Lag,LFNoise0,Ringz,LocalOut,UGen,Pexprand,ProxySpace,Pluck,Formlet,Pan2},
 #+LATEX_HEADER: 	sensitive=true,
 #+LATEX_HEADER: 	morecomment=[l]{//},
 #+LATEX_HEADER: 	morecomment=[s]{/*}{*/},
