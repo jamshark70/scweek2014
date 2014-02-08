@@ -46,7 +46,7 @@ usedClasses.do { |name, i|
 	if(i > 0) { stream << "," };
 	stream << name;
 };
-Post << "\nemph={";
+stream << "\nemph={";
 symbols.do { |symbol, i|
 	if(i > 0) { stream << "," };
 	stream << symbol;
