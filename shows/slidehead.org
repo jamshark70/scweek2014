@@ -1,4 +1,5 @@
 #+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
+# #+BIND: org-latex-listings-options (("language" "[LaTeX]Tex") ("keywordstyle" "\color{myblue}") ("basicstyle" "\ttfamily") ("commentstyle" "\color{commentred}") ("stringstyle" "\color{symbolgreen}"))
 #+bind: org-beamer-outline-frame-title "Outline"
 
 #+LANGUAGE:  en
@@ -30,8 +31,6 @@
 # #+LATEX_HEADER: \captionsetup[lstlisting]{font={it,scriptsize},labelfont={it,scriptsize},singlelinecheck=false}
 #+LATEX_HEADER: \captionsetup{font={it,scriptsize},labelfont={it,scriptsize},singlelinecheck=false}
 
-#+LATEX_HEADER: \usepackage{listings}
-
 #+LATEX_HEADER: \usepackage{color}
 #+LATEX_HEADER: \definecolor{codecolor}{RGB}{0,125,25}
 #+LATEX_HEADER: \definecolor{keycolor}{RGB}{25,94,0}
@@ -39,6 +38,42 @@
 #+LATEX_HEADER: \newcommand{\ci}[1]{\mbox{\textcolor{codecolor}{\texttt{#1}}}}
 #+LATEX_HEADER: \newcommand{\ks}[1]{\textcolor{keycolor}{\framebox[1.05\width]{\texttt{#1}}}}
 #+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
+
+#+LATEX_HEADER: \usepackage{listings}
+
+# Modified from Miguel Negrao
+# http://article.gmane.org/gmane.comp.audio.supercollider.user/105371
+#+LATEX_HEADER: \definecolor{myblue}{RGB}{51, 0, 211}
+#+LATEX_HEADER: \definecolor{commentred}{RGB}{191, 0, 0}
+#+LATEX_HEADER: \definecolor{symbolgreen}{RGB}{0, 115, 0}
+#+LATEX_HEADER: \definecolor{stringgrey}{RGB}{95, 95, 95}
+#+LATEX_HEADER: \lstset{language=[LaTeX]Tex,%C++,
+#+LATEX_HEADER:     keywordstyle=\color{myblue},
+#+LATEX_HEADER:     basicstyle=\ttfamily,
+#+LATEX_HEADER:     %identifierstyle=\color{NavyBlue},
+#+LATEX_HEADER:     commentstyle=\color{commentred},
+#+LATEX_HEADER:     stringstyle=\color{stringgrey},
+# #+LATEX_HEADER:     moredelim=
+# #+LATEX_HEADER:     texcsstyle=\color{symbolgreen},
+# #+LATEX_HEADER:     numbers=none,%left,%
+# #+LATEX_HEADER:     numberstyle=\scriptsize,%\tiny
+# #+LATEX_HEADER:     stepnumber=5,
+# #+LATEX_HEADER:     numbersep=8pt,
+# #+LATEX_HEADER:     showstringspaces=false,
+# #+LATEX_HEADER:     breaklines=true,
+# #+LATEX_HEADER:     frameround=ftff,
+# #+LATEX_HEADER: %    frame=single
+# #+LATEX_HEADER:     frame=none
+# #+LATEX_HEADER: %    frame=L
+#+LATEX_HEADER: }
+#+LATEX_HEADER: 
+#+LATEX_HEADER: \lstdefinelanguage{SuperCollider}
+#+LATEX_HEADER: 	{morekeywords={nil,true,false,var,classvar,this,thisProcess,thisThread,arg,thisFunction,super,currentEnvironment,Plot,Object,Pdefn,LFNoise1,Buffer,Scale,Osc,Saw,Note,Pwhite,LPF,PlayBuf,Synth,Line,LFGauss,LFNoise2,GrainBuf,Point,Play,Feedback,Platform,Mix,QuadL,VarSaw,HPF,BufRateScale,Pseq,SynthDef,Pbind,RLPF,LFPulse,Pkey,EnvGen,PinkNoise,Switch,Impulse,Prand,Pulse,TempoClock,SinOsc,Tdef,LinCongL,TGrains,Env,Out,LFSaw,BPF,Balance2,LFNoise0,Task,Routine,TdefAllGui,Pexprand,Event,ProxySpace,LFTri,Pan2},
+#+LATEX_HEADER: 	sensitive=true,
+#+LATEX_HEADER: 	morecomment=[l]{//},
+#+LATEX_HEADER: 	morecomment=[s]{/*}{*/},
+#+LATEX_HEADER: 	morestring=[b]"
+#+LATEX_HEADER: 	}
 
 #+LATEX_HEADER: \usepackage{glossaries}
 #+LATEX_HEADER: \newglossary[ugi]{ugen}{ugn}{ugo}{Unit Generators}
