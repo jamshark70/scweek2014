@@ -55,11 +55,11 @@
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
-** Concepts
+* Concepts
 #+LaTeX: \printglossary[type=main]
-** UGens
+* UGens
 #+LaTeX: \printglossary[type=ugen]
-** Other classes
+* Other classes
 #+LaTeX: \printglossary[type=class]
-** Methods
+* Methods
 #+LaTeX: \printglossary[type=mth]
