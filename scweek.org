@@ -32,10 +32,10 @@ ServerBoot.add({
       Dictionary: argname -> Set of NodeProxies with that argname
 *** DONE Move psSet support into a proper file
 *** TODO Support multiple NP objects in psSet
-*** TODO Move ProxySpace:setEvent into a proper file
+*** DONE Move ProxySpace:setEvent into a proper file
 ** Numbers in ProxySpace: DC or control?
 *** DONE Changing number doesn't update proxy's source
-*** INPROG Switching back to numberproxy uses old value in set of args
+*** DONE Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
 *** DONE Page breaks before parts
 *** DONE Left/right margins and header
@@ -253,7 +253,7 @@ For both, the signal
    - Turning faders into buttons
      - Thresholds
  
-* Glossary decisions [0/14]
+* Glossary decisions [2/14]
   - [ ] range
   - [ ] Nyquist
   - [ ] interpolation [0/3]
@@ -265,12 +265,12 @@ For both, the signal
   - [ ] roundUp
   - [ ] abs
   - [ ] sign
-  - [ ] squared
-  - [ ] sqrt
   - [ ] exp
   - [ ] log
   - [ ] sin
   - [ ] cos
+  - [X] squared
+  - [X] sqrt
 * Overview (MD export)
   :PROPERTIES:
   :EXPORT_TITLE: Synthesis and Performance with SuperCollider
