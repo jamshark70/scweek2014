@@ -37,6 +37,7 @@
 | envelope               |               | A control signal that shapes amplitude or another parameter. Important for note control. A standard shape is ADSR                                                                     |
 | envelope generator     |               | The standard name for the unit in a synthesizer that produces an envelope signal from the envelope's parameters                                                                       |
 | environment            |               | Named storage for objects, which can be retrieved using the convenient variable-like syntax \cd{\textasciitilde name}                                                                 |
+| equal temperament      |               | A tuning system where the intervals between chromatic steps are all equal. The frequency ratio for $n$-ET is $\sqrt[n]{2} = 2^{\frac{1}{n}}$. $\sqrt[12]{2} \approx 1.059463$         |
 | equal-power            |               | A type of crossfade where the volume that you hear is equal throughout. The square root \ci{sqrt} of a linear envelope makes an equal-power envelope                                  |
 | event type             |               | A Symbol, stored under the name ``type,'' indicating which action function should interpret the event's values and take action. Normally \ci{\textbackslash note}                     |
 | exciter                |               | In modal synthesis, a short burst of noise fed into a ringing filter, to ``excite'' the filter so that it oscillates                                                                  |
@@ -112,6 +113,7 @@
 | selector               |               | In a method call, the method's name                                                                                                                                                   |
 | spectrum               | spectra       | The frequency content of a sound, measured as the amount of energy at different frequencies                                                                                           |
 | square wave            |               | A pulse wave with a width of 50\%                                                                                                                                                     |
+| time point             |               | A way of representing rhythm relative to barlines: 2 means two beats after the barline, not two beats later than now. See \ci{Pdelta} for converting time points to deltas            |
 | triangle wave          |               | A waveform made of straight, diagonal lines up and down                                                                                                                               |
 | trigger                |               | In the server, a trigger happens when a signal crosses 0: i.e., when the previous sample was $\le$ 0 and the current sample is > 0                                                    |
 | UGen                   |               | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                                |
@@ -149,6 +151,7 @@
 | Pbind              |                      | An Event Pattern that collects values from child patterns under their names                                                                                        |
 | Pdef               |                      | Global storage for pattern proxies, where the patterns produce sequencing events                                                                                   |
 | Pdefn              |                      | Global storage for pattern proxies, where the patterns produce simple values                                                                                       |
+| Pdelta             |                      | A filter pattern that accepts a sequence of time points, and returns deltas appropriate for the given bar length                                                   |
 | Pexprand           |                      | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
 | Pgeom              |                      | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
 | Pkey               |                      | A pattern that reads a value from the given name from the event currently being processed. Child patterns can share information this way                           |

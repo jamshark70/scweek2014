@@ -227,6 +227,11 @@ For both, the signal
    - One simple idea, boring. Many simple ideas together, exciting.
    - Pick a technique that interests you. Focus on it for the rest of the workshop.
 
+** Musical control by patterns
+   - Data structures
+   - Control structures
+   - Higher level pattern tricks
+
 ** Group composition
    - Composition: Unity and contrast.
      - Unity: Collectively decide what will hold the piece together.

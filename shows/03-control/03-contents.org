@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis
+* Granular synthesis						   :noexport:
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -282,10 +282,11 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
-* Toward complex synthesis
+* Toward complex composition
 ** Simple ideas
 *** You take the lead
-    From here, we will move away from guided explanation of techniques, toward your creativity.
+    From here, we will do less guided explanation of techniques, and
+    focus more on your creativity.
     - Larger modular synths;
     - Pattern sequences with more musicality;
     - Control in performance by external devices.
@@ -338,6 +339,50 @@ p.clear;
 Switch over to SuperCollider and start building...
 #+end_center
 
-* Considerations for group composition
+** Composition: Data structures
+*** Data representation
+**** Composition depends on /representing musical information/.
+     - Western notation: Notes and rhythms.\\
+       Assumes 12 notes per octave, double or triple divisions of time.
+     - Logic or Cubase "piano roll" view: Similar assumptions.\\
+       Time is more flexible.
+**** Both of these assume a beginning-to-end sequence.
+     - In SC, we don't have to follow that rule!
+     - We have more choices to store useful information.
 
-* External control
+*** Representing pitch
+**** Recall \clsspl{Event}, and three ways to write pitch.
+     - \ci{\textbackslash freq} in Hz.
+     - \ci{\textbackslash midinote} in MIDI note numbers.\\
+       Converted to Hz according to 12-ET.[fn:1]
+     - \ci{\textbackslash degree} in scale degrees.\\
+       - Converted to \ci{\textbackslash midinote} based on \ci{\textbackslash scale}, \ci{\textbackslash root} and \ci{\textbackslash octave}.
+       - \ci{b} and \ci{s} modifiers: \cd{4s} means degree 4, sharped. \ci{b} is flat.
+**** If you're using pitch, decide which one best fits the material.
+
+*** Representing rhythm
+**** Usually in \eglspl{beat}.
+     - \clsspl{TempoClock} run in beats.
+     - \Gls{delta} time = 1 means the next event is one beat later.
+     - You can change the tempo.
+**** Sometimes useful to write rhythm as \eglspl{time point} within the bar.
+     - Often useful for drum rhythms.
+     - See also Milton Babbitt's "time-point sets."\\
+       [[http://en.wikipedia.org/wiki/Time_point]]
+     - \clss{Pdelta} converts a pattern of time points into deltas.
+
+** Composition: Control structures
+
+** Composition: Combining patterns
+
+* Considerations for group composition				   :noexport:
+** Unity and contrast
+
+* External control						   :noexport:
+** Buttons and faders
+** Receiving
+** Central hub
+** Turning faders into buttons: Thresholds
+* Footnotes
+
+[fn:1] Twelve-note \gls{equal temperament}.
