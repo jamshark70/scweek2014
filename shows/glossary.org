@@ -97,6 +97,7 @@
 | pulse width            |               | The percentage of an oscillation spent above rather than below the center line. 50\% makes a square wave                                                                              |
 | Q                      |               | Short for a filter's \emph{quality}                                                                                                                                                   |
 | quality                |               | The ``precision'' of a filter. High Q produces sharp slopes in the frequency response, narrower bandwidth and higher resonance. Mathematically, $\frac{f_c}{\Delta f}$                |
+| quantization           |               | Forces the start or stop of a process, or a change to a proxy, to happen on a barline or beat within a bar. This helps coordinate several processes                                   |
 | radian                 |               | A measure of angle. $2\pi$ radians = $360$\textdegree. Much of audio theory is based on trigonometry, where radians are more convenient                                               |
 | rate                   |               | Of a UGen, its calculation rate: audio rate, control rate or initial rate                                                                                                             |
 | receiver               |               | In a method call, the object that determines which method definition is used                                                                                                          |
@@ -166,6 +167,7 @@
 | Pwhite             |                      | A Pattern that generates random numbers between low and high boundaries, with a linear distribution                                                                |
 | Pwrand             |                      | A Pattern to choose values randomly from an array, with a different probability for each item                                                                      |
 | Pxrand             |                      | A Pattern to choose values randomly from an array, without repeating the same one twice in a row                                                                   |
+| Rest               |                      | Used in a Pbind's child pattern, a Rest object marks the event as a rest. The event will be produced and will take the time, but not make any sound                |
 | Routine            |                      | Executes a Function. The function may \ci{yield} a value, and the next call into the routine will resume just after the yield                                      |
 | Scale              |                      | A repository of scale and mode patterns. \cd{Scale.ionian} gives you a major scale, [0, 2, 4, 5, 7, 9, 11]                                                         |
 | ServerOptions      |                      | Configuration options for scsynth, including soundcard, are variables in this class. \cd{s.options} controls the bootup options for \ci{s}                         |
@@ -238,6 +240,7 @@
 | postln        |        | Print an object as a string into the post window                                                                                                                  |
 | push          |        | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
 | put           |        | Put an object into a slot in an indexed collection (e.g. Array or Dictionary). Shortcut syntax: \cd{collection[index] = item}                                     |
+| quant         |        | Sets the quantization time of a NodeProxy or pattern proxy. See the \ci{Quant} help file for details on the allowed values                                        |
 | rand          |        | \cd{num.rand}: Generate a random number $x$ where $0 \le x < num$                                                                                                 |
 | rand2         |        | \cd{num.rand}: Generate a random number $x$ where $-num \le x < num$                                                                                              |
 | range         |        | Converts a UGen's range into a different linear range                                                                                                             |

@@ -371,6 +371,141 @@ Switch over to SuperCollider and start building...
        [[http://en.wikipedia.org/wiki/Time_point]]
      - \clss{Pdelta} converts a pattern of time points into deltas.
 
+*** Deltas vs. time points 1
+**** First we need a sound to play.
+     Questions for you:
+     - Can you guess what it will sound like, from reading the code?
+     - Does it make sound right away? Why or why not?
+     - How would you make it sound on demand?
+#+name: timept1
+#+caption: A quick-and-dirty sound to trigger in rhythm.
+#+begin_src {SuperCollider} -i
+p.clear;  // or p = ProxySpace.new; p.push;
+
+~sound = { |t_trig, freq = 660, amp = 0.1|
+   var sig = PinkNoise.ar(amp),
+   eg = EnvGen.kr(Env.perc(0.01, 0.2), t_trig);
+   sig = BPF.ar(sig, freq, 0.1);
+   (sig * eg).dup
+};
+~sound.play;
+#+end_src
+
+*** Deltas vs. time points 2
+**** What does it look like to use \glspl{delta} or \glspl{time point}?
+     - Note the use of \clss{Pdefn} to switch the duration pattern independently.
+     - New feature: \mth{quant}.
+       - Sets the \egls{quantization} time.
+       - Here, it guarantees that \cd{Pdefn(\textbackslash dur)} and \ci{\textasciitilde player} can change their patterns only on the bar line.
+#+name: timept2
+#+caption: Play a rhythm on the previous sound, using deltas.
+#+begin_src {SuperCollider} -i
+Pdefn(\dur).quant = 4;
+Pdefn(\dur, Pseq([1, 0.5, 0.5, 1, 1], inf));
+
+~player.quant = 4;
+~player = \psSet -> Pbind(
+	\freq, 660, \amp, 1,
+	\dur, Pdefn(\dur)
+);
+#+end_src
+
+*** Deltas vs. time points 3
+**** Can you predict the change in rhythm?
+#+name: timept2
+#+caption: Play a rhythm, using time points.
+#+begin_src {SuperCollider} -i
+Pdefn(\dur, Pdelta(Pseq([0, 1, 1.5, 2.5, 3], inf), 4));
+#+end_src
+**** Which is better?
+     - I would use \clss{Pdelta} for a rhythm where the position within the bar is more important.
+
+*** \clss{Pdelta} and barlines				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** \clss{Pdelta} and barlines
+A side note: You may skip this for now.
+
+One thing to be careful of when using \clss{Pdelta}: If the very first
+time point is not exactly on the barline---that is, if the pattern
+should begin with the rest---\clss{Pdelta} does not automatically
+compensate.
+
+There are two ways to handle this:
+
+- Start the pattern with an offset from the barline. A
+  \gls{quantization} time is a multiple of beats /and/ an offset,
+  called \ci{phase}. This is easy in "canonical" style, because you
+  can pass the \ci{quant} as an argument when playing the pattern:
+  #+begin_src {SuperCollider} -i
+x = Pbind(
+   ...,
+   \dur, Pdelta(Pseq([1.5, 4], inf), 4)
+).play(quant: [4, 1.5]);
+  #+end_src
+  It's somewhat more difficult with proxies, because you have to set
+  the quantization time using \cd{quant =}, separate from changing or
+  playing the proxy.
+
+- Or, add a rest at the beginning of the pattern. In this example, the
+  indentation shows you how the pieces fit together. This duration
+  pattern will start at the beginning of the bar, but the first event
+  won't do anything because the \clss{Rest} marks the event as a rest.
+  #+begin_src {SuperCollider} -i
+Pdefn(\dur, Pdelta(
+   Pseq([  // a wrapper for the Rest
+      Rest(0),
+      Pseq([1.5, 3], inf)  // the real rhythm
+   ]),
+   4
+));
+  #+end_src
+  If you use this approach, make sure to leave dummy values in the
+  other child patterns. That's not an issue in the above example
+  because the frequency doesn't change.
+
+*** Data storage: Collections
+**** Data storage is key.
+     - SC has a number of \egls{collection} classes.
+     - The different collection types save information differently.
+     - Each one supports different ways of working.
+**** Choosing the right collection makes the task easier.
+
+*** Ordered vs. unordered collections
+**** We've seen two collection types already:
+     - \clss{Array} :: Items are saved /in order/ and accessed by /number/.
+     - \clss{Event} :: Order doesn't matter. Items are accessed by /name/.
+**** These reflect the main division among collections:
+     - \Gls{ordered} :: You can count on getting items out in the same order you put them in. Good for sequences of information.
+     - Unordered :: Very fast to get information by name or check whether an item is already in the collection. But, the order is lost.
+
+*** Note on order					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Wouldn't it make sense to have the order, always?
+Actually, no. Certain tasks are faster if the computer can decide the
+order of information. In particular, looking up an item by name, and
+testing "membership"---seeing if the collection contains a given
+item---benefit from the computer choosing the order.
+
+Suppose you have an \clss{Array} of arbitrary names. To find out if
+the array contains a particular name, you have to scan all the array
+items. If you find the given name, you can stop early, but if you
+don't find it---the worst case---you have to touch every array
+element. If the array has several thousand items, this could be slow.
+
+SC's unordered collections use a technique called /hash lookup/ to
+speed up the process. It's beyond the scope of this workshop to
+explain how hash lookup works. But, it means that SC needs to scan
+only part of the unordered storage, which is more efficient.
+
+So:
+- Use ordered collections when you need to know the sequence.
+- Use unordered collections when you need to know that something is
+  there, but the order doesn't matter.
+
 ** Composition: Control structures
 
 ** Composition: Combining patterns
