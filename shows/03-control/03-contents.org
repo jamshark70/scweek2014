@@ -700,6 +700,96 @@ x.maxItem { |item| item.size };
      - \mth{pairsDo} :: Like \mth{do}, but takes the items in groups of two.
      - \mth{doAdjacentPairs} :: See the example.
 
+*** Ordered collection examples
+#+name: coll3
+#+caption: Examples of useful array operations.
+#+begin_src {SuperCollider} -i
+x = (0..9).scramble;
+x[3]
+x[3] = 22;
+x.removeAt(3); x
+x = x.insert(3, 22);
+x ++ [55, 48, 60];
+x.pairsDo { |a, b| "%: %\n".postf(a, b) };
+(
+x.doAdjacentPairs { |a, b|
+   "% - % = %\n".postf(b, a, b - a)
+};
+)
+#+end_src
+
+*** Unordered collections: Dictionaries
+**** \clsspl{Dictionary} store \clsspl{Association}.
+     - Association: \cd{key -> value}.
+       - The \egls{key} is the identifier, used to access the items.
+       - Very often, the key is a name, written as a \clss{Symbol}: \cd{\textbackslash name}.
+**** Array-indexing methods work with dictionaries.
+     The \mth{at}, \mth{put} and \mth{removeAt} methods take the
+     \egls{key} as the argument, instead of a number.
+
+*** Dictionary types
+    - \clss{Dictionary} :: Looks up \egls{equivalent} keys. \clsspl{String} and \clsspl{Array} are valid keys.
+    - \clss{IdentityDictionary} :: Looks up \egls{identical} keys. \clsspl{Symbol} and \ci{Integers} are valid keys.
+    - \clss{Environment} :: The current environment provides storage for \ci{\textasciitilde environmentVars}.
+    - \clss{Event} :: An \clss{Environment} that can be \mth{play}ed.
+**** You'll probably use \clss{Event} most often.
+     Nice shortcut syntax: \cd{(key: value, key1: value1...)}.
+
+*** Dictionary methods
+**** Key-value storage calls for some other methods.
+     - \mth{keys} :: All the unique keys in this dictionary.
+     - \mth{values} :: An array of the values, without keys.
+     - \mth{keysValuesDo} :: Like \mth{do}, but the function arguments are \cd{|key, value, counter|}.
+**** Minor difference in filtering methods..
+     - \mth{collect}, \mth{select}, \mth{reject}.
+     - Arguments passed to the function are \cd{|value, key|}.
+     - Why the value first?\\
+       To be consistent. The value comes first in all the other \mth{collect} variants.
+
+*** Dictionary examples
+
+*** Unordered collections: Sets
+**** Sets may not contain any duplicated items.
+     - \clss{Set}: No \egls{equivalent} items.
+     - \clss{IdentitySet}: No \egls{identical} items.
+**** \clss{Set} and \clss{IdentitySet} are good for:
+     - Checking membership: Does the set have this item?\\
+       \clsspl{Set} can search quickly.
+     - Avoiding duplicates:
+       - What are the unique \glspl{pitch class} in a group of notes?
+       - What items are in common between two sets?
+       - What items exist in only one of the two sets?
+
+*** Unordered collections: Set methods
+    \mth{add}, \mth{remove}, \mth{do} etc. work as in other collections.
+    - \mth{sect} :: Intersection (common items: items in setA /and/ setB). Shortcut: \cd{setA \& setB}.
+    - \mth{union} :: Union: items in setA /or/ setB, or both. Shortcut: \cd{setA | setB}.
+    - \mth{difference} :: Items in setA that are /not/ in setB. Shortcut: \cd{setA - setB}.
+    - \mth{symmetricDifference} :: Items in only one of the two, but not both. Shortcut: \cd{setA -- setB}.
+
+*** Unordered collections: Set examples
+#+name: coll5
+#+caption: Examples of useful array operations.
+#+begin_src {SuperCollider} -i
+x = [59, 61, 66, 68, 69, 61,
+   59, 68, 66, 61, 69, 68];
+
+// unique pitch classes
+y = IdentitySet.new;  // OK b/c Integers
+x.do { |item| y.add(item % 12) };
+y;  // 5 items only: duplicates ignored
+z = IdentitySet[11, 1, 2, 4, 6, 7, 9];  // b minor
+
+// which notes in y belong to a b minor scale?
+y & z;
+
+// which notes in y are *not* in b minor?
+y - z;
+
+// which notes are in either y or z, not both?
+y -- z;
+#+end_src
+
 ** Composition: Control structures
 
 ** Composition: Combining patterns

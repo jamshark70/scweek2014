@@ -67,6 +67,7 @@
 | iteration              |               | Performing the same operation several times, over items in a collection or a series of numbers                                                                                        |
 | JITLib                 |               | The "Just-In-Time" Library. A system of ``proxies'' that allow you to define a synthesis structure and fill in the details a piece at a time                                          |
 | Karplus-Strong         |               | A technique to synthesize plucked strings, using a feedback-delay filter with a lowpass filter in the feedback loop                                                                   |
+| key                    |               | In a Dictionary or Association, the object that identifies the value. That is, \cd{aDictionary[key]} returns the value associated with the key                                        |
 | latency                | latencies     | It takes time for mic input to reach SC, and also for SC's calculations to reach the speakers. This time is \emph{latency}                                                            |
 | LFO                    |               | Low-Frequency Oscillator, commonly used as a modulation source to control synthesis parameters                                                                                        |
 | linear                 |               | A unit of measurement that works by addition, like semitones or MIDI note numbers. Or, envelope segments that are straight lines (compare to ``equal-power'')                         |
@@ -135,12 +136,14 @@
 |--------------------+----------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | AppClock           |                      | A permanent clock, which always ticks in seconds. It is lower-priority, thus, less likely to interfere with musical activity. Required for GUI actions             |
 | Array              |                      | An ordered list of items with a fixed maximum number of items. When adding, be sure to reassign: \cd{array = array.add(item)}                                      |
+| Association        |                      | An object that links an identifier (the ``key'') to another object (the ``value''). Dictionaries act like collections of Associations                              |
 | Buffer             |                      | An object in the audio server that can hold large amounts of audio or other data. Used for sample playback and soundfile input/output                              |
 | Clock              |                      | The general class of schedulers. Any actions scheduled at a given time will wait until that time to execute. See TempoClock, SystemClock and AppClock              |
 | ControlSpec        |                      | Defines a numeric range, with low and high values, a curve, step size (for quantization) and a default value                                                       |
 | DebugPbind         |                      | An extension class in the \emph{ddwPatterns} Quark, which prints every step of a Pbind's evaluation to the post window                                             |
 | Dictionary         | Dictionaries         | An unordered set of associations \cd{key -> value}. \cd{dictionary[key]} returns the value for that key                                                            |
 | Env                |                      | Defines an envelope specification, based on segments (target values, times and curves)                                                                             |
+| Environment        |                      | A specialized type of IdentityDictionary, which you can enter (\ci{push} or \ci{use}). \ci{\textasciitilde envirVars} look in the current environment              |
 | Event              |                      | Stores information like IdentityDictionary. Playing an event gets musical results: play a note, change values etc. Patterns can produce events for sequencing      |
 | EventStreamPlayer  |                      | Gets Events from an event stream. It plays each one in turn, and then waits event's delta time before retrieving the next event                                    |
 | File               |                      | Read and write text or binary files on the local filesystem                                                                                                        |
@@ -160,7 +163,7 @@
 | Pkey               |                      | A pattern that reads a value from the given name from the event currently being processed. Child patterns can share information this way                           |
 | Platform           |                      | Holds settings and file paths that are specific to the operating system                                                                                            |
 | Prand              |                      | A Pattern to choose values randomly from an array                                                                                                                  |
-| ProxySpace         |                      | An environment that automatically makes a NodeProxy from any item in it                                                                                            |
+| ProxySpace         |                      | An Environment that automatically makes a NodeProxy from any item in it                                                                                            |
 | Pseq               |                      | A Pattern to return values from an array, one by one                                                                                                               |
 | Pseries            | Pseries              | A Pattern yielding an arithmetic series. Each value is the previous value plus a given step size                                                                   |
 | Pshuf              |                      | Read items from a list in random order, using all items before repeating---i.e., ``shuffle'' the items                                                             |
@@ -191,104 +194,112 @@
 
 * Methods							   :noexport:
 #+name: mth
-| Term            | Plural | Description                                                                                                                                                       |
-|-----------------+--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ++              |        | Concatenate (join) two arrays: \cd{[0, 1, 2] ++ [10, 11, 12]} $\to$ \cd{[0, 1, 2, 10, 11, 12]}                                                                    |
-| add             |        | For SynthDefs, add the definition into the server so that it can be played. For Collections, add a new item                                                       |
-| addSpec         |        | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
-| adsr            |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                      |
-| alloc           |        | \cd{Buffer.alloc(server, numFrames, numChannels)} reserves memory in the server for a new buffer                                                                  |
-| ar              |        | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
-| asr             |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                       |
-| asSignal        |        | Convert a Wavetable object back into a Signal                                                                                                                     |
-| asStream        |        | Produce a Stream from another object (usually a Pattern)                                                                                                          |
-| asWavetable     |        | Given a single cycle of a waveform, as a \ci{Signal} object, convert it to wavetable format. The resulting Wavetable will be twice as big as the Signal           |
-| at              |        | Retrieve an item from an indexed collection (e.g. Array or Dictionary) by its index. Shortcut syntax: \cd{collection[index]}                                      |
-| atKlank         |        | Get filter parameters from FormantTable, suitable for use in Klank                                                                                                |
-| blockSize       |        | A variable in \ci{ServerOptions}, setting the number of samples in one control block. The default is 64                                                           |
-| clip            |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
-| clump           |        | Group the items of a flat array into equally-sized chunks. \cd{[0, 1, 2, 3, 4].clump(2)} returns \cd{[[0, 1], [2, 3], [4]]}                                       |
-| collect         |        | A looping structure, like \ci{do}, which collects the results of the loop function into a new collection. Like \ci{map} in many other languages                   |
-| count           |        | Returns a count of items in a collection that meet a condition, written as a function                                                                             |
-| cpsmidi         |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
-| curvelin        |        | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
-| differentiate   |        | Returns an array $y$ where $y_0 = x_0 - 0$, $y_1 = x_1 - x_0$ and so on                                                                                           |
-| do              |        | A looping structure that runs a Function several times. Many types of objects can \ci{do}: usually numbers or collections                                         |
-| doAdjacentPairs |        | ``Do'' a function over pairs of items, but advance through the array by one each time. Most items will be touched twice                                           |
-| drop            |        | On an array, remove $n$ items. If $n > 0$, remove the first $n$; if $n < 0$, remove the last $n$                                                                  |
-| dup             |        | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(3)'' becomes ``[1, 1, 1]'' and so on                                                                   |
-| explin          |        | Convert an exponential input range (inMin, inMax) to a linear output range (outMin, outMax)                                                                       |
-| exprand         |        | \cd{exprand(low, high)}: Generate a random number $x$ where $low \le x \le high$, with an exponential distribution                                                |
-| exprange        |        | Converts a UGen's range into a different exponential range                                                                                                        |
-| fadeTime        |        | Controls the time it takes to crossfade between sources in a \ci{NodeProxy}. When used on a \ci{ProxySpace}, it applies to all proxies in that space              |
-| fill            |        | \cd{Array.fill(size, item)} makes a new Array of \ci{size} elements based on \ci{item}. Functions are evaluated (good for random numbers)                         |
-| flat            |        | Convert any nested array into a single array, e.g. \cd{[[0, 1, 2], [3, 4]].flat} returns \cd{[0, 1, 2, 3, 4]}                                                     |
-| fold            |        | Constrain a number within a range. The boundaries are like mirrors: A value above the maximum gets reflected back into the range                                  |
-| fork            |        | \cd{\{ ... \}.fork} or \cd{fork \{ ... \}} is a convenient shortcut syntax for \cd{Routine(\{ ... \}).play}                                                       |
-| free            |        | Removes a resource that was previously allocated, including Buffers and MIDI or OSC responders                                                                    |
-| if              |        | A branching structure common in many programming languages. If the condition is true, do the ``true'' branch; otherwise, the ``false'' branch                     |
-| includes        |        | Answers \ci{true} if a collection (the receiver) contains the identical item, \ci{false} if not                                                                   |
-| includesEqual   |        | Answers \ci{true} if a collection (the receiver) contains an equivalent item, \ci{false} if not                                                                   |
-| insert          |        | Put a new item into an array, and slide other items to the right to make room for it. \cd{[0, 1, 2].insert(1, 10)} $\to$ \cd{[0, 10, 1, 2]}                       |
-| integrate       |        | Given an array, return a new array where each item is the sum of all the previous original items                                                                  |
-| kr              |        | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
-| lincurve        |        | Convert a linear input range (inMin, inMax) to a curved output range (outMin, outMax) with a user-specified curve factor                                          |
-| linen           |        | \cd{Env.linen} makes a linear (trapezoidal) envelope                                                                                                              |
-| linexp          |        | Convert a linear input range (inMin, inMax) to an exponential output range (outMin, outMax)                                                                       |
-| linlin          |        | Convert a linear input range (inMin, inMax) to a linear output range (outMin, outMax)                                                                             |
-| loop            |        | A flow-of-control structure that repeats the same block of code several times. Typical loops are \ci{for}, \ci{do} and \ci{while}                                 |
-| max             |        | Between \ci{a} and \ci{b}, return whichever is higher                                                                                                             |
-| maxIndex        |        | Returns the index of the largest item in a collection                                                                                                             |
-| maxItem         |        | Returns the largest item in a collection                                                                                                                          |
-| midicps         |        | Convert a MIDI note number to a frequency in Hz                                                                                                                   |
-| midiratio       |        | Convert a number of semitones into a frequency factor                                                                                                             |
-| min             |        | Between \ci{a} and \ci{b}, return whichever is lower                                                                                                              |
-| minIndex        |        | Returns the index of the smallest item in a collection                                                                                                            |
-| minItem         |        | Returns the smallest item in a collection                                                                                                                         |
-| neg             |        | Same result as \cd{-1 * n}, but slightly faster                                                                                                                   |
-| next            |        | When called on a Routine (or any Stream), returns the stream's next yield value                                                                                   |
-| pairsDo         |        | ``Do'' a function over pairs of items in an array. No item will be touched more than once. Compare \ci{doAdjacentPairs}                                           |
-| perc            |        | \cd{Env.perc} makes a percussive envelope (quick attack, curved decay)                                                                                            |
-| play            |        | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
-| postln          |        | Print an object as a string into the post window                                                                                                                  |
-| push            |        | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
-| put             |        | Put an object into a slot in an indexed collection (e.g. Array or Dictionary). Shortcut syntax: \cd{collection[index] = item}                                     |
-| quant           |        | Sets the quantization time of a NodeProxy or pattern proxy. See the \ci{Quant} help file for details on the allowed values                                        |
-| rand            |        | \cd{num.rand}: Generate a random number $x$ where $0 \le x < num$                                                                                                 |
-| rand2           |        | \cd{num.rand}: Generate a random number $x$ where $-num \le x < num$                                                                                              |
-| range           |        | Converts a UGen's range into a different linear range                                                                                                             |
-| read            |        | \cd{Buffer.read()} creates a new buffer in the server and fills it with audio from a sound file                                                                   |
-| readChannel     |        | Like \cd{Buffer.read}, but reads one or more channels in an order you choose                                                                                      |
-| reciprocal      |        | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
-| reject          |        | Returns a new collection, containing items from another collection that do not satisfy a condition provided as a test function                                    |
-| release         |        | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
-| remove          |        | Remove the given item from the collection. Returns the item, not the collection---so you can't write \cd{x.remove(1).remove(2)}                                   |
-| removeAll       |        | Removes all the given items from the collection                                                                                                                   |
-| removeAt        |        | Remove the item at the given index from the collection. Returns the item, not the collection                                                                      |
-| reset           |        | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                         |
-| resourceDir     |        | \cd{Platform.resourceDir} points to a directory of extra resources, which are part of a normal SC installation                                                    |
-| round           |        | Round a number to the nearest division---by default, 1 (integers) but it may also be fractional                                                                   |
-| rrand           |        | \cd{rrand(low, high)}: Generate a random number $x$ where $low \le x \le high$                                                                                    |
-| sched           |        | Schedule an activity to happen a certain number of beats/seconds in the future (i.e., later than now)                                                             |
-| schedAbs        |        | Schedule an activity to happen at a specific (``absolute'') time                                                                                                  |
-| select          |        | Returns a new collection, containing items from another collection that satisfy a condition provided as a test function                                           |
-| separate        |        | Group items from a flat array into sub-arrays, based on a condition (function) applied to items that are next to each other                                       |
-| set             |        | On a synth node or NodeProxy, set a new value for a control input: \cd{n.set(\textbackslash name, value...)}                                                      |
-| setEvent        |        | Called on a ProxySpace, setEvent returns an event prepared to set controls within that ProxySpace                                                                 |
-| sine            |        | \cd{Env.sine} makes an attack-decay envelope with sine-shaped segments. More or less a bell curve                                                                 |
-| sine1           |        | Fill a Buffer with a waveform based on harmonic amplitudes, in wavetable format                                                                                   |
-| sine2           |        | Fill a Buffer with a waveform based on harmonic frequencies and amplitudes, in wavetable format                                                                   |
-| sine3           |        | Fill a Buffer with a waveform based on harmonic frequencies, amplitudes and phases, in wavetable format                                                           |
-| size            |        | Returns the number of items in a collection                                                                                                                       |
-| sqrt            |        | Take the square root of a number $x$: $\sqrt{x}$                                                                                                                  |
-| squared         |        | Square a number $x$: $x^2$                                                                                                                                        |
-| stop            |        | Stop a process that was previously started by \ci{play}                                                                                                           |
-| sync            |        | In a Routine, call \ci{sync} on a server to wait for any pending asynchronous operations to finish                                                                |
-| value           |        | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
-| wait            |        | In a Routine, same as \ci{yield}, but works only for numbers. Used for deltas (wait times).                                                                       |
-| while           |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                         |
-| wrap            |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                             |
-| yield           |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                              |
+| Term                | Plural | Description                                                                                                                                                       |
+|---------------------+--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ++                  |        | Concatenate (join) two arrays: \cd{[0, 1, 2] ++ [10, 11, 12]} $\to$ \cd{[0, 1, 2, 10, 11, 12]}                                                                    |
+| add                 |        | For SynthDefs, add the definition into the server so that it can be played. For Collections, add a new item                                                       |
+| addSpec             |        | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                 |
+| adsr                |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                      |
+| alloc               |        | \cd{Buffer.alloc(server, numFrames, numChannels)} reserves memory in the server for a new buffer                                                                  |
+| ar                  |        | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                             |
+| asr                 |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                       |
+| asSignal            |        | Convert a Wavetable object back into a Signal                                                                                                                     |
+| asStream            |        | Produce a Stream from another object (usually a Pattern)                                                                                                          |
+| asWavetable         |        | Given a single cycle of a waveform, as a \ci{Signal} object, convert it to wavetable format. The resulting Wavetable will be twice as big as the Signal           |
+| at                  |        | Retrieve an item from an indexed collection (e.g. Array or Dictionary) by its index. Shortcut syntax: \cd{collection[index]}                                      |
+| atKlank             |        | Get filter parameters from FormantTable, suitable for use in Klank                                                                                                |
+| blockSize           |        | A variable in \ci{ServerOptions}, setting the number of samples in one control block. The default is 64                                                           |
+| clip                |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
+| clump               |        | Group the items of a flat array into equally-sized chunks. \cd{[0, 1, 2, 3, 4].clump(2)} returns \cd{[[0, 1], [2, 3], [4]]}                                       |
+| collect             |        | A looping structure, like \ci{do}, which collects the results of the loop function into a new collection. Like \ci{map} in many other languages                   |
+| count               |        | Returns a count of items in a collection that meet a condition, written as a function                                                                             |
+| cpsmidi             |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
+| curvelin            |        | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
+| difference          |        | Given two sets, return the items in the first that do not exist in the second. May also be written \cd{setA - setB}                                               |
+| differentiate       |        | Returns an array $y$ where $y_0 = x_0 - 0$, $y_1 = x_1 - x_0$ and so on                                                                                           |
+| do                  |        | A looping structure that runs a Function several times. Many types of objects can \ci{do}: usually numbers or collections                                         |
+| doAdjacentPairs     |        | ``Do'' a function over pairs of items, but advance through the array by one each time. Most items will be touched twice                                           |
+| drop                |        | On an array, remove $n$ items. If $n > 0$, remove the first $n$; if $n < 0$, remove the last $n$                                                                  |
+| dup                 |        | Duplicate an object. ``1.dup'' becomes ``[1, 1].'' ``1.dup(3)'' becomes ``[1, 1, 1]'' and so on                                                                   |
+| explin              |        | Convert an exponential input range (inMin, inMax) to a linear output range (outMin, outMax)                                                                       |
+| exprand             |        | \cd{exprand(low, high)}: Generate a random number $x$ where $low \le x \le high$, with an exponential distribution                                                |
+| exprange            |        | Converts a UGen's range into a different exponential range                                                                                                        |
+| fadeTime            |        | Controls the time it takes to crossfade between sources in a \ci{NodeProxy}. When used on a \ci{ProxySpace}, it applies to all proxies in that space              |
+| fill                |        | \cd{Array.fill(size, item)} makes a new Array of \ci{size} elements based on \ci{item}. Functions are evaluated (good for random numbers)                         |
+| flat                |        | Convert any nested array into a single array, e.g. \cd{[[0, 1, 2], [3, 4]].flat} returns \cd{[0, 1, 2, 3, 4]}                                                     |
+| fold                |        | Constrain a number within a range. The boundaries are like mirrors: A value above the maximum gets reflected back into the range                                  |
+| fork                |        | \cd{\{ ... \}.fork} or \cd{fork \{ ... \}} is a convenient shortcut syntax for \cd{Routine(\{ ... \}).play}                                                       |
+| free                |        | Removes a resource that was previously allocated, including Buffers and MIDI or OSC responders                                                                    |
+| if                  |        | A branching structure common in many programming languages. If the condition is true, do the ``true'' branch; otherwise, the ``false'' branch                     |
+| includes            |        | Answers \ci{true} if a collection (the receiver) contains the identical item, \ci{false} if not                                                                   |
+| includesEqual       |        | Answers \ci{true} if a collection (the receiver) contains an equivalent item, \ci{false} if not                                                                   |
+| insert              |        | Put a new item into an array, and slide other items to the right to make room for it. \cd{[0, 1, 2].insert(1, 10)} $\to$ \cd{[0, 10, 1, 2]}                       |
+| integrate           |        | Given an array, return a new array where each item is the sum of all the previous original items                                                                  |
+| kr                  |        | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                            |
+| lincurve            |        | Convert a linear input range (inMin, inMax) to a curved output range (outMin, outMax) with a user-specified curve factor                                          |
+| linen               |        | \cd{Env.linen} makes a linear (trapezoidal) envelope                                                                                                              |
+| linexp              |        | Convert a linear input range (inMin, inMax) to an exponential output range (outMin, outMax)                                                                       |
+| linlin              |        | Convert a linear input range (inMin, inMax) to a linear output range (outMin, outMax)                                                                             |
+| loop                |        | A flow-of-control structure that repeats the same block of code several times. Typical loops are \ci{for}, \ci{do} and \ci{while}                                 |
+| max                 |        | Between \ci{a} and \ci{b}, return whichever is higher                                                                                                             |
+| maxIndex            |        | Returns the index of the largest item in a collection                                                                                                             |
+| maxItem             |        | Returns the largest item in a collection                                                                                                                          |
+| midicps             |        | Convert a MIDI note number to a frequency in Hz                                                                                                                   |
+| midiratio           |        | Convert a number of semitones into a frequency factor                                                                                                             |
+| min                 |        | Between \ci{a} and \ci{b}, return whichever is lower                                                                                                              |
+| minIndex            |        | Returns the index of the smallest item in a collection                                                                                                            |
+| minItem             |        | Returns the smallest item in a collection                                                                                                                         |
+| neg                 |        | Same result as \cd{-1 * n}, but slightly faster                                                                                                                   |
+| next                |        | When called on a Routine (or any Stream), returns the stream's next yield value                                                                                   |
+| pairsDo             |        | ``Do'' a function over pairs of items in an array. No item will be touched more than once. Compare \ci{doAdjacentPairs}                                           |
+| perc                |        | \cd{Env.perc} makes a percussive envelope (quick attack, curved decay)                                                                                            |
+| play                |        | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                |
+| postln              |        | Print an object as a string into the post window                                                                                                                  |
+| push                |        | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                              |
+| put                 |        | Put an object into a slot in an indexed collection (e.g. Array or Dictionary). Shortcut syntax: \cd{collection[index] = item}                                     |
+| quant               |        | Sets the quantization time of a NodeProxy or pattern proxy. See the \ci{Quant} help file for details on the allowed values                                        |
+| rand                |        | \cd{num.rand}: Generate a random number $x$ where $0 \le x < num$                                                                                                 |
+| rand2               |        | \cd{num.rand}: Generate a random number $x$ where $-num \le x < num$                                                                                              |
+| range               |        | Converts a UGen's range into a different linear range                                                                                                             |
+| read                |        | \cd{Buffer.read()} creates a new buffer in the server and fills it with audio from a sound file                                                                   |
+| readChannel         |        | Like \cd{Buffer.read}, but reads one or more channels in an order you choose                                                                                      |
+| reciprocal          |        | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
+| reject              |        | Returns a new collection, containing items from another collection that do not satisfy a condition provided as a test function                                    |
+| release             |        | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
+| remove              |        | Remove the given item from the collection. Returns the item, not the collection---so you can't write \cd{x.remove(1).remove(2)}                                   |
+| removeAll           |        | Removes all the given items from the collection                                                                                                                   |
+| removeAt            |        | Remove the item at the given index from the collection. Returns the item, not the collection                                                                      |
+| reset               |        | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                         |
+| resourceDir         |        | \cd{Platform.resourceDir} points to a directory of extra resources, which are part of a normal SC installation                                                    |
+| round               |        | Round a number to the nearest division---by default, 1 (integers) but it may also be fractional                                                                   |
+| rrand               |        | \cd{rrand(low, high)}: Generate a random number $x$ where $low \le x \le high$                                                                                    |
+| sched               |        | Schedule an activity to happen a certain number of beats/seconds in the future (i.e., later than now)                                                             |
+| schedAbs            |        | Schedule an activity to happen at a specific (``absolute'') time                                                                                                  |
+| sect                |        | Given two sets, return the \emph{intersection} between them: the items that exist in both sets. May also be written \cd{setA \& setB}                             |
+| select              |        | Returns a new collection, containing items from another collection that satisfy a condition provided as a test function                                           |
+| separate            |        | Group items from a flat array into sub-arrays, based on a condition (function) applied to items that are next to each other                                       |
+| set                 |        | On a synth node or NodeProxy, set a new value for a control input: \cd{n.set(\textbackslash name, value...)}                                                      |
+| setEvent            |        | Called on a ProxySpace, setEvent returns an event prepared to set controls within that ProxySpace                                                                 |
+| sine                |        | \cd{Env.sine} makes an attack-decay envelope with sine-shaped segments. More or less a bell curve                                                                 |
+| sine1               |        | Fill a Buffer with a waveform based on harmonic amplitudes, in wavetable format                                                                                   |
+| sine2               |        | Fill a Buffer with a waveform based on harmonic frequencies and amplitudes, in wavetable format                                                                   |
+| sine3               |        | Fill a Buffer with a waveform based on harmonic frequencies, amplitudes and phases, in wavetable format                                                           |
+| size                |        | Returns the number of items in a collection                                                                                                                       |
+| sqrt                |        | Take the square root of a number $x$: $\sqrt{x}$                                                                                                                  |
+| squared             |        | Square a number $x$: $x^2$                                                                                                                                        |
+| stop                |        | Stop a process that was previously started by \ci{play}                                                                                                           |
+| sum                 |        | Add all the items in a collection. Assumes the items are numbers                                                                                                  |
+| symmetricDifference |        | Given two sets, return the items that exist in only one of the two, but not both. May also be written \cd{setA -- setB}                                           |
+| sync                |        | In a Routine, call \ci{sync} on a server to wait for any pending asynchronous operations to finish                                                                |
+| union               |        | Given two sets, return their \emph{union}: the items that exist in either set, or both. May also be written \cd{setA \textbar setB}                               |
+| value               |        | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd |
+| wait                |        | In a Routine, same as \ci{yield}, but works only for numbers. Used for deltas (wait times).                                                                       |
+| while               |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                         |
+| wrap                |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                             |
+| yield               |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                              |
+| keys                |        | Called on a Dictionary, returns a set of unique keys (without their values)                                                                                       |
+| values              |        | Called on a Dictionary, returns a list (array) of the values. It must be an array, to allow duplicate values                                                      |
+| keysValuesDo        |        | A variation on \ci{do}, for Dictionaries. The loop function receives \cd{\textbar key, value, counter\textbar} as arguments                                       |
 
 
 * UGens								   :noexport:
