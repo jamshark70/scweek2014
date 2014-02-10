@@ -59,7 +59,7 @@
 # #+LATEX_HEADER:     numberstyle=\scriptsize,%\tiny
 # #+LATEX_HEADER:     stepnumber=5,
 # #+LATEX_HEADER:     numbersep=8pt,
-# #+LATEX_HEADER:     showstringspaces=false,
+#+LATEX_HEADER:     showstringspaces=false,
 # #+LATEX_HEADER:     breaklines=true,
 # #+LATEX_HEADER:     frameround=ftff,
 # #+LATEX_HEADER: %    frame=single

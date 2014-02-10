@@ -71,6 +71,7 @@
 #+LATEX_HEADER:     %identifierstyle=\color{NavyBlue},
 #+LATEX_HEADER:     commentstyle=\color{commentred},
 #+LATEX_HEADER:     stringstyle=\color{stringgrey},
+#+LATEX_HEADER:     showstringspaces=false,
 #+LATEX_HEADER: }
 #+LATEX_HEADER: 
 #+LATEX_HEADER: \lstdefinelanguage{SuperCollider}
