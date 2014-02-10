@@ -206,6 +206,7 @@
 | clip          |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                        |
 | clump         |        | Group the items of a flat array into equally-sized chunks. \cd{[0, 1, 2, 3, 4].clump(2)} returns \cd{[[0, 1], [2, 3], [4]]}                                       |
 | collect       |        | A looping structure, like \ci{do}, which collects the results of the loop function into a new collection. Like \ci{map} in many other languages                   |
+| count         |        | Returns a count of items in a collection that meet a condition, written as a function                                                                             |
 | cpsmidi       |        | Convert a frequency in Hz to a MIDI note number                                                                                                                   |
 | curvelin      |        | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                          |
 | differentiate |        | Returns an array $y$ where $y_0 = x_0 - 0$, $y_1 = x_1 - x_0$ and so on                                                                                           |
@@ -230,9 +231,13 @@
 | linlin        |        | Convert a linear input range (inMin, inMax) to a linear output range (outMin, outMax)                                                                             |
 | loop          |        | A flow-of-control structure that repeats the same block of code several times. Typical loops are \ci{for}, \ci{do} and \ci{while}                                 |
 | max           |        | Between \ci{a} and \ci{b}, return whichever is higher                                                                                                             |
+| maxIndex      |        | Returns the index of the largest item in a collection                                                                                                             |
+| maxItem       |        | Returns the largest item in a collection                                                                                                                          |
 | midicps       |        | Convert a MIDI note number to a frequency in Hz                                                                                                                   |
 | midiratio     |        | Convert a number of semitones into a frequency factor                                                                                                             |
 | min           |        | Between \ci{a} and \ci{b}, return whichever is lower                                                                                                              |
+| minIndex      |        | Returns the index of the smallest item in a collection                                                                                                            |
+| minItem       |        | Returns the smallest item in a collection                                                                                                                         |
 | neg           |        | Same result as \cd{-1 * n}, but slightly faster                                                                                                                   |
 | next          |        | When called on a Routine (or any Stream), returns the stream's next yield value                                                                                   |
 | perc          |        | \cd{Env.perc} makes a percussive envelope (quick attack, curved decay)                                                                                            |
@@ -244,20 +249,29 @@
 | rand          |        | \cd{num.rand}: Generate a random number $x$ where $0 \le x < num$                                                                                                 |
 | rand2         |        | \cd{num.rand}: Generate a random number $x$ where $-num \le x < num$                                                                                              |
 | range         |        | Converts a UGen's range into a different linear range                                                                                                             |
+| read          |        | \cd{Buffer.read()} creates a new buffer in the server and fills it with audio from a sound file                                                                   |
+| readChannel   |        | Like \cd{Buffer.read}, but reads one or more channels in an order you choose                                                                                      |
 | reciprocal    |        | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                     |
+| reject        |        | Returns a new collection, containing items from another collection that do not satisfy a condition provided as a test function                                    |
 | release       |        | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                |
+| remove        |        | Remove the given item from the collection. Returns the item, not the collection---so you can't write \cd{x.remove(1).remove(2)}                                   |
+| removeAll     |        | Removes all the given items from the collection                                                                                                                   |
+| removeAt      |        | Remove the item at the given index from the collection. Returns the item, not the collection                                                                      |
 | reset         |        | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                         |
 | resourceDir   |        | \cd{Platform.resourceDir} points to a directory of extra resources, which are part of a normal SC installation                                                    |
 | round         |        | Round a number to the nearest division---by default, 1 (integers) but it may also be fractional                                                                   |
 | rrand         |        | \cd{rrand(low, high)}: Generate a random number $x$ where $low \le x \le high$                                                                                    |
 | sched         |        | Schedule an activity to happen a certain number of beats/seconds in the future (i.e., later than now)                                                             |
 | schedAbs      |        | Schedule an activity to happen at a specific (``absolute'') time                                                                                                  |
+| select        |        | Returns a new collection, containing items from another collection that satisfy a condition provided as a test function                                           |
+| separate      |        | Group items from a flat array into sub-arrays, based on a condition (function) applied to items that are next to each other                                       |
 | set           |        | On a synth node or NodeProxy, set a new value for a control input: \cd{n.set(\textbackslash name, value...)}                                                      |
 | setEvent      |        | Called on a ProxySpace, setEvent returns an event prepared to set controls within that ProxySpace                                                                 |
 | sine          |        | \cd{Env.sine} makes an attack-decay envelope with sine-shaped segments. More or less a bell curve                                                                 |
 | sine1         |        | Fill a Buffer with a waveform based on harmonic amplitudes, in wavetable format                                                                                   |
 | sine2         |        | Fill a Buffer with a waveform based on harmonic frequencies and amplitudes, in wavetable format                                                                   |
 | sine3         |        | Fill a Buffer with a waveform based on harmonic frequencies, amplitudes and phases, in wavetable format                                                           |
+| size          |        | Returns the number of items in a collection                                                                                                                       |
 | sqrt          |        | Take the square root of a number $x$: $\sqrt{x}$                                                                                                                  |
 | squared       |        | Square a number $x$: $x^2$                                                                                                                                        |
 | stop          |        | Stop a process that was previously started by \ci{play}                                                                                                           |
@@ -267,9 +281,6 @@
 | while         |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                         |
 | wrap          |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                             |
 | yield         |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                              |
-| read          |        | \cd{Buffer.read()} creates a new buffer in the server and fills it with audio from a sound file                                                                   |
-| readChannel   |        | Like \cd{Buffer.read}, but reads one or more channels in an order you choose                                                                                      |
-
 
 * UGens								   :noexport:
 #+name: ugens
