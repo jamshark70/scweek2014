@@ -405,8 +405,8 @@ Pdefn(\dur, Pseq([1, 0.5, 0.5, 1, 1], inf));
 
 ~player.quant = 4;
 ~player = \psSet -> Pbind(
-	\freq, 660, \amp, 1,
-	\dur, Pdefn(\dur)
+   \freq, 660, \amp, 1,
+   \dur, Pdefn(\dur)
 );
 #+end_src
 
@@ -505,6 +505,200 @@ So:
 - Use ordered collections when you need to know the sequence.
 - Use unordered collections when you need to know that something is
   there, but the order doesn't matter.
+
+*** Doing things with collections
+**** What can you do with collections?
+     And why would you want to do them?
+     - /Transforming/ data is as important as collecting it in the first place.
+     - This is how computers can /generate/ musical details.
+
+*** Example: Phrase separation
+**** For example: Split a list of pitches into phrases.
+     - Suppose, to make it easy, that phrases go up.
+     - Split at every downward jump larger than, oh, a third.\\
+       A third, in scale degrees, is 2. /Why?/ \pause
+     - How do you get a number for the interval between \ci{a} and \ci{b}?\\ \pause
+       \cd{b - a} \pause
+     - What's the condition for a downward jump more than a third?\\ \pause
+       \cd{(b - a) < -2}
+
+*** Array magic for separation
+**** \clss{Array} already has a method for this: \mth{separate}.
+     - Give it a \clss{Function} for the condition.
+     - The function gets two items as \glspl{argument}.\\
+       The items are next to each other in the array.
+     - The function returns \ci{true} if a split should happen between those items.
+#+name: coll1
+#+caption: A sequence of rising phrases, split by the separate method.
+#+begin_src {SuperCollider} -i
+x = [0, 2, 4, 6, 7, 1, 2, 3, 4, 5, 2,
+   3, 5, 6, 7, 8, 10, 3, 5, 6, 8,
+   9, 10, 4, 5, 6, 7, 8, 9
+];
+
+y = x.separate { |a, b| b - a < -2 };
+#+end_src
+
+*** So what?
+**** What is that good for?
+     - Before, we could:
+       - Play the notes in the original order (\clss{Pseq});
+       - Or play them in random order, breaking phrases:\\
+	 \clss{Prand}, \clss{Pwrand}, \clss{Pxrand}.
+     - Now, we can play the /phrases/ in any order, but keep each phrase intact.
+**** The point:
+     /Doing something to the array created a new \textbf{musical} possibility./
+
+*** Choosing the phrases at random
+     Note \ci{z}: We can make a \clss{Pseq} for each phrase in advance.
+#+name: coll2
+#+caption: Play the phrases in random order. Pxrand makes sure the same phrase will not play twice in a row.
+#+begin_src {SuperCollider} -i
+z = y.collect { |array| Pseq(array, 1) };
+
+~player = Pbind(
+   \degree, Pxrand(z, inf),
+   \dur, 0.15
+);
+~player.play;
+
+~player.clear;
+#+end_src
+
+*** Things you can do with any collection
+**** All collections can do these basic things:
+     - \mth{size} :: How many items?
+     - \mth{add} :: Add a new item (if ordered, to the end).
+     - \mth{remove} :: Remove an item.
+     - \mth{removeAll} :: Remove all the given items.
+     - \mth{includes} :: Membership test (\ci{true} if the collection has the exact \egls{identical} item).
+     - \mth{includesEqual} :: Slightly relaxed membership test (OK if the matching item is \egls{equivalent}, not identical).
+
+*** Note on identity					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** What's the difference between \egls{identical} vs. \egls{equivalent}, and why does it matter?
+\eGls{identical} refers to the same exact object, while
+\egls{equivalent} refers to separate objects that happen to have the
+same value, or the same contents.
+
+It might seem strange to speak of objects being "identical." If there
+can be only one object with a particular identity, how could you
+compare it to something else? Wouldn't the comparison always end up
+\ci{false}?
+
+Checking identity is meaningful because you can have several
+/references/ to the same object: one object, held in several variables
+or several collection items. Here, we put an array into \ci{x}, and
+then assign the same array into \ci{y}. The \ci{===} test shows that
+they are identical. They are not /separate/ arrays with the same
+contents. Both variables refer to one and the same array. Because both
+variables point to the same place, a change to \ci{x} will also appear
+in \ci{y}---because, as far as the array is concerned, it doesn't
+matter whether you call it \ci{x} or \ci{y} or \ci{stupidArray}. Its
+contents have changed, and /any/ variable referring to that array will
+see the change.
+
+#+begin_src {SuperCollider} -i
+x = [0, 1, 2];
+y = x;
+
+y === x;  // identical
+
+x.put(1, 10);
+y;  // prints: [ 0, 10, 2 ]
+#+end_src
+
+This is, in fact, a common mistake when creating arrays of arrays
+(that is, rows and columns). In this example, all three "rows" are
+identical arrays---so, you can't modify any row's contents without
+also changing /every/ row.
+
+#+begin_src {SuperCollider} -i
+x = Array.fill(3, [0, 1, 2]);
+
+x[0] === x[1];  // identical
+#+end_src
+
+The solution is to use a function with \cd{Array.fill}. /Get in the
+habit \textbf{now} of using functions here!/ Forgetting the function
+@@latex:\cd{\{ \}}@@ is one of /the/ most common mistakes.
+
+#+begin_src {SuperCollider} -i
+x = Array.fill(3, { [0, 1, 2] });
+
+x[0] === x[1];  // NOT identical
+x[0] == x[1];  // equivalent
+#+end_src
+
+Why not simplify, and just test equivalence for everything? The reason
+is that checking identity is faster. Speed is important when looking
+up items by name in an \clss{Event}, \clss{IdentityDictionary} or
+\clss{ProxySpace}, because /many/ comparisons are needed.
+
+For membership testing:
+
+- If the items are \clsspl{Symbol} or \cd{Integers}, you can use
+  \mth{includes}. Also, \clss{IdentitySet} is faster for lookup, and
+  these types are valid keys in an \clss{IdentityDictionary}.
+- Any other types within a collection---\clss{String}, \cd{Float},
+  other collections---should check membership by
+  \mth{includesEqual}. Use \clss{Set} or \clss{Dictionary}.
+
+#+begin_src {SuperCollider} -i
+x = Array.fill(3, { [0, 1, 2] });
+
+x.includes([0, 1, 2]);  // FALSE b/c not identical
+x.includesEqual([0, 1, 2]);  // TRUE
+#+end_src
+
+*** Looping operations on collections
+     All these take a function with arguments \cd{|item, index|}.
+     - \mth{do} :: Do something to each item; don't keep results.
+     - \mth{collect} :: Do something to each item; keep the results in a new collection.
+     - \mth{select} :: Make a new collection, with the items that satisfy the condition in the function.
+     - \mth{reject} :: Like \mth{select}, but keeps the items that fail the condition.
+     - \mth{count} :: How many items satisfy a condition?
+     - \mth{sum} :: Add up the items; the optional function can calculate new values.
+
+*** Collection looping examples
+**** Can you imagine musical uses for these?
+     Try them one by one, and try to explain the results.
+#+name: coll2
+#+caption: Examples of looping operations on collections.
+#+begin_src {SuperCollider} -i
+x = (0..9).scramble;
+(
+x.collect { |item|
+   if(item.odd) {
+      item * 10
+   } {
+      item
+   }
+};
+)
+x.select { |item| item > 4 };
+x.reject { |item| item > 4 };
+x.maxItem;
+
+x = ["An", "array", "of", "strings"];
+x.count { |item| item.size > 3 };
+x.sum { |item| item.size };
+x.maxItem { |item| item.size };
+#+end_src
+
+*** Musical uses						   :noexport:
+
+*** Things you can do with ordered collections
+**** \Gls{ordered} collections can address items by number.
+     - \mth{at} :: Get the item at a given number. Shortcut: \cd{array[1]} $\to$ \cd{array.at(1)}.
+     - \mth{put} :: Put a new item into the numbered slot. Shortcut: \cd{array[1] = 5} $\to$ \cd{array.put(1, 5)}.
+     - \mth{removeAt} :: Remove the item at the given index.
+     - \mth{insert} :: Insert a new item at the index, pushing the other items to the right.
+     - \mth{++} :: Join two arrays into one.
+     - \mth{pairsDo} :: Like \mth{do}, but takes the items in groups of two.
+     - \mth{doAdjacentPairs} :: See the example.
 
 ** Composition: Control structures
 
