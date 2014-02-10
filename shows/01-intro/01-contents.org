@@ -422,7 +422,7 @@ p.push;
      [[../01-intro/img/take-apart-02-function.pdf]]
      #+end_center
 ***** A \clss{Function} is a block of code in curly braces.
-     - Functions can take information in through \egls{arguments}.
+     - Functions can take information in through \eglspl{argument}.
      - \te{Call} a function using \mth{value}.
      - When you call it, SC:
        - Runs all the code inside;
@@ -436,7 +436,7 @@ p.push;
      - $a^2 + b^2 = c^2$, so $c = \sqrt{a^2 + b^2}$.
      - In SC: \cd{sqrt(a.squared + b.squared)}.
 **** How do we get \ci{a} and \ci{b} in there?
-     - That's what the \egls{arguments} are for.
+     - That's what the \eglspl{argument} are for.
      - \cd{arg a, b;}: \ci{a} and \ci{b} will get their values from the \mth{value} call.
      - \cd{f.value(3, 4)}: \ci{a} is 3, \ci{b} is 4.\\
        So the whole expression is @@latex: \cd{sqrt(3.squared + 4.squared)} $\to$
@@ -508,7 +508,7 @@ f.value(b: 5);  // prints "5.830..."; a is still 3
      - Any function can \egls{declare} variable names.
      - Declared variables exist only inside that function!\\
        This is called \egls{local} scope.
-     - \eGls{arguments} are variables, but get values from outside.
+     - \eGlspl{argument} are variables, but get values from outside.
 #+name: declarevars
 #+caption: A function that declares a variable.
 #+begin_src {SuperCollider} -i :extract=t
@@ -625,7 +625,7 @@ x == y;  // prints false
      #+begin_center
      [[../01-intro/img/take-apart-05-args.pdf]]
      #+end_center
-***** \eGls{arguments} pass information into a method or function.
+***** \eGlspl{argument} pass information into a method or function.
       - In general, UGens take numbers or signals as inputs.
       - They generate signals as output.
       - \ugen{SinOsc}'s arguments are:
@@ -648,7 +648,7 @@ x == y;  // prints false
 **** A \gls{method call} consists of three parts:
     - \Gls{receiver} :: The object that will perform the method.
     - \Gls{selector} :: The method's name.
-    - \Gls{arguments} :: Additional input (optional).
+    - \Glspl{argument} :: Additional input (optional).
 \\
 In \cd{SinOsc.ar(440)}:
     - Receiver = the class \cd{SinOsc}
@@ -701,7 +701,7 @@ SinOsc.ar + 1;
 **** Important SC language concepts
      - \gls{Function} :: A package of instructions, to be executed any time.
      - \gls{variable} :: A placeholder for an object (a reference to it).
-     - \gls{arguments} :: Inputs to a function or method.
+     - \glspl{argument} :: Inputs to a function or method.
      - \gls{class} :: An object definition: /Data/ and /actions/.
      - \gls{method} :: An action that an object that knows how to perform.
      - \gls{receiver} :: The object that will answer the method call.
@@ -846,7 +846,7 @@ p.gui;
      - freq :: Frequency, with a default 440 (A natural).
      - amp :: Amplitude (volume), with a default 0.1 (-20 dB).
 **** Arguments are magical in synthesis functions.
-     - They automatically become \gls{control inputs}.
+     - They automatically become \glspl{control input}.
      - You can set the value from outside, and it changes the sound inside.
      - Try it: \cd{\textasciitilde oscil.set(\textbackslash freq, 261.6)}.
 **** Control inputs make it possible to do musical sequencing.
