@@ -158,6 +158,7 @@
 | Pdef               |                      | Global storage for pattern proxies, where the patterns produce sequencing events                                                                                   |
 | Pdefn              |                      | Global storage for pattern proxies, where the patterns produce simple values                                                                                       |
 | Pdelta             |                      | A filter pattern that accepts a sequence of time points, and returns deltas appropriate for the given bar length                                                   |
+| Pdict              |                      | A Pattern that looks up subpatterns from a Dictionary, and embeds the subpatterns into the output stream in turn                                                   |
 | Pexprand           |                      | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
 | Pgeom              |                      | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
 | Pkey               |                      | A pattern that reads a value from the given name from the event currently being processed. Child patterns can share information this way                           |

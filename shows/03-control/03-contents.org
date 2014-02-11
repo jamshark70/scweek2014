@@ -339,7 +339,7 @@ p.clear;
 Switch over to SuperCollider and start building...
 #+end_center
 
-** Composition: Data structures
+** Composition: Representing musical information
 *** Data representation
 **** Composition depends on /representing musical information/.
      - Western notation: Notes and rhythms.\\
@@ -465,6 +465,7 @@ Pdefn(\dur, Pdelta(
   other child patterns. That's not an issue in the above example
   because the frequency doesn't change.
 
+** Composition: Data structures
 *** Data storage: Collections
 **** Data storage is key.
      - SC has a number of \egls{collection} classes.
@@ -748,6 +749,30 @@ x.doAdjacentPairs { |a, b|
 
 *** Dictionary examples
 
+    Note the use of \clss{Pdict}, to embed patterns by name.
+#+name: coll4
+#+caption: A useful Dictionary trick: Naming subpatterns for sequencing.
+#+begin_src {SuperCollider} -i
+d = (
+   mel1: [0, 7, 3, 4, 6, 7],
+   mel2: [9, 7, 6, 4, 3],
+   mel3: [3.9, 4, 6, 3, 2]
+);
+
+// preserves the keys
+e = d.collect { |array| Pseq(array, 1) };
+
+e.keysValuesDo { |key, value| [key, value].postcs }; ""
+
+q = Pbind(
+   \degree, Pdict(e, Pxrand([\mel1, \mel2, \mel3], inf)),
+   \dur, Pwhite(1, 3, inf) * 0.15,
+   \scale, Scale.aeolian,
+   \root, 11, \octave, 3
+).play;
+
+q.stop;
+#+end_src
 *** Unordered collections: Sets
 **** Sets may not contain any duplicated items.
      - \clss{Set}: No \egls{equivalent} items.
