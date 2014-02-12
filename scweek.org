@@ -156,7 +156,7 @@ Ideally before defining BEAMER-CLASS-P.
 In \clss{ProxySpace}, assigning a function or pattern to a \ci{\textasciitilde name} creates a \clss{NodeProxy}. The proxy is always running. If it's a function, the server is running the UGens; if a pattern, the language is generating events and playing them.
 
 For both, the signal
-
+** TODO Discuss Out and buses
 * High-level outline
 ** *Notes* (not a topic)
    - Sequencing... where?
