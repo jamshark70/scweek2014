@@ -301,7 +301,7 @@ into an array of five \ugen{Formlet}s. Then, all we have to do is
 *** Changing vowels by arguments 2: Arrayed controls
 **** We also need a way to send arrays to an argument.
      - Regular arguments have some limitations for this.
-     - Remember that arguments turn into \egls{control inputs}.
+     - Remember that arguments turn into \eglspl{control input}.
      - We can make control inputs explicitly, using \ugen{NamedControl}.
      - An array for the default value makes an \egls{arrayed control}.
 #+begin_src {SuperCollider} -i
