@@ -128,6 +128,7 @@
 | variable               |               | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                                       |
 | wavetable              |               | A single cycle of a waveform stored in a sampling buffer, or an oscillator that plays back the wavetable at a given frequency                                                         |
 | wavetable format       |               | A way of storing repeating waveforms to make wavetable oscillators more efficient. A wavetable buffer needs twice as many numbers as audio samples in the waveform                    |
+| callback               |               | A function that executes in response to an event in some other part of the system. If you make a GUI button, a click needs to ``call back'' into your code                            |
 
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
@@ -196,6 +197,7 @@
 | Wavetable          |                      | Very much like Signal, but it's data should be in wavetable format                                                                                                 |
 | Pn                 |                      | A pattern that repeats a value or pattern /n/ times. If /n/ is \ci{inf}, it will repeat as many times as needed                                                    |
 | Rect               |                      | Represent a rectangular area: \cd{Rect(left, top, width, height)}. Used for GUI object boundaries                                                                  |
+| Slider             |                      | A GUI widget that draws a draggable slider in a window. The natural range is normalized: 0.0--1.0                                                                  |
 
 
 * Methods							   :noexport:

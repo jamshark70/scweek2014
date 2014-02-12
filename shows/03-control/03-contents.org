@@ -282,7 +282,68 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
-* Toward complex composition
+* External control
+** Basic concepts
+*** Custom interfaces
+**** So far, we have used the built-in \ci{ProxyMixer}.
+    This is a good, general-purpose interface, but not ideal for every performance need.
+**** A few fundamentals can get you started making your own interfaces.
+     - Display only the controls that you need.
+     - Put them in a layout that makes sense visually.
+**** The concepts to do this are preparation for mobile interfaces.
+
+*** Main concepts
+**** By far, the most important concept is \egls{callback}.
+     - User interaction needs to "call back" into your code.
+     - GUI, MIDI, OSC, HID interfaces all depend on this idea.
+**** Other concepts
+     - View :: A general term for a GUI widget.
+     - Spec :: A \clss{ControlSpec}, mapping a control onto a range of values.
+     - Layout :: An automated way to position views in a window.
+
+*** A simple slider
+**** Let's control pitch with a \clss{Slider}.
+     - The example makes a simple sound, and puts a slider on screen.
+     - The slider is not connected to anything yet.
+     - Note that the slider's first argument is \ci{nil}.\\
+       It's a shortcut to make a window for the slider automatically.
+#+name: gui1
+#+caption: A simple sound, and a slider that will control it (but not yet).
+#+begin_src {SuperCollider} -i
+p = ProxySpace.new.push;
+
+~sound = { |freq = 440, amp = 0.1|
+   VarSaw.ar(freq, 0, 0.5, amp).dup
+};
+~sound.play;
+
+z = Slider(nil, Rect(600, 200, 200, 20)).front;
+#+end_src
+
+*** Controlling pitch
+**** To connect the slider to the frequency:
+     1. A \egls{callback} function:\\
+	When the user moves the slider, set the frequency.
+     2. Convert the slider's range to frequency.\\
+	Sliders always run 0.0--1.0. Use a \clss{ControlSpec} to convert.\\
+	\cd{y.map} takes in 0.0--1.0, puts out a value matching the spec's range.
+#+name: gui2
+#+caption: Plug the slider into the frequency input.
+#+begin_src {SuperCollider} -i
+y = ControlSpec(110, 880, \exp);
+
+z.action = { |sl|
+   ~sound.set(\freq, y.map(sl.value));
+};
+#+end_src
+
+* Not yet							   :noexport:
+** Buttons and faders
+** Receiving
+** Central hub
+** Turning faders into buttons: Thresholds
+
+* Toward complex composition					   :noexport:
 ** Simple ideas
 *** The trick
 **** The trick to making music by programming:
@@ -1046,12 +1107,6 @@ o = Button(nil, Rect(600, 100, 100, 20))
     - Larger modular synths;
     - Pattern sequences with more musicality;
     - Control in performance by external devices.
-
-* External control						   :noexport:
-** Buttons and faders
-** Receiving
-** Central hub
-** Turning faders into buttons: Thresholds
 
 * Removed							   :noexport:
 *** Branching: Case
