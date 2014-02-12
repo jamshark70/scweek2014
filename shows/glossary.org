@@ -142,6 +142,7 @@
 | Array              |                      | An ordered list of items with a fixed maximum number of items. When adding, be sure to reassign: \cd{array = array.add(item)}                                      |
 | Association        |                      | An object that links an identifier (the ``key'') to another object (the ``value''). Dictionaries act like collections of Associations                              |
 | Buffer             |                      | An object in the audio server that can hold large amounts of audio or other data. Used for sample playback and soundfile input/output                              |
+| Button             |                      | A multi-state button that responds to user clicks. Each state has a label, text color and background color                                                         |
 | Clock              |                      | The general class of schedulers. Any actions scheduled at a given time will wait until that time to execute. See TempoClock, SystemClock and AppClock              |
 | ControlSpec        |                      | Defines a numeric range, with low and high values, a curve, step size (for quantization) and a default value                                                       |
 | DebugPbind         |                      | An extension class in the \emph{ddwPatterns} Quark, which prints every step of a Pbind's evaluation to the post window                                             |
@@ -167,6 +168,7 @@
 | Pgeom              |                      | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
 | Pkey               |                      | A pattern that reads a value from the given name from the event currently being processed. Child patterns can share information this way                           |
 | Platform           |                      | Holds settings and file paths that are specific to the operating system                                                                                            |
+| Pn                 |                      | A pattern that repeats a value or pattern /n/ times. If /n/ is \ci{inf}, it will repeat as many times as needed                                                    |
 | Prand              |                      | A Pattern to choose values randomly from an array                                                                                                                  |
 | ProxySpace         |                      | An Environment that automatically makes a NodeProxy from any item in it                                                                                            |
 | Pseq               |                      | A Pattern to return values from an array, one by one                                                                                                               |
@@ -177,12 +179,14 @@
 | Pwhite             |                      | A Pattern that generates random numbers between low and high boundaries, with a linear distribution                                                                |
 | Pwrand             |                      | A Pattern to choose values randomly from an array, with a different probability for each item                                                                      |
 | Pxrand             |                      | A Pattern to choose values randomly from an array, without repeating the same one twice in a row                                                                   |
+| Rect               |                      | Represent a rectangular area: \cd{Rect(left, top, width, height)}. Used for GUI object boundaries                                                                  |
 | Rest               |                      | Used in a Pbind's child pattern, a Rest object marks the event as a rest. The event will be produced and will take the time, but not make any sound                |
 | Routine            |                      | Executes a Function. The function may \ci{yield} a value, and the next call into the routine will resume just after the yield                                      |
 | Scale              |                      | A repository of scale and mode patterns. \cd{Scale.ionian} gives you a major scale, [0, 2, 4, 5, 7, 9, 11]                                                         |
 | ServerOptions      |                      | Configuration options for scsynth, including soundcard, are variables in this class. \cd{s.options} controls the bootup options for \ci{s}                         |
 | Set                |                      | An unordered collection of items, optimized for iteration and testing membership: \cd{set.do}, \cd{set.includes(item)}                                             |
 | Signal             |                      | A special-purpose array that can hold only numbers. It supports some methods that are valid only for audio data                                                    |
+| Slider             |                      | A GUI widget that draws a draggable slider in a window. The natural range is normalized: 0.0--1.0                                                                  |
 | SoundFile          |                      | Read and write audio files from the language (no server involvement). See \ci{Buffer} for reading and writing files in the server                                  |
 | Stream             |                      | A category of classes representing sequences of values, of which \ci{Routine} is the most common. One value is returned by calling \ci{next} on the stream         |
 | String             |                      | A list of characters that behaves like text                                                                                                                        |
@@ -195,9 +199,7 @@
 | TdefAllGui         |                      | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
 | TempoClock         |                      | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
 | Wavetable          |                      | Very much like Signal, but it's data should be in wavetable format                                                                                                 |
-| Pn                 |                      | A pattern that repeats a value or pattern /n/ times. If /n/ is \ci{inf}, it will repeat as many times as needed                                                    |
-| Rect               |                      | Represent a rectangular area: \cd{Rect(left, top, width, height)}. Used for GUI object boundaries                                                                  |
-| Slider             |                      | A GUI widget that draws a draggable slider in a window. The natural range is normalized: 0.0--1.0                                                                  |
+| Window             |                      | A GUI object representing a window on screen                                                                                                                       |
 
 
 * Methods							   :noexport:

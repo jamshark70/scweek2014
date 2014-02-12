@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis						   :noexport:
+* Granular synthesis
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -337,13 +337,90 @@ z.action = { |sl|
 };
 #+end_src
 
+*** An "EZ"-er way
+**** The *EZ* GUI objects do the range mapping for you.
+     See their help files: Start with \ci{EZSlider}.\\
+     Close the old slider window, then do this.\\<all>
+     Also introducing \clss{Window}.\\
+     When you make your own window, you can put more things in it.
+#+name: gui3
+#+caption: EZSlider: Much easier to map an on-screen control to a range of useful values.
+#+begin_src {SuperCollider} -i
+w = Window("window name", Rect(600, 200, 300, 120));
+z = EZSlider(w,
+   bounds: Rect(5, 5, 290, 20),
+   label: "freq",
+   controlSpec: [110, 880, \exp],  // short form OK
+   // no need for 'map' in the action!
+   action: { |view| ~sound.set(\freq, view.value) },
+   initVal: 440
+);
+w.front;
+#+end_src
+
+*** Note on Window bounds				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Why is the window near the bottom?
+This is a strange behavior left over from the original OSX
+SuperCollider application. The Apple (Cocoa) GUI objects put 0 at the
+bottom of the screen. The coordinates for the screen's height is at
+the top. Now SuperCollider uses Qt objects for drawing, because they
+work on all supported operating systems (not only Mac). The SC Qt
+objects keep this "upside down" behavior, so that older code will
+still put the windows in the same place.
+
+Inside a window, $y = 0$ is the top of the frame, and $y$ increases as
+you go down. This is also true if you make a GUI object without a
+window, as in Listing [[gui1]]. But, when you make a \clss{Window}, you
+have to remember that the "top" coordinate in the boundary \clss{Rect}
+is actually the window's /bottom/, and it's measured from the bottom
+of the screen.
+
+Weird, but that's the way it is.
+
+*** Buttons and faders
+**** Only two kinds of user-interface objects:[fn:2]
+     - Faders :: Represent a range of values. Sliders, knobs, 2D canvases are all faders.
+     - Buttons :: Represent a momentary trigger.
+**** dummy						    :B_ignoreheading:
+     :PROPERTIES:
+     :BEAMER_env: ignoreheading
+     :END:
+     - Faders are good for values, especially moving continuously up and down the range.
+     - Buttons are good for starting and stopping actions.
+     - When we get into mobile control, we will see how to make a fader act like a button.
+
+*** SC Button interface
+**** SC's \clss{Button} is /multi-state/.
+     - It can cycle through different labels and actions.
+     - "Playing" and "stopped" are two states.
+     - Each state is an array:\\
+       \cd{[label, textColor, backgroundColor]}.
+#+name: gui4
+#+caption: Add a button into the same window. Note the coordinates, and the syntax to set several properties at once.
+#+begin_src {SuperCollider} -i
+b = Button(w, Rect(5, 30, 290, 30))
+.states_([
+   ["stopped", Color.black, Color.gray(0.8)],
+   ["playing", Color.black, Color.green]
+])
+.action_({ |view|
+   if(view.value == 1) {
+      ~sound.play;
+   } {
+      ~sound.stop;
+   };
+});
+#+end_src
+
 * Not yet							   :noexport:
-** Buttons and faders
 ** Receiving
 ** Central hub
 ** Turning faders into buttons: Thresholds
 
-* Toward complex composition					   :noexport:
+* Toward complex composition
 ** Simple ideas
 *** The trick
 **** The trick to making music by programming:
@@ -1214,3 +1291,5 @@ f.close;
 * Footnotes
 
 [fn:1] Twelve-note \gls{equal temperament}.
+
+[fn:2] Credit to Jeffrey Stolet for this insight.
