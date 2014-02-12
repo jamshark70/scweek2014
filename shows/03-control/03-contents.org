@@ -1028,64 +1028,13 @@ o = Button(nil, Rect(600, 100, 100, 20))
 *** Looping
 **** We have seen loops over collections.
      \mth{do}, \mth{keysValuesDo}, \mth{collect}, \mth{select}, \mth{reject}.
-**** Now we'll take apart what they really do.
-
-*** All looping comes from "while"
-**** The basis of all looping is \mth{while}.
-     - @@latex: \cd{while \{ condition \} \{ loop body \}}@@.\\
-       *IMPORTANT:* The condition must be in braces, /not/ parens!!!
-     - When the condition is true, the loop body runs again.
-     - When it becomes false, the loop stops.
-     - \cd{10.do} is actually a \mth{while} loop like this:
-#+name: while1
-#+caption: A while loop, showing how "number.do" really works.
-#+begin_src {SuperCollider} -i
-i = 0;
-while { i < 10 } {
-   i.postln;  // <-- this is the "do" function
-   i = i + 1;
-};
-#+end_src
-
-*** Loop exit conditions
-**** *VERY IMPORTANT:* There must always be an exit condition! :B_alertblock:
-     :PROPERTIES:
-     :BEAMER_env: alertblock
-     :END:
-     - In the last example, if you forget \cd{i = i + 1}, then \ci{i} never changes.
-     - It will always be < 10.
-     - The loop will never exit---an \egls{infinite loop}.
-     - Infinite loops will lock up SuperCollider. You have to force quit.
-**** I can't count the number of times I made that mistake...
-     Fortunately, \ci{do} and other types of loops handle the exit condition for you.
-
-*** Use of while
-**** You won't use \mth{while} very often.
-     - \ci{do} etc. handle most loop situations, and they're safer.
-     - \mth{while} is useful when you don't know how many times you have to loop.
-     - For example, reading from a file:
-#+name: while2
-#+caption: A while loop, showing how "number.do" really works.
-#+begin_src {SuperCollider} -i
-(
-f = File(thisProcess.platform.startupFiles.last, "r");
-while {
-   x = f.getLine;
-   x.notNil  // keep going until 'nil'
-} {
-   x.postln;
-};
-f.close;
-)
-#+end_src
-
-*** Note: exit condition				    :B_ignoreheading:
-    :PROPERTIES:
-    :BEAMER_env: ignoreheading
-    :END:
-**** What's the exit condition?
-     There is no infinitely-long file. Eventually it will run out of
-     information, and \ci{getLine} will return nil. Then the loop stops.
+**** Other useful loops:
+     - \ci{number.do}: Counts 0 to (number--1).
+     - \ci{Array.fill}: Counts 0 to (number--1), adds function results to a new array.
+     - \cd{(start .. end).do}: Counts \ci{start} to \ci{end}.\\
+       Shortcut for \mth{for}: @@latex:\cd{for(start, end) \{ body \}}@@.
+     - \cd{(start, second .. end).do}: Counts \ci{start} to \ci{end}, with a skip of \cd{second - start}.\\
+       Shortcut for \mth{forSeries}: @@latex:\cd{forSeries(start, second, end) \{ body \}}@@.
 
 ** Composition: Combining patterns
 
@@ -1147,6 +1096,65 @@ switch(3.rand,  // 3.rand == 0, 1 or 2
 **** You'll use \mth{if} a /lot/.
      Don't worry too much about \mth{case} or \mth{switch} for now.
 **** Possible uses are... basically infinite.
+*** Removed loop stuff
+**** Now we'll take apart what they really do.
+
+*** All looping comes from "while"
+**** The basis of all looping is \mth{while}.
+     - @@latex: \cd{while \{ condition \} \{ loop body \}}@@.\\
+       *IMPORTANT:* The condition must be in braces, /not/ parens!!!
+     - When the condition is true, the loop body runs again.
+     - When it becomes false, the loop stops.
+     - \cd{10.do} is actually a \mth{while} loop like this:
+#+name: while1
+#+caption: A while loop, showing how "number.do" really works.
+#+begin_src {SuperCollider} -i
+i = 0;
+while { i < 10 } {
+   i.postln;  // <-- this is the "do" function
+   i = i + 1;
+};
+#+end_src
+
+*** Loop exit conditions
+**** *VERY IMPORTANT:* There must always be an exit condition! :B_alertblock:
+     :PROPERTIES:
+     :BEAMER_env: alertblock
+     :END:
+     - In the last example, if you forget \cd{i = i + 1}, then \ci{i} never changes.
+     - It will always be < 10.
+     - The loop will never exit---an \egls{infinite loop}.
+     - Infinite loops will lock up SuperCollider. You have to force quit.
+**** I can't count the number of times I made that mistake...
+     Fortunately, \ci{do} and other types of loops handle the exit condition for you.
+
+*** Use of while
+**** You won't use \mth{while} very often.
+     - \ci{do} etc. handle most loop situations, and they're safer.
+     - \mth{while} is useful when you don't know how many times you have to loop.
+     - For example, reading from a file:
+#+name: while2
+#+caption: A while loop, showing how "number.do" really works.
+#+begin_src {SuperCollider} -i
+(
+f = File(thisProcess.platform.startupFiles.last, "r");
+while {
+   x = f.getLine;
+   x.notNil  // keep going until 'nil'
+} {
+   x.postln;
+};
+f.close;
+)
+#+end_src
+
+*** Note: exit condition				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** What's the exit condition?
+     There is no infinitely-long file. Eventually it will run out of
+     information, and \ci{getLine} will return nil. Then the loop stops.
 
 * Footnotes
 

@@ -313,6 +313,8 @@
 | switch              |        | A branching control structure that looks up the action for a specific value                                                                                                |
 | asPattern           |        | An extension method (``ddwCommon'' quark) that makes a pattern from an object. Most objects just repeat themselves in the pattern: \cd{Pn(object, inf)}                    |
 | front               |        | Brings a GUI window to the front. Windows are invisible until you call \ci{front}                                                                                          |
+| for                 |        | A loop that counts from a beginning to an ending number. It has a more convenient shortcut syntax: \cd{(start .. end).do}                                                  |
+| forSeries           |        | A loop that counts from a beginning to an ending number, by a skip determined from a given second number. Shortcut syntax: \cd{(start, second .. end).do}                  |
 
 
 * UGens								   :noexport:
