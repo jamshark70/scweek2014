@@ -284,18 +284,11 @@ p.clear;
 
 * Toward complex composition
 ** Simple ideas
-*** You take the lead
-    From here, we will do less guided explanation of techniques, and
-    focus more on your creativity.
-    - Larger modular synths;
-    - Pattern sequences with more musicality;
-    - Control in performance by external devices.
-
 *** The trick
 **** The trick to making music by programming:
-**** quote							:B_quotation:
+**** quote							    :B_quote:
      :PROPERTIES:
-     :BEAMER_env: quotation
+     :BEAMER_env: quote
      :END:
      A simple idea by itself is boring.\\<all>
      Lots of simple ideas working together make music.
@@ -700,6 +693,7 @@ x.maxItem { |item| item.size };
      - \mth{++} :: Join two arrays into one.
      - \mth{pairsDo} :: Like \mth{do}, but takes the items in groups of two.
      - \mth{doAdjacentPairs} :: See the example.
+     - \mth{sort} :: Arrange the items in ascending or descending order. *In-place:* modifies the array.
 
 *** Ordered collection examples
 #+name: coll3
@@ -717,6 +711,12 @@ x.doAdjacentPairs { |a, b|
    "% - % = %\n".postf(b, a, b - a)
 };
 )
+
+x.sort;  // restores 0 .. 9 order
+
+// sort in descending order:
+// literally, so that an earlier item is bigger
+x.sort { |a, b| a > b };
 #+end_src
 
 *** Unordered collections: Dictionaries
@@ -794,7 +794,7 @@ q.stop;
 
 *** Unordered collections: Set examples
 #+name: coll5
-#+caption: Examples of useful array operations.
+#+caption: Examples of useful Set operations.
 #+begin_src {SuperCollider} -i
 x = [59, 61, 66, 68, 69, 61,
    59, 68, 66, 61, 69, 68];
@@ -815,18 +815,339 @@ y - z;
 y -- z;
 #+end_src
 
+*** Summary: Collections
+**** Any collection:
+     - Loop: \mth{do}, \mth{collect}.
+     - Filter: \mth{select}, \mth{reject}.
+**** Store and recall items /in order/ (\clss{Array}).
+     - Split (\mth{separate}, \mth{clump}) and join (\mth{++}) items.
+     - \mth{sort} in order, and randomize the order (\mth{scramble}).
+**** Store and recall items /by name/ (\clss{Dictionary}).
+     - Looping: \mth{keysValuesDo}.
+
+*** Collections: Musical memory
+**** Composers and improvisers /manipulate/ musical material.
+     - Create variations on a basic idea.
+     - Cut material support, rearrange, splice, transpose, otherwise alter.
+**** Collections let you store musical ideas and change them.
+     - One week is not enough to go very far.
+     - Keep these classes in mind. You /will/ need them later.
+
 ** Composition: Control structures
+*** Control structures: Branching and Looping
+**** Running code straight through is boring and limiting.
+     Two things are very important in computing:
+     - Making decisions: Which one of several things to do?\\
+       This is \egls{branching}.
+     - Doing the same thing many times, with different information.\\
+       This is \egls{looping}.
+
+*** Branching
+**** \Gls{branching}'s basic question:
+     I have two or more branches I can take. Which one?
+**** Branching structures in SuperCollider:
+     - \mth{if} :: *If* (condition), *then* do this; *else* do that.
+     - \mth{case} :: Check several conditions; do the action for the first "true."
+     - \mth{switch} :: Look up an action by value.
+
+*** Boolean values
+**** Branching depends on \egls{Boolean} expressions.
+     - A \egls{Boolean} is either true or false, no middle ground.
+     - Boolean expressions are often called "conditions":\\
+       \cd{x < 10} is a condition: Either \ci{x} is, or it isn't.
+     - Most conditions are based on comparison operators:
+       - \ci{==}, \ci{===}: Are two items \egls{equivalent} or \egls{identical}?\\
+	 \ci{!=} and \ci{!==}: Not equal, or not identical.
+       - \ci{<}, \ci{<=}, \ci{>}, \ci{>=}: Less than or greater than?
+       - Also useful: \mth{inclusivelyBetween}\cd{(lo, hi)}.
+
+*** Basic branching: If
+**** \mth{if} is the basic decision maker.
+     - Remember it this way: *If -- then -- else*.
+     - Can you predict what the \cd{10.rand} example will do?
+#+name: if1
+#+caption: Outline of the ``if'' structure.
+#+begin_src {SuperCollider} -i
+if(condition) {
+   (then... true branch)
+} {
+   (else... false branch)
+};
+
+x = 10.rand;
+if(x < 5) {
+   "low random number: %\n".postf(x);  // then
+} {
+   "high random number: %\n".postf(x);  // else
+};
+#+end_src
+
+*** Note on branch returns				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+You might have noticed that the \cd{10.rand} example displays the
+string twice. Why?
+
+The \ci{postf} method formats a string (substituting \ci{x} where the
+\ci{\%} appears) and then prints it. This accounts for the first
+display.
+
+The second display is because SC always prints the result of the last
+expression in the code block that was just executed. The last
+expression is the \mth{if}. So, if the string printed again, then the
+\mth{if} statement itself must have returned the string as a result
+value.
+
+This is a big difference between SuperCollider and languages like C or
+Java. In C, \mth{if} is a "statement," and statements have no
+value. The statement says what to do, but when the statement finishes,
+its only effect is that it did something to something else.
+
+By contrast, in SC, /everything/ is an expression. /Every/ statement
+produces a return value. You can choose to ignore the return value,
+but the value will be returned anyway. For example, look back at the
+\mth{collect} example in Listing [[coll2]].
+
+#+begin_src {SuperCollider} -i
+x.collect { |item|
+   if(item.odd) {
+      item * 10
+   } {
+      item
+   }
+};
+#+end_src
+
+\cd{item * 10} is not really an /action/---it doesn't change a
+variable or tell an object to do something---but it does produce a new
+value. If the incoming item is an odd number, the \mth{if} says to
+multiply that item by 10 /and return the result/. This returned result
+goes back to \mth{collect}, which puts the new value into the result
+array.
+
+This is a very powerful idea, and it may take some time to
+understand. Put it in the back of your mind for now, and come back to
+it later when you need it.
+
+*** What to do with "if"?
+**** Just about anything...
+     - Play a note on 75\% of 16th-notes in a bar.\\<all>
+       *If* a 75% coin toss is true, keep the event; else make it a rest.
+     - Avoid reloading something that's already loaded.\\<all>
+       *If* the variable is nil, load it; else do nothing.\\
+       (Note: You can just leave out the /else/ branch.)
+     - On/off buttons.\\<all>
+       *If* the user turned it on, do something; else, do something different.
+
+*** "If" examples
+#+name: if2
+#+caption: Practical uses of "if."
+#+begin_src {SuperCollider} -i
+a = Pbind(  // canonical style
+   \degree, Pn(Pseries(0, 1, 8), inf),
+   \dur, 0.125.asPattern.collect { |dur|
+      if(0.75.coin) { dur } { Rest(dur) }
+   }
+).play;
+
+a.stop;
+
+if(b.isNil) { b = Buffer.alloc(s, 44100*5, 1) };
+
+o = Button(nil, Rect(600, 100, 100, 20))
+.states_([["off"], ["on"]])
+.action_({ |button|
+   if(button.value == 1) {
+      "on".postln;
+   } {
+      "off".postln;
+   };
+}).front;
+#+end_src
+
+*** Note: New stuff 					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** New elements
+     - \mth{asPattern}: We need \ci{0.125} to act like a pattern, so
+       that \mth{collect}'s function will run once for every
+       event. Here, it's an easier-to-read alternative to
+       \cd{Pn(0.125, inf)}.\glsadd{Pn}
+     - \clss{Button}: Makes a clickable GUI button. We'll cover GUI basics later. For now:
+       - \ci{nil} means the button has no parent window. It will make
+         its own window automatically.
+       - \clss{Rect} gives the position (600 and 100 are at the left
+         and top coordinates) and size (100 and 20 are the width and
+         height).
+       - The button has two states, labeled as shown. Each state has
+         its own sub-array, so that you can assign different colors.
+       - \mth{front} brings the window to the front, so you can see it.
+
+*** Compound conditions 
+**** Often, you need to put several conditions together.
+     E.g., if x is odd, and more than 100.
+**** Logical operators:
+     - \ci{and} :: True, if /both/ are true.
+     - \ci{or} :: True, if /either/ is true, or both.
+     - \ci{xor} :: True, if one or the other is true, but not both.
+**** dummy						    :B_ignoreheading:
+     :PROPERTIES:
+     :BEAMER_env: ignoreheading
+     :END:
+     The above would be written: \cd{x.odd and: (x > 100)}.
+     - You must put \ci{()} around the second condition.
+
+*** Short-circuiting conditions
+**** Sometimes you don't have to test all the conditions.
+     \cd{x.odd and: (x > 100)}:
+     - If \ci{x} is even, the first condition is false.
+     - False \ci{and} anything is false: so \ci{x > 100} doesn't matter!
+**** Good to get in the habit of writing conditions this way:
+     @@latex:\cd{x.odd and: \{ x > 100 \}}@@.
+     - Writing the second condition as a function means SC can skip it if possible.
+     - This can improve speed by avoiding wasted expressions.
+
+*** Short-circuiting and type safety
+**** Some conditions are valid only for some types of objects.
+     - Short-circuited conditions make it easy:\\
+       @@latex:\cd{if(typecheck and: \{ condition \}) ...}@@
+     - SC will try the condition the only if the type check is OK.
+     - Often the result of an expression is \ci{nil} (empty result).\\
+       Handle it this way:\\
+       @@latex:\cd{if(object.notNil and: \{ condition \}) ...}@@
+
+*** Other branching methods
+    \mth{case} and \mth{switch} make some kinds of branching easier.\\
+    We won't cover them in detail here. Look them up the help system for more.
+    - Case: [[http://doc.sccode.org/Classes/Function.html#-case][Web link]]
+    - Switch: [[http://doc.sccode.org/Classes/Object.html#-switch][Web link]]
+    - Control structures in general: [[http://doc.sccode.org/Reference/Control-Structures.html][Web link]]
+
+*** Looping
+**** We have seen loops over collections.
+     \mth{do}, \mth{keysValuesDo}, \mth{collect}, \mth{select}, \mth{reject}.
+**** Now we'll take apart what they really do.
+
+*** All looping comes from "while"
+**** The basis of all looping is \mth{while}.
+     - @@latex: \cd{while \{ condition \} \{ loop body \}}@@.\\
+       *IMPORTANT:* The condition must be in braces, /not/ parens!!!
+     - When the condition is true, the loop body runs again.
+     - When it becomes false, the loop stops.
+     - \cd{10.do} is actually a \mth{while} loop like this:
+#+name: while1
+#+caption: A while loop, showing how "number.do" really works.
+#+begin_src {SuperCollider} -i
+i = 0;
+while { i < 10 } {
+   i.postln;  // <-- this is the "do" function
+   i = i + 1;
+};
+#+end_src
+
+*** Loop exit conditions
+**** *VERY IMPORTANT:* There must always be an exit condition! :B_alertblock:
+     :PROPERTIES:
+     :BEAMER_env: alertblock
+     :END:
+     - In the last example, if you forget \cd{i = i + 1}, then \ci{i} never changes.
+     - It will always be < 10.
+     - The loop will never exit---an \egls{infinite loop}.
+     - Infinite loops will lock up SuperCollider. You have to force quit.
+**** I can't count the number of times I made that mistake...
+     Fortunately, \ci{do} and other types of loops handle the exit condition for you.
+
+*** Use of while
+**** You won't use \mth{while} very often.
+     - \ci{do} etc. handle most loop situations, and they're safer.
+     - \mth{while} is useful when you don't know how many times you have to loop.
+     - For example, reading from a file:
+#+name: while2
+#+caption: A while loop, showing how "number.do" really works.
+#+begin_src {SuperCollider} -i
+(
+f = File(thisProcess.platform.startupFiles.last, "r");
+while {
+   x = f.getLine;
+   x.notNil  // keep going until 'nil'
+} {
+   x.postln;
+};
+f.close;
+)
+#+end_src
+
+*** Note: exit condition				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** What's the exit condition?
+     There is no infinitely-long file. Eventually it will run out of
+     information, and \ci{getLine} will return nil. Then the loop stops.
 
 ** Composition: Combining patterns
 
 * Considerations for group composition				   :noexport:
 ** Unity and contrast
+*** You take the lead
+    From here, we will do less guided explanation of techniques, and
+    focus more on your creativity.
+    - Larger modular synths;
+    - Pattern sequences with more musicality;
+    - Control in performance by external devices.
 
 * External control						   :noexport:
 ** Buttons and faders
 ** Receiving
 ** Central hub
 ** Turning faders into buttons: Thresholds
+
+* Removed							   :noexport:
+*** Branching: Case
+**** \mth{case} combines several if--then--else structures.
+     - \cd{if(condition)}
+       - Then \cd{branch}
+       - Else \cd{if(condition2)}
+	 - Then \cd{branch2}
+	 - Else...
+#+name: case1
+#+caption: A case statement, putting a random number in one of three categories.
+#+begin_src {SuperCollider} -i
+x = 10.rand;
+case { x < 3 } {
+   "low random number: %\n".postf(x);
+}
+{ x < 6 } {
+   "mid random number: %\n".postf(x);
+}
+{ x < 10 } {
+   "high random number: %\n".postf(x);
+};
+#+end_src
+
+*** Branching: Switch
+**** \mth{switch} is like "case" in other languages.
+     - The fastest way to match a value to an action, /if/ you know in
+       advance what the values can be.
+     - For example, a GUI \ci{Button} has integer values 0, 1, 2...
+     - This would be easy to match using \mth{switch}.
+#+name: switch1
+#+caption: A switch statement, matching an exact value.
+#+begin_src {SuperCollider} -i
+switch(3.rand,  // 3.rand == 0, 1 or 2
+   0, { "zero" },  // do this if 3.rand === 0
+   1, { "one" },
+   2, { "two" }
+);
+#+end_src
+
+*** "If" is the most common
+**** You'll use \mth{if} a /lot/.
+     Don't worry too much about \mth{case} or \mth{switch} for now.
+**** Possible uses are... basically infinite.
+
 * Footnotes
 
 [fn:1] Twelve-note \gls{equal temperament}.
