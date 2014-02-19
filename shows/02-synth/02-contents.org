@@ -214,7 +214,7 @@ p = Pbind(
 **** In Listing [[pbind1]], change \clss{Pbind} to \clss{DebugPbind}.
      Now you can read exactly what's going on.
      1. Start with an empty event.
-     2. \ci{\textbackslash freq} gets the random value, e.g. 133.25.
+     2. \ci{\textbackslash freq} gets a random value, e.g. 133.25.
      3. The empty event becomes \cd{(freq: 133.25)}.
      4. \ci{\textbackslash dur} gets 0.125.
      5. The final event has both values, with the right names.
@@ -631,9 +631,11 @@ if you're playing a one-channel sound file, you would need
 \ugen{PlayBuf} $\to$ amplifier \ci{*} $\to$ output. For a stereo file,
 you need /two/ channels from \ugen{PlayBuf} and two amplifiers.
 
-In Max/MSP, you would have to create each of the 
-\cd{[*\textasciitilde ]} amplifiers by hand. Adding or removing a channel can force you to
-make cascading changes through large sections of the patch.
+In graphical patching environments, you would have to create each of
+the \cd{[*\textasciitilde]} amplifiers by hand (unless you want to
+automate object creation using JavaScript). Adding or removing a
+channel can force you to make cascading changes through large sections
+of the patch.
 
 In SuperCollider, the difference is merely:
 
@@ -646,9 +648,9 @@ right] * amp} = \cd{[left * amp, right * amp]}@@. You could even go up
 to large multichannel diffusion systems, and amplify all the channels
 at once in exactly the same way.
 
-Even for ordinary synthesis: Because multichannel processing is more
-convenient in SC, you'll do more of it and get more interesting sounds
-for less work.
+Multichannel expansion is useful even for ordinary synthesis: Because
+it's more convenient in SC, you'll do more of it and get more
+interesting sounds for less work.
 
 *** Detuning by octaves or other intervals
 **** Standard analog-style plug-ins (e.g. Massiv) feature multiple oscillators.
@@ -1563,7 +1565,7 @@ b = Buffer.read(s,
 
 *** Buffer loading is asynchronous
 **** Look carefully at the output from that command.
-#+begin_src {SuperCollider} -i
+#+begin_src {} -i
 Buffer(0, nil, nil, nil, 
    /usr/local/share/SuperCollider/sounds/a11wlk01.wav)
 done

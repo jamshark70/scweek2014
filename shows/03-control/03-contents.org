@@ -182,7 +182,6 @@ p.gui;  // if it's not already open
 **** Sustaining sounds need:
      - Fast grain triggers;
      - Relatively high overlap (at least 5).
-**** Important to avoid too much regularity.
 #      If the trigger frequency, buffer position and grain rate are all constant, then you hear sonic features repeating exactly.
 #+name: grain5
 #+caption: Granular synthesis, sustaining sound, with constant triggers, buffer position and grain rate.
@@ -249,8 +248,10 @@ p.clear;
      :PROPERTIES:
      :BEAMER_col: 0.4
      :END:
+     #+begin_center
      #+attr_latex: :height 1in
      [[../03-control/img/randomized-line.png]]
+     #+end_center
 
 *** Glitchy sounds
 **** Glitchy sounds also use random \glspl{LFO}, but wider range.
@@ -306,7 +307,7 @@ p.clear;
      - The example makes a simple sound, and puts a slider on screen.
      - The slider is not connected to anything yet.
      - Note that the slider's first argument is \ci{nil}.\\
-       It's a shortcut to make a window for the slider automatically.
+       This is a shortcut to make a window for the slider automatically.
 #+name: gui1
 #+caption: A simple sound, and a slider that will control it (but not yet).
 #+begin_src {SuperCollider} -i
@@ -879,7 +880,7 @@ x.sort { |a, b| a > b };
      - \mth{keys} :: All the unique keys in this dictionary.
      - \mth{values} :: An array of the values, without keys.
      - \mth{keysValuesDo} :: Like \mth{do}, but the function arguments are \cd{|key, value, counter|}.
-**** Minor difference in filtering methods..
+**** Minor difference in filtering methods.
      - \mth{collect}, \mth{select}, \mth{reject}.
      - Arguments passed to the function are \cd{|value, key|}.
      - Why the value first?\\

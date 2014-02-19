@@ -590,10 +590,23 @@ x == y;  // prints false
        - Actions :: Objects know how to do specific things.\\
        	 E.g., You can add two \ci{Point}s together: \cd{point1 + point2}.\\
        	 The \cd{Point} \te{class} declares how a Point should do \cd{+}.
-***** O2							  :B_onlyenv:
+***** O2 							  :B_onlyenv:
       :PROPERTIES:
       :BEAMER_env: onlyenv
       :BEAMER_act: 2
+      :END:
+****** \eGlspl{class} and \eGlspl{instance}
+       - \eGlspl{class} define the structure and behavior.
+       - \eGlspl{instance} use the structure to do work.
+       - \cd{Point(1, 2)} and \cd{Point(3, 4)} are two \eglspl{instance} of \ci{Point}.\\
+       	 In one, \ci{x = 1}; in the other, \ci{x = 3}.\\
+       	 \cd{Point(1, 2) + 2} returns one result; \cd{Point(3, 4) + 2}, different.\\
+       	 Same class, same operation, different instances, different results.
+
+***** O3 							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 3
       :END:
 ****** \ugen{SinOsc} is a \egls{UGen} (Unit Generator) class.
        - Unit generators process signals in the server.
@@ -610,12 +623,30 @@ x == y;  // prints false
      #+begin_center
      [[../01-intro/img/take-apart-04-methods.pdf]]
      #+end_center
-***** A \egls{method} defines an action that an object can perform.
-      It's like a function, but it has a name and belongs to a class.
-      - \mth{ar} :: Makes an \te{audio rate} instance of \ugen{SinOsc}.
-      - \mth{dup} :: Copies the mono signal from \ugen{SinOsc} into both left and right channels.
-      - \mth{play} :: Makes a \te{synth node} from the function.\\
-       	\mth{play} is one of the most important methods. Lots of things in SC know how to \ci{play}!
+***** O1							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 1
+      :END:
+****** A \egls{method} defines an action that an object can perform.
+       It's like a function, but it has a name and belongs to a class.
+       - \mth{ar} :: Makes an \te{audio rate} instance of \ugen{SinOsc}.
+       - \mth{dup} :: Copies the mono signal from \ugen{SinOsc} into both left and right channels.
+       - \mth{play} :: Makes a \te{synth node} from the function.\\
+       	 \mth{play} is one of the most important methods. Lots of things in SC know how to \ci{play}!
+***** O2							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 2
+      :END:
+****** \eGls{class} and \egls{instance} methods
+       - Call /class methods/ directly on a class: \cd{SinOsc.ar}.
+       - Often, class methods create instances:
+       	 - \cd{SinOsc.ar(440)} makes a \clss{SinOsc} instance.
+       	 - \cd{Point.new(1, 2)} makes a \cd{Point} instance.\\
+	   \mth{new} is implied: \cd{Point(1, 2)} is the same!
+       - After you have the instance, use instance methods on it.\\
+       	 \mth{dup} is an instance method, called on the specific \ugen{SinOsc}.
 
 *** Taking it apart: Arguments
 **** {1\textwidth}{3in}					      :B_overlayarea:
@@ -649,7 +680,7 @@ x == y;  // prints false
     - \Gls{receiver} :: The object that will perform the method.
     - \Gls{selector} :: The method's name.
     - \Glspl{argument} :: Additional input (optional).
-\\
+#+latex: \bigskip
 In \cd{SinOsc.ar(440)}:
     - Receiver = the class \cd{SinOsc}
     - Selector = \cd{ar}
@@ -1041,10 +1072,39 @@ x = EnvelopeView(w, w.view.bounds.insetBy(2, 2)).setEnv(e);
    gate: Impulse.kr(1)
 ) };
 
-~out = { (~filter.ar * ~eg).dup }; ~out.play;
+~out = { ~filter.ar * ~eg }; ~out.play;
 
 ~out.stop;
 #+End_src
+
+*** Note on 'dup'					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Why does Listing [[ampenv1]] leave out the \ci{dup} call, which we saw in so many other examples?
+Look back to Listing [[mod1]]. \ci{dup} is here. This means that
+\ci{\textasciitilde oscil} is already stereo. Tomorrow, we will learn
+about a rule called "multichannel expansion." This is a general rule,
+which takes some time to appreciate fully. In this specific case, it
+means: If you feed a stereo oscillator into a filter, then the filter
+will also be stereo---and, if you then multiply the filter by an
+envelope, this will be stereo as well.
+
+Since \cd{\textasciitilde filter.ar * \textasciitilde eg} is already
+stereo, there is no need to use \ci{dup} to make it stereo again.
+
+When you use any kind of programming language, you create
+"identifiers" to represent information or actions. @@latex:\ci{\textasciitilde
+oscil}@@ stands for a signal processor that makes a waveform. One of
+\ci{\textasciitilde oscil}'s properties is that it's producing a
+stereo pair of signals. It's up to you to remember that
+\ci{\textasciitilde oscil} is stereo. Then, you can write other signal
+processors that depend on \ci{\textasciitilde oscil}'s stereo signal,
+so that they will handle the stereo signal properly.
+
+One of the most important skills to use SuperCollider successfully is
+to keep the meaning of each identifier clear in your mind. This is a
+skill that grows with practice.
 
 *** Envelope generator UGen
 # deliberately no caption: Don't want this numbered or collated
@@ -1692,7 +1752,7 @@ Tdef(\reich).stop;  // if you want
        - 10 sequenced notes
        - 5 or 6 random notes
      - Phrase structures: Choose one phrase, then another.
-**** \clsspl{Stream}---\clsspl{Routine}--handle these.
+**** \clsspl{Stream}---\clsspl{Routine}---handle these.
      - Streams have memory.
      - You need memory to keep track of your place in a more complex structure.
 

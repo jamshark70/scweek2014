@@ -82,6 +82,8 @@
 #+LATEX_HEADER: 	morestring=[b]"
 #+LATEX_HEADER: 	}
 
+#+LATEX_HEADER: \hyphenation{Synth-Def Synth-Defs}
+
 #+LATEX_HEADER: \usepackage{glossaries}
 #+LATEX_HEADER: \newglossary[ugi]{ugen}{ugn}{ugo}{Unit Generators}
 #+LATEX_HEADER: \newglossary[cls]{class}{cla}{clo}{Classes}

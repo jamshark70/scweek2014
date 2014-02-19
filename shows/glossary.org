@@ -22,7 +22,7 @@
 | bus                    | buses         | The server uses audio and control buses to communicate signals between synth nodes. NodeProxies handle the buses for you. Sometimes you need to manage them yourself                  |
 | carrier                |               | In frequency or phase modulation synthesis, the signal being modulated. The carrier is connected to the audio output                                                                  |
 | chaotic                |               | Chaotic functions are dynamic systems with large differences in the results based on small differences in the inputs. They sound like something between normal waves and random noise |
-| class                  |               | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                                            |
+| class                  | classes       | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                                            |
 | clock                  |               | A scheduler. Functions or Routines scheduled on the clock will wake up at the given time, and they will reschedule if the return value is a number                                    |
 | collection             |               | An object that contains several other objects, and supports individual access (``at'') and/or iteration (``do'', ``collect'')                                                         |
 | comb filter            |               | A feedback-delay filter using a simple delay, whose fundamental frequency is $\frac{1}{t}$ ($t$ is the delay time). Its spectrum resembles the teeth of a comb                        |
@@ -63,6 +63,7 @@
 | impulse response       |               | A filter's output when given a single-sample impulse in the input. This is one way to describe a filter's behavior                                                                    |
 | infinite loop          |               | A programming error in which a loop never stops. The loop will try to execute forever, blocking all other activities in sclang                                                        |
 | inharmonic             |               | In an inharmonic spectrum, the frequencies are not integer multiples of a fundamental. Noisy and metallic sounds often have inharmonic components                                     |
+| instance               |               | If a class is like a blueprint for a house, an instance is the real house that you can live in. Two instances of the same class will behave alike, but hold different information     |
 | initial rate           |               | The UGen rate that calculates one output value at the beginning of the synth, and holds it as a constant                                                                              |
 | interpreter            |               | Referring to the single-letter variables a--z                                                                                                                                         |
 | IOI                    |               | ``Inter-Onset Interval'': The amount of time between successive note beginnings. SuperCollider Events refer to this as \ci{delta}                                                     |
@@ -129,6 +130,8 @@
 | wavetable              |               | A single cycle of a waveform stored in a sampling buffer, or an oscillator that plays back the wavetable at a given frequency                                                         |
 | wavetable format       |               | A way of storing repeating waveforms to make wavetable oscillators more efficient. A wavetable buffer needs twice as many numbers as audio samples in the waveform                    |
 | callback               |               | A function that executes in response to an event in some other part of the system. If you make a GUI button, a click needs to ``call back'' into your code                            |
+| constructor            |               | A method that creates an instance of a class. Common constructors in SC are \ci{new}, \ci{newFrom}, \ci{ar}, \ci{kr} and \ci{ir} for UGens                                            |
+| destructor             |               | A method that releases, or destroys, an instance that is no longer needed. Common destructors are \ci{free} and \ci{remove}                                                           |
 
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
@@ -260,6 +263,7 @@
 | minIndex            |        | Returns the index of the smallest item in a collection                                                                                                                     |
 | minItem             |        | Returns the smallest item in a collection                                                                                                                                  |
 | neg                 |        | Same result as \cd{-1 * n}, but slightly faster                                                                                                                            |
+| new                 |        | A class method that creates an instance of a class, and usually initializes it with data supplied in the arguments                                                         |
 | next                |        | When called on a Routine (or any Stream), returns the stream's next yield value                                                                                            |
 | pairsDo             |        | ``Do'' a function over pairs of items in an array. No item will be touched more than once. Compare \ci{doAdjacentPairs}                                                    |
 | perc                |        | \cd{Env.perc} makes a percussive envelope (quick attack, curved decay)                                                                                                     |

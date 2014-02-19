@@ -243,6 +243,17 @@ p.gui;
      - \ugen{Klank} or \ugen{DynKlank} = bank of \ugen{Ringz}.
      - So, a bank of \ugen{Formlet}s = \cd{Klank(decay) - Klank(attack)}!
 
+*** Filter parameters for specific vowels
+**** Where do you get the numbers for the filters?
+     \clss{FormantTable}, from /sc3-plugins/, can help.
+     - A \clss{Dictionary} of filter settings, organized by:
+       - Voice type (soprano, alto, tenor, bass, countertenor);
+       - Vowel (A, E, I, O, U).
+     - \mth{keys}: List all the vowel identifiers.
+     - \mth{at}: Get filter parameters, suitable for use with \ci{BBandPass}.
+     - \mth{atKlank}: Filter parameters, for \ugen{Ringz}, \ugen{Klank} or \ugen{Formlet}.
+     - We will use \mth{atKlank}.
+
 *** Example: FormantTable and Klank
     - The result of \mth{atKlank} is used directly where the filter array should appear.
     - One \ugen{Klank} minus another (like \ugen{Formlet}).
@@ -339,7 +350,7 @@ formant = NamedControl.kr(\formant,
 *** Changing vowels by arguments 3: Array geometry
 **** Small complication: Array dimensions
      - \clss{FormantTable} gives a two-dimensional array (5x3).
-     - The filters expect the two-dimensional array (5x3).
+     - The filters expect a two-dimensional array (5x3).
      - The \ugen{NamedControl} must be one-dimensional!
 **** Solution:
      - One-dimensional array for messaging: use \mth{flat}.
