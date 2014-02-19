@@ -312,7 +312,7 @@ p.clear;
 **** Other concepts
      - View :: A general term for a GUI widget.
      - Spec :: A \clss{ControlSpec}, mapping a control onto a range of values.
-     - Layout :: An automated way to position views in a window.
+#     - Layout :: An automated way to position views in a window.
 
 *** A simple slider
 **** Let's control pitch with a \clss{Slider}.
@@ -353,7 +353,7 @@ z.action = { |sl|
 
 *** An "EZ"-er way
 **** The *EZ* GUI objects do the range mapping for you.
-     See their help files: Start with \ci{EZSlider}.\\
+     See their help files: Start with \ci{EZSlider} and \ci{EZKnob}.\\
      Close the old slider window, then do this.\\<all>
      Also introducing \clss{Window}.\\
      When you make your own window, you can put more things in it.
@@ -395,14 +395,13 @@ of the screen.
 Weird, but that's the way it is.
 
 *** Buttons and faders
-**** Only two kinds of user-interface objects:[fn:6607d9b8]
+**** Only two categories of user-interface objects:[fn:6607d9b8]
      - Faders :: Represent a range of values. Sliders, knobs, 2D canvases are all faders.
      - Buttons :: Represent a momentary trigger.
-**** dummy						    :B_ignoreheading:
-     :PROPERTIES:
-     :BEAMER_env: ignoreheading
-     :END:
-     - Faders are good for values, especially moving continuously up and down the range.
+**** These are /categories/, not specific controls.
+     - You can have faders that look and act differently (slider
+       vs. knob), but all faders move continuously up and down a
+       range.
      - Buttons are good for starting and stopping actions.
      - When we get into mobile control, we will see how to make a fader act like a button.
 
@@ -572,7 +571,8 @@ w.front;
 **** What we now know about GUIs:
      - How to create \clsspl{Window}, \clsspl{Slider}, \clsspl{Button}.
      - How to use *EZ* GUIs (\ci{EZSlider}, \ci{EZKnob}), for easier range mapping.
-     - How \egls{callback} functions (\ci{action}) make the views do real things.
+     - How \egls{callback} functions (\ci{action}) make the views do
+       real things. *Most important point.*
      - How to put several views into one window:
        - Directly, with explicit positions in the boundary \clsspl{Rect}.
        - Using \clss{FlowView} for automatic positioning.
