@@ -98,7 +98,7 @@ if(0.25.coin) {
 We can run some code on a laptop and to hear the result right now. This is because:
 - Your laptop can calculate audio faster than it will play. By
   contrast, Music II took an hour to calculate one minute of
-  music.[fn:2]
+  music.[fn:69c2f54f]
 - You don't have to share computer time with other users. In the
   1960s, there were only mainframes, no PCs. You had to prepare a job,
   submit it for processing when there was enough computer time
@@ -1951,7 +1951,7 @@ p.setEvent((freq: exprand(200, 600), gt: 1, sustain: 2)).play;
 
 [fn:1] Online copy at [[http://doc.sccode.org/Tutorials/A-Practical-Guide/PG_01_Introduction.html][doc.sccode.org]].
 
-[fn:2] "A Short History of Computer Music." Author
+[fn:69c2f54f] "A Short History of Computer Music." Author
 unattributed. http://artsites.ucsc.edu/EMS/music/equipment/computers/history/history.html. Accessed
 24 January 2014.
 

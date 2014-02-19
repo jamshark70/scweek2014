@@ -381,7 +381,7 @@ of the screen.
 Weird, but that's the way it is.
 
 *** Buttons and faders
-**** Only two kinds of user-interface objects:[fn:2]
+**** Only two kinds of user-interface objects:[fn:6607d9b8]
      - Faders :: Represent a range of values. Sliders, knobs, 2D canvases are all faders.
      - Buttons :: Represent a momentary trigger.
 **** dummy						    :B_ignoreheading:
@@ -485,7 +485,7 @@ Switch over to SuperCollider and start building...
 **** Recall \clsspl{Event}, and three ways to write pitch.
      - \ci{\textbackslash freq} in Hz.
      - \ci{\textbackslash midinote} in MIDI note numbers.\\
-       Converted to Hz according to 12-ET.[fn:1]
+       Converted to Hz according to 12-ET.[fn:03ac80c1]
      - \ci{\textbackslash degree} in scale degrees.\\
        - Converted to \ci{\textbackslash midinote} based on \ci{\textbackslash scale}, \ci{\textbackslash root} and \ci{\textbackslash octave}.
        - \ci{b} and \ci{s} modifiers: \cd{4s} means degree 4, sharped. \ci{b} is flat.
@@ -1290,6 +1290,7 @@ f.close;
 
 * Footnotes
 
-[fn:1] Twelve-note \gls{equal temperament}.
+[fn:03ac80c1] Twelve-note \gls{equal temperament}.
 
-[fn:2] Credit to Jeffrey Stolet for this insight.
+[fn:6607d9b8] Credit to Jeffrey Stolet for this insight.
+
