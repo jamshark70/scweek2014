@@ -284,7 +284,7 @@ p.clear;
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
 * External control
-** Basic concepts
+** Basic concepts: GUI
 *** Custom interfaces
 **** So far, we have used the built-in \ci{ProxyMixer}.
     This is a good, general-purpose interface, but not ideal for every performance need.
@@ -292,6 +292,18 @@ p.clear;
      - Display only the controls that you need.
      - Put them in a layout that makes sense visually.
 **** The concepts to do this are preparation for mobile interfaces.
+
+*** Only the basics
+**** This is not a GUI design workshop!
+     We will cover only the simplest usage:
+     - How to put controls on screen.
+       - Basic types of controls.
+       - A simple way to arrange several controls in one window.
+     - How to use GUI control information.
+       - Mapping GUI number ranges onto real-world parameters.
+       - Communicating the mapped values to NodeProxies.
+**** Experiment with GUIs in your own work, after the workshop.
+     When you need a bigger GUI, look more deeply into the GUI system.
 
 *** Main concepts
 **** By far, the most important concept is \egls{callback}.
@@ -307,7 +319,8 @@ p.clear;
      - The example makes a simple sound, and puts a slider on screen.
      - The slider is not connected to anything yet.
      - Note that the slider's first argument is \ci{nil}.\\
-       This is a shortcut to make a window for the slider automatically.
+       This is a shortcut for single views.
+     - See also \clss{Knob} (look in its help file for details).
 #+name: gui1
 #+caption: A simple sound, and a slider that will control it (but not yet).
 #+begin_src {SuperCollider} -i
@@ -396,11 +409,87 @@ Weird, but that's the way it is.
 *** SC Button interface
 **** SC's \clss{Button} is /multi-state/.
      - It can cycle through different labels and actions.
-     - "Playing" and "stopped" are two states.
+     - In the next example:
+       - "Playing" and "stopped" are two states.
+       - "Playing" lives at index 0; "stopped," at 1.
+       - These are available in the callback function as the button's \mth{value}.
      - Each state is an array:\\
-       \cd{[label, textColor, backgroundColor]}.
+       @@latex:\cd{["label", textColor, backgroundColor]}@@.\\
+       You can leave out the colors: @@latex: \cd{["label"]}@@.\\
+       You can't leave out the sub-array brackets!
+
+*** Button example
 #+name: gui4
-#+caption: Add a button into the same window. Note the coordinates, and the syntax to set several properties at once.
+#+caption: Add a button into the same window. Note the Rect coordinates.
+#+begin_src {SuperCollider} -i
+b = Button(w, Rect(5, 30, 290, 30));
+b.states = [
+   ["stopped", Color.black, Color.gray(0.8)],
+   ["playing", Color.black, Color.green]
+];
+b.action = { |view|
+   if(view.value == 1) {
+      ~sound.play;
+   } {
+      ~sound.stop;
+   };
+};
+#+end_src
+
+*** Setting many properties at once
+**** This is a common pattern in GUIs:
+     1. Create the widget: \cd{b = Button(...)}.
+     2. Set the object's variables:
+	- \cd{b.states = [...];}
+	- @@latex:\cd{b.action = \{ ... \};}@@
+**** More convenient: \cd{\textunderscore} for setting
+     - \cd{b.states\textunderscore([...])} is the same as \cd{b.states = [...];}.
+     - You can chain \cd{\textunderscore} calls:\\
+       @@latex:\cd{b.states\textunderscore([...]).action\textunderscore(\{ ... \})}@@.
+     - This helps, if you're using long, descriptive variable names.\\
+       You don't have to repeat the variable name for every property.
+
+*** Notes on "the same"					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** How are those two "the same"?
+We have two separate concepts here. They are somewhat alike, but they
+are actually doing different things.
+
+- Assigning a value to a variable: \cd{x = 1}. We have discussed this before.
+
+- Setting a property of an object: \cd{b.value = 1}.
+
+The second is actually not an assignment statement! Remember that the
+/only/ way to do anything with an object is to call one of its
+methods. Let that sink in for a minute: There is /no way/ to change
+the \ci{Button} object's \ci{value} property without calling a
+method. The syntax looks like variable assignment, but /the only
+possible way it could work is as a method call/.
+
+In fact, \ci{Button} does have a method to change \ci{value}. That method
+is named \ci{value\textunderscore}, and it's called like this:
+\cd{b.value\textunderscore(1)}. But this is ugly, and a bit harder to
+read. So SuperCollider understands \cd{b.value = 1} as if you had
+written \cd{b.value\textunderscore(1)}.
+
+If you have to set several properties at one time, the
+\ci{\textunderscore} becomes more convenient:
+
+- Easy:
+  @@latex:\cd{b.states\textunderscore([...]).action\textunderscore(\{
+  ... \});}@@
+- A bother, if \ci{b} is, say, \ci{closeWindowButton} instead:\\<all>
+  \cd{b.states = [...];}\\<all>
+  @@latex:\cd{b.action = \{ ... \};}@@
+- Avoids repeating the variable, but with more properties, you'll need
+  more open-parens at the beginning. Extremely ugly:\\<all>
+  @@latex:\cd{(b.states = [...]).action = \{ ... \}};@@
+
+*** Button example, rewritten with \textunderscore
+#+name: gui5
+#+caption: A more convenient way to set all the properties of a GUI object in one statement, by chaining .name\textunderscore() method calls.
 #+begin_src {SuperCollider} -i
 b = Button(w, Rect(5, 30, 290, 30))
 .states_([
@@ -415,6 +504,106 @@ b = Button(w, Rect(5, 30, 290, 30))
    };
 });
 #+end_src
+
+*** "Parent" and "bounds"
+**** \ci{parent} and \ci{bounds} are set at creation time:
+     \cd{Slider(parent, bounds)}.
+     - \ci{parent}: Which window contains the new widget.
+     - \ci{bounds}: A \clss{Rect} saying where to put the widget in
+       the window, and how big to make it.
+       - A common height for single-line views is 20.
+
+*** Easier positioning: FlowView
+**** \clss{FlowView} positions views automatically.
+     - Left to right, top to bottom.
+     - Two ways to write \ci{bounds}:
+       - \cd{Rect(0, 0, width, height)}, or
+       - \cd{Point(width, height)}.
+**** How to use:
+     1. Make the window.
+     2. Put a \clss{FlowView} inside it.\\
+	*Hint:* Use the window's size, as in the example.
+     3. Use the \clss{FlowView} as the parent for other views.
+     4. If you need a "line break," call: \cd{f.startRow}.
+
+*** FlowView example
+**** Same control window, with automatic positioning.
+**** Only slideshow						  :B_onlyenv:
+     :PROPERTIES:
+     :BEAMER_env: onlyenv
+     :BEAMER_act: presentation
+     :END:
+      This won't fit into the slideshow. See Listing [[gui6]] in Part III's =scd= file.
+**** cancel "only"					    :B_ignoreheading:
+     :PROPERTIES:
+     :BEAMER_env: ignoreheading
+     :END:
+#+name: gui6
+#+caption: Using FlowView to arrange an EZSlider and a Button automatically.
+#+begin_src {SuperCollider} -i :var extract='t
+(
+w = Window("window name", Rect(600, 200, 300, 120));
+f = FlowView(w, w.view.bounds);
+z = EZSlider(f,
+   bounds: Point(290, 20),  // HERE: No left/top, only size
+   label: "freq",
+   controlSpec: [110, 880, \exp],
+   action: { |view| ~sound.set(\freq, view.value) },
+   initVal: 440
+);
+
+b = Button(f, Point(290, 30))
+.states_([
+   ["stopped", Color.black, Color.gray(0.8)],
+   ["playing", Color.black, Color.green]
+])
+.action_({ |view|
+   if(view.value == 1) {
+      ~sound.play;
+   } {
+      ~sound.stop;
+   };
+});
+
+w.front;
+)
+#+end_src
+*** GUI summary (so far)
+**** What we now know about GUIs:
+     - How to create \clsspl{Window}, \clsspl{Slider}, \clsspl{Button}.
+     - How to use *EZ* GUIs (\ci{EZSlider}, \ci{EZKnob}), for easier range mapping.
+     - How \egls{callback} functions (\ci{action}) make the views do real things.
+     - How to put several views into one window:
+       - Directly, with explicit positions in the boundary \clsspl{Rect}.
+       - Using \clss{FlowView} for automatic positioning.
+**** This will take you a long way.
+     Your GUIs might not be pretty, but they will do things.
+
+*** Layout notes					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** What we didn't cover:
+     - *Layouts:* A set of classes that set both the positions and
+       sizes of views automatically. The problem with \clss{FlowView}
+       is that you have to tell it how big each view should be. If you
+       want the left, right, top and bottom sides of several views to
+       line up, you have to calculate their sizes carefully. This gets
+       really irritating. Layouts are containers that distribute the
+       views in different arrangements. You provide "hints" for size
+       and alignment, and the layout figures out exactly how big each
+       one should be. For example, if you want a row of three buttons
+       occupying the entire width of a window, with a \ci{margin} at
+       left and right and a \ci{gap} in between the buttons:
+       - FlowView: Calculate the buttons' widths:\\<all>
+         \cd{(window.bounds.width - (margin * 2) - (gap * 2)) / 3}.
+       - Layouts: Put the buttons into a \ci{HLayout}. That's it.
+     - *MVC* (Model-View-Controller) design: When GUIs become more
+       complicated, you have to control the data flow more
+       carefully. This is especially important when synchronizing
+       multiple control sources: GUI, MIDI and/or mobile devices with
+       OSC. A tried-and-true approach is Model-View-Controller. We
+       will see a simple example later.
 
 * Not yet							   :noexport:
 ** Receiving

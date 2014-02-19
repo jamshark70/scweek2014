@@ -155,10 +155,12 @@
 | Event              |                      | Stores information like IdentityDictionary. Playing an event gets musical results: play a note, change values etc. Patterns can produce events for sequencing      |
 | EventStreamPlayer  |                      | Gets Events from an event stream. It plays each one in turn, and then waits event's delta time before retrieving the next event                                    |
 | File               |                      | Read and write text or binary files on the local filesystem                                                                                                        |
+| FlowView           |                      | A \emph{container view} that automatically lays out its children, left to right, top to bottom. You don't have to think about views' positions, only their sizes   |
 | FormantTable       |                      | An extension class (from sc3-plugins) listing filter parameters for different voice types and vowels                                                               |
 | Function           |                      | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object |
 | IdentityDictionary | IdentityDictionaries | Like Dictionary, but restricts the types of keys for faster lookup. Usually the keys are Symbols                                                                   |
 | IdentitySet        |                      | Like Set, but restricts the types of items for faster membership testing                                                                                           |
+| Knob               |                      | A GUI widget that draws a rotating knob in a window. The natural range is normalized: 0.0--1.0                                                                     |
 | List               |                      | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                                                         |
 | NodeProxy          | NodeProxies          | A hot-swappable placeholder for a Synth on the server                                                                                                              |
 | OutputProxy        | OutputProxies        | One channel of a multichannel UGen. The SynthDef builder has to track connections to individual channels. OutputProxy is the individual connection                 |
