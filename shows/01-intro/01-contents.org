@@ -665,6 +665,24 @@ x == y;  // prints false
        	- mul :: Amplitude.
        	- add :: An offset (generally not used for audio).
 
+*** Comments
+**** /Comments/ are free text in the program body.
+     - They are to remind /you/ what you were thinking.
+     - The language interpreter ignores them.
+     - The IDE highlights comments in red.
+     - Easy way: Select text, then \ks{Ctrl-/}.
+**** Two ways to write comments:
+#+begin_src {SuperCollider} -i
+some.code;  // comment: double-/ to end of line
+
+/* Comments may also begin with slash-star,
+and end with star-slash.
+
+These comments can span several lines. */
+
+x = 1 + /* or sit in the middle of a line */ 2;
+#+end_src
+
 *** Method calls: Most important thing
 **** The SC language is all about /calling methods/.
      Everything happens in SC through method calls. *Everything.*\\
