@@ -1563,6 +1563,33 @@ b = Buffer.read(s,
 );
 #+end_src
 
+*** Note: strings					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Side note: Strings and file paths
+What exactly is that third line doing? It's building a \egls{path} to
+the sound file. Paths---actually, any kind of text---exist in
+SuperCollider as \clsspl{String}. ("String" is a standard programming
+term for a sequence of characters.)
+
+The way to write a string is to enclose it in straight quote marks, as
+in the second half of that line: @@latex:\cd{"sounds/a11wlk01.wav"}@@.
+
+The \clss{Platform} class describes features that are unique to the
+machine's operating system, including file locations. The
+SuperCollider installation has to put support files in a place that
+makes sense for the OS, and this is different in Linux, OSX and
+Windows. Many of these files are in the "resource directory."
+Platform's method \mth{resourceDir} gives you a string with the full
+path to that location. On my Linux machine, \cd{Platform.resourceDir;}
+returns =/usr/local/share/SuperCollider=; in Windows XP, it's
+=C:\Program Files\SuperCollider-3.6.6=.
+
+\ci{+/+} joins the two together, and puts a path separator in between,
+if needed. So, in Linux, the sound file path ends up being
+=/usr/local/share/SuperCollider/sounds/a11wlk01.wav=.
+
 *** Buffer loading is asynchronous
 **** Look carefully at the output from that command.
 #+begin_src {} -i
