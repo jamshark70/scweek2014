@@ -20,12 +20,14 @@
 | breakpoint             |               | The endpoint of a line segment in an envelope                                                                                                                                         |
 | Brownian motion        |               | A ``random walk'': Imagine a particle that moves a random amount in each step. The trace it leaves behind is Brownian motion                                                          |
 | bus                    | buses         | The server uses audio and control buses to communicate signals between synth nodes. NodeProxies handle the buses for you. Sometimes you need to manage them yourself                  |
+| callback               |               | A function that executes in response to an event in some other part of the system. If you make a GUI button, a click needs to ``call back'' into your code                            |
 | carrier                |               | In frequency or phase modulation synthesis, the signal being modulated. The carrier is connected to the audio output                                                                  |
 | chaotic                |               | Chaotic functions are dynamic systems with large differences in the results based on small differences in the inputs. They sound like something between normal waves and random noise |
 | class                  | classes       | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                                            |
 | clock                  |               | A scheduler. Functions or Routines scheduled on the clock will wake up at the given time, and they will reschedule if the return value is a number                                    |
 | collection             |               | An object that contains several other objects, and supports individual access (``at'') and/or iteration (``do'', ``collect'')                                                         |
 | comb filter            |               | A feedback-delay filter using a simple delay, whose fundamental frequency is $\frac{1}{t}$ ($t$ is the delay time). Its spectrum resembles the teeth of a comb                        |
+| constructor            |               | A method that creates an instance of a class. Common constructors in SC are \ci{new}, \ci{newFrom}, \ci{ar}, \ci{kr} and \ci{ir} for UGens                                            |
 | control cycle          |               | For efficiency, the SC server calculates audio in blocks. By default, one block is 64 samples. A block is one control cycle. \ci{kr} UGens calculate one sample per cycle             |
 | control input          |               | An argument of a synthesis function. The server exposes control inputs to be set from the language client: \cd{synth.set(\textbackslash name, newValue);}                             |
 | control rate           |               | The UGen rate that produces one output value per calculation cycle (by default, 64 audio samples). Use for slower-moving control signals                                              |
@@ -35,6 +37,7 @@
 | default                |               | A value that will be used unless you specify another value. E.g., the default frequency for \cd{SinOsc.ar} is 440 Hz                                                                  |
 | degree                 |               | A property of an event, specifying a diatonic scale degree. Many scale patterns are available                                                                                         |
 | delta                  |               | How long to wait until the next event. SuperCollider terminology for Inter-Onset Interval (IOI)                                                                                       |
+| destructor             |               | A method that releases, or destroys, an instance that is no longer needed. Common destructors are \ci{free} and \ci{remove}                                                           |
 | doneAction             |               | A UGen parameter that determines node releases when the UGen is finished. Most typically 0 (do nothing) or 2 (free only this synth)                                                   |
 | envelope               |               | A control signal that shapes amplitude or another parameter. Important for note control. A standard shape is ADSR                                                                     |
 | envelope generator     |               | The standard name for the unit in a synthesizer that produces an envelope signal from the envelope's parameters                                                                       |
@@ -63,8 +66,8 @@
 | impulse response       |               | A filter's output when given a single-sample impulse in the input. This is one way to describe a filter's behavior                                                                    |
 | infinite loop          |               | A programming error in which a loop never stops. The loop will try to execute forever, blocking all other activities in sclang                                                        |
 | inharmonic             |               | In an inharmonic spectrum, the frequencies are not integer multiples of a fundamental. Noisy and metallic sounds often have inharmonic components                                     |
-| instance               |               | If a class is like a blueprint for a house, an instance is the real house that you can live in. Two instances of the same class will behave alike, but hold different information     |
 | initial rate           |               | The UGen rate that calculates one output value at the beginning of the synth, and holds it as a constant                                                                              |
+| instance               |               | If a class is like a blueprint for a house, an instance is the real house that you can live in. Two instances of the same class will behave alike, but hold different information     |
 | interpreter            |               | Referring to the single-letter variables a--z                                                                                                                                         |
 | IOI                    |               | ``Inter-Onset Interval'': The amount of time between successive note beginnings. SuperCollider Events refer to this as \ci{delta}                                                     |
 | iteration              |               | Performing the same operation several times, over items in a collection or a series of numbers                                                                                        |
@@ -93,6 +96,7 @@
 | ordered                |               | Of a collection, indicates that the collection remembers the order of items, e.g., Array, List                                                                                        |
 | OSC                    |               | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                                   |
 | oscillator             |               | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                                            |
+| path                   |               | A /-separated string, giving a location in a tree structure. File paths go through directories. OSC command paths use slashes the same way                                            |
 | pattern                |               | An object that describes a stream of values without requiring the programming logic to be repeated. The pattern object makes Streams that perform the calculations                    |
 | phase                  |               | The starting angle, usually given in radians, of a sine wave or any cyclical waveform---effectively, a horizontal shift that doesn't affect the wave's shape                          |
 | phase modulation       |               | Similar to frequency modulation, but the modulator is applied to the oscillator's phase input. This avoids a problem of FM, in which the frequency may deviate off center             |
@@ -129,9 +133,6 @@
 | variable               |               | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                                       |
 | wavetable              |               | A single cycle of a waveform stored in a sampling buffer, or an oscillator that plays back the wavetable at a given frequency                                                         |
 | wavetable format       |               | A way of storing repeating waveforms to make wavetable oscillators more efficient. A wavetable buffer needs twice as many numbers as audio samples in the waveform                    |
-| callback               |               | A function that executes in response to an event in some other part of the system. If you make a GUI button, a click needs to ``call back'' into your code                            |
-| constructor            |               | A method that creates an instance of a class. Common constructors in SC are \ci{new}, \ci{newFrom}, \ci{ar}, \ci{kr} and \ci{ir} for UGens                                            |
-| destructor             |               | A method that releases, or destroys, an instance that is no longer needed. Common destructors are \ci{free} and \ci{remove}                                                           |
 
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
@@ -162,7 +163,10 @@
 | IdentitySet        |                      | Like Set, but restricts the types of items for faster membership testing                                                                                           |
 | Knob               |                      | A GUI widget that draws a rotating knob in a window. The natural range is normalized: 0.0--1.0                                                                     |
 | List               |                      | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                                                         |
+| NetAddr            |                      | Represents a port for network communication: an IP address (e.g. \cd{"127.0.0.1"}) and a port number                                                               |
 | NodeProxy          | NodeProxies          | A hot-swappable placeholder for a Synth on the server                                                                                                              |
+| OSCdef             |                      | Like Pdef and Tdef, OSCdef is global storage for OSCFunc responders                                                                                                |
+| OSCFunc            |                      | Receives Open Sound Control messages. The ``Func'' is a callback function, whose arguments are \cd{msg, time, addr, recvPort}                                      |
 | OutputProxy        | OutputProxies        | One channel of a multichannel UGen. The SynthDef builder has to track connections to individual channels. OutputProxy is the individual connection                 |
 | Pbind              |                      | An Event Pattern that collects values from child patterns under their names                                                                                        |
 | Pdef               |                      | Global storage for pattern proxies, where the patterns produce sequencing events                                                                                   |
@@ -217,6 +221,7 @@
 | adsr                |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                               |
 | alloc               |        | \cd{Buffer.alloc(server, numFrames, numChannels)} reserves memory in the server for a new buffer                                                                           |
 | ar                  |        | Create an audio-rate instance of a UGen. The arguments to ``ar'' establish connections to other UGens                                                                      |
+| asPattern           |        | An extension method (``ddwCommon'' quark) that makes a pattern from an object. Most objects just repeat themselves in the pattern: \cd{Pn(object, inf)}                    |
 | asr                 |        | \cd{Env.asr} makes an attack-sustain-release envelope: like \cd{Env.linen} but the sustain phase is gated rather than timed                                                |
 | asSignal            |        | Convert a Wavetable object back into a Signal                                                                                                                              |
 | asStream            |        | Produce a Stream from another object (usually a Pattern)                                                                                                                   |
@@ -224,6 +229,7 @@
 | at                  |        | Retrieve an item from an indexed collection (e.g. Array or Dictionary) by its index. Shortcut syntax: \cd{collection[index]}                                               |
 | atKlank             |        | Get filter parameters from FormantTable, suitable for use in Klank                                                                                                         |
 | blockSize           |        | A variable in \ci{ServerOptions}, setting the number of samples in one control block. The default is 64                                                                    |
+| case                |        | A branching control structure. Takes pairs of conditions and actions; and executes the action for the first condition that is true                                         |
 | clip                |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                                 |
 | clump               |        | Group the items of a flat array into equally-sized chunks. \cd{[0, 1, 2, 3, 4].clump(2)} returns \cd{[[0, 1], [2, 3], [4]]}                                                |
 | collect             |        | A looping structure, like \ci{do}, which collects the results of the loop function into a new collection. Like \ci{map} in many other languages                            |
@@ -243,14 +249,21 @@
 | fill                |        | \cd{Array.fill(size, item)} makes a new Array of \ci{size} elements based on \ci{item}. Functions are evaluated (good for random numbers)                                  |
 | flat                |        | Convert any nested array into a single array, e.g. \cd{[[0, 1, 2], [3, 4]].flat} returns \cd{[0, 1, 2, 3, 4]}                                                              |
 | fold                |        | Constrain a number within a range. The boundaries are like mirrors: A value above the maximum gets reflected back into the range                                           |
+| for                 |        | A loop that counts from a beginning to an ending number. It has a more convenient shortcut syntax: \cd{(start .. end).do}                                                  |
 | fork                |        | \cd{\{ ... \}.fork} or \cd{fork \{ ... \}} is a convenient shortcut syntax for \cd{Routine(\{ ... \}).play}                                                                |
+| forSeries           |        | A loop that counts from a beginning to an ending number, by a skip determined from a given second number. Shortcut syntax: \cd{(start, second .. end).do}                  |
 | free                |        | Removes a resource that was previously allocated, including Buffers and MIDI or OSC responders                                                                             |
+| front               |        | Brings a GUI window to the front. Windows are invisible until you call \ci{front}                                                                                          |
 | if                  |        | A branching structure common in many programming languages. If the condition is true, do the ``true'' branch; otherwise, the ``false'' branch                              |
 | includes            |        | Answers \ci{true} if a collection (the receiver) contains the identical item, \ci{false} if not                                                                            |
 | includesEqual       |        | Answers \ci{true} if a collection (the receiver) contains an equivalent item, \ci{false} if not                                                                            |
+| inclusivelyBetween  |        | A Boolean condition: true if the receiver is between the \ci{lo} and \ci{hi} arguments. If $x$ is the receiver, $lo \le x \le hi$                                          |
 | insert              |        | Put a new item into an array, and slide other items to the right to make room for it. \cd{[0, 1, 2].insert(1, 10)} $\to$ \cd{[0, 10, 1, 2]}                                |
 | integrate           |        | Given an array, return a new array where each item is the sum of all the previous original items                                                                           |
+| keys                |        | Called on a Dictionary, returns a set of unique keys (without their values)                                                                                                |
+| keysValuesDo        |        | A variation on \ci{do}, for Dictionaries. The loop function receives \cd{\textbar key, value, counter\textbar} as arguments                                                |
 | kr                  |        | Create a control-rate instance of a UGen. The arguments to ``kr'' establish connections to other UGens                                                                     |
+| langPort            |        | \ci{NetAddr.langPort} returns the network port that SuperCollider is listening to. Use this as the outgoing port in TouchOSC or mrmr                                       |
 | lincurve            |        | Convert a linear input range (inMin, inMax) to a curved output range (outMin, outMax) with a user-specified curve factor                                                   |
 | linen               |        | \cd{Env.linen} makes a linear (trapezoidal) envelope                                                                                                                       |
 | linexp              |        | Convert a linear input range (inMin, inMax) to an exponential output range (outMin, outMax)                                                                                |
@@ -282,7 +295,7 @@
 | reciprocal          |        | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                              |
 | reject              |        | Returns a new collection, containing items from another collection that do not satisfy a condition provided as a test function                                             |
 | release             |        | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                         |
-| remove              |        | Remove the given item from the collection. Returns the item, not the collection---so you can't write \cd{x.remove(1).remove(2)}                                            |
+| remove              |        | Remove the given item from the collection. Returns the item, not the collection---so you can't write \cd{x.remove(1).remove(2)}. Also releases some object types           |
 | removeAll           |        | Removes all the given items from the collection                                                                                                                            |
 | removeAt            |        | Remove the item at the given index from the collection. Returns the item, not the collection                                                                               |
 | reset               |        | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                                  |
@@ -294,6 +307,8 @@
 | scramble            |        | On an ordered collection, rearrange the items into a random order. Pshuf is the corresponding pattern                                                                      |
 | sect                |        | Given two sets, return the \emph{intersection} between them: the items that exist in both sets. May also be written \cd{setA \& setB}                                      |
 | select              |        | Returns a new collection, containing items from another collection that satisfy a condition provided as a test function                                                    |
+| sendBundle          |        | Sends several Open Sound Control messages in one packet to the receiver (\ci{NetAddr}). A non-nil latency value attaches a timestamp                                       |
+| sendMsg             |        | Sends an Open Sound Control message to the IP address and port named in the receiver, which must be a \ci{NetAddr}                                                         |
 | separate            |        | Group items from a flat array into sub-arrays, based on a condition (function) applied to items that are next to each other                                                |
 | set                 |        | On a synth node or NodeProxy, set a new value for a control input: \cd{n.set(\textbackslash name, value...)}                                                               |
 | setEvent            |        | Called on a ProxySpace, setEvent returns an event prepared to set controls within that ProxySpace                                                                          |
@@ -307,24 +322,16 @@
 | squared             |        | Square a number $x$: $x^2$                                                                                                                                                 |
 | stop                |        | Stop a process that was previously started by \ci{play}                                                                                                                    |
 | sum                 |        | Add all the items in a collection. Assumes the items are numbers                                                                                                           |
+| switch              |        | A branching control structure that looks up the action for a specific value                                                                                                |
 | symmetricDifference |        | Given two sets, return the items that exist in only one of the two, but not both. May also be written \cd{setA -- setB}                                                    |
 | sync                |        | In a Routine, call \ci{sync} on a server to wait for any pending asynchronous operations to finish                                                                         |
 | union               |        | Given two sets, return their \emph{union}: the items that exist in either set, or both. May also be written \cd{setA \textbar setB}                                        |
 | value               |        | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd          |
+| values              |        | Called on a Dictionary, returns a list (array) of the values. It must be an array, to allow duplicate values                                                               |
 | wait                |        | In a Routine, same as \ci{yield}, but works only for numbers. Used for deltas (wait times).                                                                                |
 | while               |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                                  |
 | wrap                |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                                      |
 | yield               |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                                       |
-| keys                |        | Called on a Dictionary, returns a set of unique keys (without their values)                                                                                                |
-| values              |        | Called on a Dictionary, returns a list (array) of the values. It must be an array, to allow duplicate values                                                               |
-| keysValuesDo        |        | A variation on \ci{do}, for Dictionaries. The loop function receives \cd{\textbar key, value, counter\textbar} as arguments                                                |
-| inclusivelyBetween  |        | A Boolean condition: true if the receiver is between the \ci{lo} and \ci{hi} arguments. If $x$ is the receiver, $lo \le x \le hi$                                          |
-| case                |        | A branching control structure. Takes pairs of conditions and actions; and executes the action for the first condition that is true                                         |
-| switch              |        | A branching control structure that looks up the action for a specific value                                                                                                |
-| asPattern           |        | An extension method (``ddwCommon'' quark) that makes a pattern from an object. Most objects just repeat themselves in the pattern: \cd{Pn(object, inf)}                    |
-| front               |        | Brings a GUI window to the front. Windows are invisible until you call \ci{front}                                                                                          |
-| for                 |        | A loop that counts from a beginning to an ending number. It has a more convenient shortcut syntax: \cd{(start .. end).do}                                                  |
-| forSeries           |        | A loop that counts from a beginning to an ending number, by a skip determined from a given second number. Shortcut syntax: \cd{(start, second .. end).do}                  |
 
 
 * UGens								   :noexport:
