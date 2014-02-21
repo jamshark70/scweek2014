@@ -668,3 +668,263 @@ of control goes down.
     4. Try different envelopes on the noise generator.
        - Shorter and longer.
 
+* Synchronizing interfaces: Model-View-Controller
+** Model-View-Controller: What and why
+*** What is Model-View-Controller?
+**** Model-View-Controller (MVC) is a software design for user interfaces.
+     - Created in the 1980s as part of SmallTalk.
+     - /Still used today!/
+**** MVC does two main things to make interfaces easier to manage:
+     - Divides the requirements of an interface into logical units.
+     - Controls the flow of information between these units, to avoid confusion.
+
+*** Parts of MVC
+**** MVC is made of:
+     - \Gls{model} :: The object that does real work. The model should
+                      have no visible interface on its own.
+     - \Gls{view} :: Physical display and user interaction. Buttons,
+                     sliders and TouchOSC controls may be views.
+     - \Gls{controller} :: The "glue" between the model and the view.
+**** dummy						    :B_ignoreheading:
+     :PROPERTIES:
+     :BEAMER_env: ignoreheading
+     :END:
+     - If the model changes, the controller updates the display.
+     - If the user touches a view, the controller changes the model's state.
+
+*** What problem does MVC solve?
+**** *Problem:* Multiple displays (views) of the same object.
+     - The simplest idea is: Every view talks to every other view.
+     - When you have more views, this will drive you insane.
+**** *Solution:* Strict flow of information.
+     - User action: View $\to$ Controller $\to$ Model
+     - Change in the model: Model $\to$ Controller $\to$ View
+**** That's... really abstract. What on earth does it mean?
+     Let's try an example.
+
+*** Building a MVC for a ProxySpace, step 1
+**** Recall the GUI examples from Part II: \ci{EZSlider} $\to$ pitch.
+     This translates neatly into MVC.
+     - *Model:* A \clss{NodeProxy} representing frequency.
+     - *View:* The \ci{EZSlider} itself.
+     - *Controller:* The \ci{EZSlider}'s action function.
+**** Starting with the model:
+#+name: mvc1
+#+caption: A simple use of MVC to control pitch by a slider, starting here with just the model.
+#+begin_src {SuperCollider} -i
+p.clear;  // or p = ProxySpace.new.push;
+
+// MODEL: A numeric NodeProxy
+~freq.addSpec(\value0, \freq);
+~freq = 440;
+
+// Create the oscillator, but don't play it yet.
+~oscil = { VarSaw.ar(~freq, 0, 0.25, 0.1).dup };
+#+end_src
+
+*** MVC step 2: View and Controller
+**** \ci{EZSlider} includes both the view and controller.
+#+name: mvc2
+#+caption: EZSlider as view and controller.
+#+begin_src {SuperCollider} -i
+w = Window("MVC demonstration", Rect(700, 300, 300, 100));
+
+// VIEW: EZSlider
+z = EZSlider(w, Rect(5, 5, 290, 20), "freq", \freq,
+   // CONTROLLER: Callback function
+   { |sl| ~freq = sl.value }, 440
+);
+
+b = Button(w, Rect(5, 30, 290, 30))
+.states_([["stopped"], ["playing"]])
+.action_({ |btn|
+   if(btn.value == 1) { ~oscil.play } { ~oscil.stop };
+});
+
+w.front;
+#+end_src
+
+*** Action function as controller
+**** The action function does exactly what a controller should:
+     - The user touches the slider.
+     - The slider calls the function (controller).
+     - The controller talks back to the model.\\
+       Here, "talking back" means changing \ci{\textasciitilde freq}'s value.
+**** Any type of controller should work like this.
+     In "real" programming, the controller is a dedicated object.\\
+     We're taking a little shortcut here.
+
+*** Synchronizing the display
+**** *Problem:* The controller works in only one direction.
+     - It works fine if you change pitch from the GUI.
+     - Try running this:\\
+       \cd{\textasciitilde freq = 220;}
+     - What happened in the GUI?\pause \\
+       /Nothing.../
+**** *Solution:* Another controller.
+     - This one catches the model's changes, and updates the GUI.
+
+*** Notifications from the model
+**** We need to know when the model changed.
+     - In traditional MVC, the model /broadcasts/ a notification.
+     - \clss{NodeProxy} already does this!
+**** Listening for notifications in SuperCollider
+     Good choices for listeners:
+     - \clss{Updater} :: Acts on every notification.
+     - \clss{SimpleController} :: Responds to specific notification keys.
+     \clss{SimpleController} allows you to write simpler functions, and it's a bit faster.
+
+*** TODO Notes on listeners			   :B_ignoreheading:noexport:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Advanced usage: Writing your own controller object
+\clss{Updater} or \clss{SimpleController} handle a lot of needs. When
+an interface becomes a lot more complex, however, it may be easier to
+create an object that handles both directions of communication in
+one. This is actually better software design, but it's overkill for
+the relatively simple cases in this workshop.
+
+The mechanics of creating your own classes is beyond the scope of this
+workshop. You can start with the help file entitled "Writing Classes"
+for some basic information.
+
+Finish this later...
+
+*** What do the notifications look like?
+**** The notification's structure depends on its purpose.
+     - How do you find out exactly what is in the notification?\pause\\
+     - You can use \clss{Updater} to "trace."
+     - Give the updater a function that prints the arguments.\\
+       The notification arguments are:
+       - \ci{changer} :: The object sending the notification.
+       - \ci{what} :: A Symbol, describing what happened.
+       - \ci{allArgs} :: Any number of additional values.
+#+name: mvc3
+#+caption: Look at the NodeProxy's notifications, using an Updater.
+#+begin_src {SuperCollider} -i
+u.remove;
+u = Updater(~freq, { |obj, what ... allArgs|
+   [obj, what, allArgs].postcs;
+});
+
+// When finished tracing:
+u.remove;
+#+end_src
+
+*** What does the printout mean?
+**** You should get something like this:
+#+begin_src {}
+[ ~freq, 'set', [ [ 'value0', 220.0 ] ] ]
+#+end_src
+     - \ci{changer}: The NodeProxy. No surprise here.
+     - \ci{what}: A Symbol, @@latex:\cd{'set'}@@.\\
+       We are setting a control, so again, no surprise.
+     - \ci{args}: An array, listing control names and values.\\
+       We are interested in the value: \cd{array[1]}.
+
+*** Note on allArgs					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** A little clarification on \ci{allArgs}:
+In this usage, \ci{allArgs} needs to represent /several/ arguments
+that can be passed in the notification. But \ci{allArgs} is one
+variable, and one variable can hold only one object. So, \ci{allArgs}
+is an array containing all the arguments after \ci{changer} and
+\ci{what}.
+
+This is the meaning of the @@latex:\ci{...}@@ argument syntax: It
+assumes the single variable name will represent several discrete
+arguments, and packs them into an array. We're using it here for
+exploration, because we don't know how many values will come with this
+notification.
+
+Inside this array is another array. That's the argument itself:
+@@latex:\cd{[ 'value0', 220.0 ]}@@. When we write the real controller,
+we'll leave out @@latex:\ci{...}@@ and just write a single argument
+name. Then we can treat this as an array directly.
+
+*** Updating the GUI from the notification
+**** \clss{SimpleController} can register a function to update the slider.
+     - How to set the slider's value?\pause\\
+       \cd{z.value = newValue;}
+     - Where does the new value come from?\pause\\
+       \cd{setArray[1]}\pause
+#+name: mvc4
+#+caption: Add a SimpleController, which responds to 'set' notifications by updating the slider.
+#+begin_src {SuperCollider} -i
+u.remove;
+u = SimpleController(~freq)
+.put(\set, { |changer, what, setArray|
+   z.value = setArray[1];
+});
+
+// Try it:
+~freq = exprand(220, 880);
+
+// When finished:
+u.remove;
+#+end_src
+
+*** Summary: MVC and GUI
+**** Putting it all together, it's not so complicated:
+     - An object for the value (model = numeric \clss{NodeProxy}).
+     - An object for the display (view = \ci{EZSlider}).
+     - A function that changes the model based on user interaction (controller = action function).
+     - A listener that changes the display based on the model (\clss{SimpleController}).
+
+*** Maybe not							   :noexport:
+**** Information flow:
+     - The controllers "own" the views.
+       - The controller talks to /its own/ views.
+       - The views talk only to their own controllers.
+     - A controller communicates changes directly to its model.
+     - The model broadcasts its changes.\\
+       It never talks directly to a specific controller.
+
+*** Compare to the earlier GUI code
+**** Just to differences between this and the earlier GUI code:
+     - Storing frequency in its own \clss{NodeProxy}.\\
+       The information should be separate from the interface!
+     - The \clss{SimpleController} to keep the GUI in sync.
+     So, /it really isn't that much to implement/.
+**** What's the real benefit?
+     MVC makes it /much/ easier to add another interface!
+
+*** Adding a mobile controller
+**** Let's also control frequency by TouchOSC.
+     Same requirements:
+     - Touching the control should change the frequency.
+     - If the frequency changes in the computer, we should see that on the phone.
+     Same implementation:
+     - Instead of \ci{EZSlider}'s action function, we'll use \ci{OSCdef}.
+     - Still using \clss{SimpleController}.\\
+       Instead of setting the GUI's value, we'll send a message to the phone.
+
+*** MVC mobile controller example
+    - Assumes you have already set up OSC communication.
+    - \clss{OSCdef} doesn't map the range for you.\\
+      So we have to map when receiving, and unmap for sending.
+    - \mth{sendMsg} needs a \clss{NetAddr} for the target.\\
+      Its arguments list the message's Items.
+#+name: mvc5
+#+caption: Add mobile control to the example. The GUI and phone should stay in sync.
+#+begin_src {SuperCollider} -i
+// Receiving OSC
+OSCdef(\sl1, { |msg|
+   ~freq = \freq.asSpec.map(msg[1]);
+}, '/1/fader1', NetAddr("192.168.43.1", nil));
+
+// Sending OSC
+n = NetAddr("192.168.43.1", 9000);  // Where to send
+o.remove;
+o = SimpleController(~freq)
+.put(\set, { |changer, what, setArray|
+   n.sendMsg('/1/fader1', \freq.asSpec.unmap(setArray[1]));
+});
+#+end_src
+
+*** TODO Wrap up						   :noexport:
+    - Chart of data flow
+    - Adding the OSC controller was easy because we set up a good structure first

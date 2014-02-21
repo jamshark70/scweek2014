@@ -31,6 +31,7 @@
 | control cycle          |               | For efficiency, the SC server calculates audio in blocks. By default, one block is 64 samples. A block is one control cycle. \ci{kr} UGens calculate one sample per cycle             |
 | control input          |               | An argument of a synthesis function. The server exposes control inputs to be set from the language client: \cd{synth.set(\textbackslash name, newValue);}                             |
 | control rate           |               | The UGen rate that produces one output value per calculation cycle (by default, 64 audio samples). Use for slower-moving control signals                                              |
+| controller             |               | In MVC, the object that connects the model and the view. The controller decides how user actions translate into the model, and how the model's changes affect the display             |
 | crossfade              |               | A way to join audio segments by fading the first one out while the second is fading in                                                                                                |
 | declarative            |               | A style of programming that describes the desired result, and allows the software to handle the details. SC patterns are more like declarative code                                   |
 | declare                |               | Of a variable, to define its name and initial value using a ``var'' statement                                                                                                         |
@@ -86,6 +87,7 @@
 | method call            |               | A request to an object to perform one of its predefined actions. It consists of three parts: receiver, selector and arguments                                                         |
 | modal synthesis        |               | A technique to simulate the vibrating modes in a body that has been struck. It uses a short burst of noise to excite a bank of ringing filters                                        |
 | mode                   |               | In a vibrating body, a mode is one of the consistent patterns of vibration. Real objects vibrate in many modes at once, producing many frequencies                                    |
+| model                  |               | In MVC, the model is the object that holds real information and does real work. A NodeProxy may serve as a model                                                                      |
 | modular                |               | This workshop presents a modular approach to synthesis: Each component performs a small part of the work, and you can replace components freely                                       |
 | modulation             |               | Using a signal to control a synthesis parameter. Adds variety to simple synthesis techniques                                                                                          |
 | modulation index       |               | In frequency or phase modulation synthesis, the amplitude of the modulator. A higher index produces a more complex spectrum                                                           |
@@ -131,6 +133,7 @@
 | UGen                   |               | A Unit Generator, defining a signal-processing operation that runs in the audio server                                                                                                |
 | unordered              |               | Of a collection, indicates that the collection may rearrange the items' order for faster lookup, e.g., Set, Dictionary                                                                |
 | variable               |               | A placeholder for an object, necessary to recall an object later and address method calls to it                                                                                       |
+| view                   |               | A GUI widget onscreen, like a slider, knob or button. A view is also the physical interface component of MVC design                                                                   |
 | wavetable              |               | A single cycle of a waveform stored in a sampling buffer, or an oscillator that plays back the wavetable at a given frequency                                                         |
 | wavetable format       |               | A way of storing repeating waveforms to make wavetable oscillators more efficient. A wavetable buffer needs twice as many numbers as audio samples in the waveform                    |
 
@@ -212,6 +215,8 @@
 | TempoClock         |                      | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
 | Wavetable          |                      | Very much like Signal, but it's data should be in wavetable format                                                                                                 |
 | Window             |                      | A GUI object representing a window on screen                                                                                                                       |
+| SimpleController   |                      | A good controller for MVC design. It attaches separate functions to the Symbol identifying the type of notification                                                |
+| Updater            |                      | A good controller for MVC design. It receives all notifications coming from the model. Use branching structures in the function to take the right action           |
 
 
 * Methods							   :noexport:
@@ -335,6 +340,10 @@
 | while               |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                                  |
 | wrap                |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                                      |
 | yield               |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                                       |
+| changed             |        | This method broadcasts a notification from the receiver to any dependents that have been registered with \ci{addDependant}                                                 |
+| update              |        | This method receives notifications sent by \ci{changed}                                                                                                                    |
+| addDependant        |        | \cd{model.addDependant(listener)} registers \ci{listener} as a dependent of \ci{model}. The listener will receive notifications from the model                             |
+| removeDependant     |        | \cd{model.removeDependant(listener)} disconnects that particular listener from the model                                                                                   |
 
 
 * UGens								   :noexport:
