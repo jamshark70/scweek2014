@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis						   :noexport:
+* Granular synthesis
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -875,7 +875,7 @@ OSCdef(\sl1).free;
 ** Central hub
 ** Turning faders into buttons: Thresholds
 
-* Toward complex composition					   :noexport:
+* Toward complex composition
 ** Simple ideas
 *** The trick
 **** The trick to making music by programming:
@@ -1649,7 +1649,7 @@ o = Button(nil, Rect(600, 100, 100, 20))
 	 - Then \cd{branch2}
 	 - Else...
 #+name: case1
-#+caption: A case statement, putting a random number in one of three categories.
+# #+caption: A case statement, putting a random number in one of three categories.
 #+begin_src {SuperCollider} -i
 x = 10.rand;
 case { x < 3 } {
@@ -1670,7 +1670,7 @@ case { x < 3 } {
      - For example, a GUI \ci{Button} has integer values 0, 1, 2...
      - This would be easy to match using \mth{switch}.
 #+name: switch1
-#+caption: A switch statement, matching an exact value.
+# #+caption: A switch statement, matching an exact value.
 #+begin_src {SuperCollider} -i
 switch(3.rand,  // 3.rand == 0, 1 or 2
    0, { "zero" },  // do this if 3.rand === 0
@@ -1694,7 +1694,7 @@ switch(3.rand,  // 3.rand == 0, 1 or 2
      - When it becomes false, the loop stops.
      - \cd{10.do} is actually a \mth{while} loop like this:
 #+name: while1
-#+caption: A while loop, showing how "number.do" really works.
+# #+caption: A while loop, showing how "number.do" really works.
 #+begin_src {SuperCollider} -i
 i = 0;
 while { i < 10 } {
@@ -1721,7 +1721,7 @@ while { i < 10 } {
      - \mth{while} is useful when you don't know how many times you have to loop.
      - For example, reading from a file:
 #+name: while2
-#+caption: A while loop, showing how "number.do" really works.
+# #+caption: A while loop, showing how "number.do" really works.
 #+begin_src {SuperCollider} -i
 (
 f = File(thisProcess.platform.startupFiles.last, "r");
