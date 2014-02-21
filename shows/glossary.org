@@ -163,6 +163,9 @@
 | IdentitySet        |                      | Like Set, but restricts the types of items for faster membership testing                                                                                           |
 | Knob               |                      | A GUI widget that draws a rotating knob in a window. The natural range is normalized: 0.0--1.0                                                                     |
 | List               |                      | An ordered list of items that can expand at will. No need to reassign: \cd{list.add(item)}                                                                         |
+| MIDIdef            |                      | MIDIdef is global, named storage for MIDIFuncs, just like OSCdef is global storage for OSCFuncs                                                                    |
+| MIDIFunc           |                      | Receives incoming MIDI messages. Its design is very much like OSCFunc; only the specific parameters differ                                                         |
+| MIDIOut            |                      | Sends MIDI messages to hardware or other applications                                                                                                              |
 | NetAddr            |                      | Represents a port for network communication: an IP address (e.g. \cd{"127.0.0.1"}) and a port number                                                               |
 | NodeProxy          | NodeProxies          | A hot-swappable placeholder for a Synth on the server                                                                                                              |
 | OSCdef             |                      | Like Pdef and Tdef, OSCdef is global storage for OSCFunc responders                                                                                                |
