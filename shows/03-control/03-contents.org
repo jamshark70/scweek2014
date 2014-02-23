@@ -570,6 +570,102 @@ b = Button(f, Point(290, 30))
 w.front;
 )
 #+end_src
+
+*** Updating a GUI view's display
+**** How do you change the displayed value?
+     - For almost all GUIs: \cd{theView.value = newValue}.
+     - We will not do much with this right now.\\
+       See "Synchronizing interfaces" in the Appendix.
+
+*** GUI operations and Tasks
+**** Using GUIs in a \clss{Task}, timing becomes an issue.
+     - Drawing onscreen may not be fast.
+     - Musical timing is more important than anything else!
+**** You have two choices:
+     - Run the task on \clss{AppClock}.
+       - Timing is /close/, but not perfect.
+       - Good enough for GUI-only tasks.
+       - \cd{theTask.play(AppClock)}.
+     - Or, \mth{defer} GUI operations.
+       - The \clss{Task}'s timing will be exact.
+       - GUI updates /only/ will shift to \clss{AppClock}.
+
+*** Example: GUI and Task
+**** We'll turn the sound on and off at random intervals.
+     The button will show the on/off state.
+     - The \clss{Task} affects the sound. We need musical timing.
+     - So, run it on \clss{TempoClock} and \mth{defer} GUI code.
+#+name: gui7
+#+caption: Changing the display of a GUI button within a Task.
+#+begin_src {SuperCollider} -i
+Tdef(\onoff, {
+   loop {
+      ~oscil.play;
+      defer { b.value = 1 };
+      rrand(0.25, 0.5).wait;
+      ~oscil.stop;
+      defer { b.value = 0 };
+      exprand(0.15, 0.5).wait;
+   }
+}).play;
+
+Tdef(\onoff).stop;
+#+end_src
+
+*** The most common GUI error
+**** This error message happens a lot:
+**** quote							    :B_quote:
+     :PROPERTIES:
+     :BEAMER_env: quote
+     :END:
+=ERROR: Qt: You can not use this Qt functionality in the current thread. Try scheduling on AppClock instead.=\\
+=ERROR: Primitive '_QObject_SetProperty' failed.=
+**** It means: You need \mth{defer} somewhere.
+     To help find it, the error message also tells you:
+     - The receiver's type (button, slider, etc.);
+     - The "call stack" showing what the code was doing.
+     See the "Understanding Errors" help file.
+
+*** Notes on timing					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** But, really, why do we need \mth{defer}?
+The most important thing in any real-time processing is /to be sure
+everything is going to finish in a reliable amount of time/.
+
+Let's say you have a pattern playing very fast events---say, the delta
+time is 10 ms. (This is entirely possible, if you're doing granular
+synthesis with control on the language side---that is, one synth per
+grain, instead of using \ci{TGrains}.) The total time to process an
+event must be less than 10 ms. The total time includes:
+
+- Calculating the event's parameters in \clss{Pbind}.
+- The event's automatic calculations.
+- Building the OSC message(s) for the server.
+- Sending the OSC message(s).
+- Rescheduling.
+
+GUI operations draw things onscreen. Turning lines and curves into
+pixels (with anti-aliasing) takes more time than simple
+calculations. So there is no guarantee that the OS can finish drawing
+in time for SC to move onto the next event. If graphics updates can
+cause musical events to happen late, it's totally unacceptable.
+
+Without \mth{defer}, the code is saying, "Whatever you're doing, stop
+it all to change the screen's display." If the update is deferred,
+this says, "Update the display as soon as you're not busy."
+
+**** Frequency of screen updates
+Now, use a little common sense. Movies run at about 24
+frames/second. If that's good enough for Hollywood, it should be good
+enough for graphical displays.
+
+/It's completely pointless to update GUIs 50 or 100 times per second!/
+
+"Synchronizing interfaces" explains a technique to control the update
+rate.
+
 *** GUI summary (so far)
 **** What we now know about GUIs:
      - How to create \clsspl{Window}, \clsspl{Slider}, \clsspl{Button}.
@@ -605,10 +701,10 @@ w.front;
        complicated, you have to control the data flow more
        carefully. This is especially important when synchronizing
        multiple control sources: GUI, MIDI and/or mobile devices with
-       OSC. A tried-and-true approach is Model-View-Controller. We
-       will see a simple example later.
+       OSC. A tried-and-true approach is Model-View-Controller. See
+       the Appendix.
 
-** OSC and mobile control
+** Open Sound Control fundamentals
 *** Why mobile control in this workshop?
 **** Because: Just about everybody has a smartphone.
      If you have a smartphone, there's probably an app for it that will send OSC.
@@ -685,6 +781,7 @@ o.free;  // when you're tired of the printing
 	 Filtering by port means listening to just one app.
      - Other values in the message. (See OSCFunc help.)
 
+** OSC and mobile control
 *** Mobile control overview
 **** To use your phone or tablet:
      1. Set up TouchOSC or mrmr on the phone.\\
@@ -1614,8 +1711,8 @@ o = Button(nil, Rect(600, 100, 100, 20))
 *** Other branching methods
     \mth{case} and \mth{switch} make some kinds of branching easier.\\
     We won't cover them in detail here. Look them up the help system for more.
-    - Case: [[http://doc.sccode.org/Classes/Function.html#-case][Web link]]
-    - Switch: [[http://doc.sccode.org/Classes/Object.html#-switch][Web link]]
+    - Case: [[http://doc.sccode.org/Classes/Function.html\#-case][Web link]]
+    - Switch: [[http://doc.sccode.org/Classes/Object.html\#-switch][Web link]]
     - Control structures in general: [[http://doc.sccode.org/Reference/Control-Structures.html][Web link]]
 
 *** Looping

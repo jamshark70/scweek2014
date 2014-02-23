@@ -244,6 +244,7 @@
 | count               |        | Returns a count of items in a collection that meet a condition, written as a function                                                                                      |
 | cpsmidi             |        | Convert a frequency in Hz to a MIDI note number                                                                                                                            |
 | curvelin            |        | Convert a curved input range (inMin, inMax) to a linear output range (outMin, outMax) with a user-specified curve factor                                                   |
+| defer               |        | Postpone (``defer'') an action to run later, on a lower-priority clock. Most operations on GUI objects should be deferred, or they could break musical timing              |
 | difference          |        | Given two sets, return the items in the first that do not exist in the second. May also be written \cd{setA - setB}                                                        |
 | differentiate       |        | Returns an array $y$ where $y_0 = x_0 - 0$, $y_1 = x_1 - x_0$ and so on                                                                                                    |
 | do                  |        | A looping structure that runs a Function several times. Many types of objects can \ci{do}: usually numbers or collections                                                  |
