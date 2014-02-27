@@ -213,6 +213,7 @@
 | Tdef               |                      | Global storage for Tasks. Give the task function a name, and Tdef will treat the function as a Task                                                                |
 | TdefAllGui         |                      | A graphical control panel allowing you to play and stop Tdef tasks interactively                                                                                   |
 | TempoClock         |                      | The clock normally used for musical sequencing. You can set its tempo, and have as many TempoClocks as you need, with different tempi                              |
+| Tuning             |                      | A repository of tuning systems. \cd{Tuning.et12} gives you 12-tone equal temperament                                                                               |
 | Wavetable          |                      | Very much like Signal, but it's data should be in wavetable format                                                                                                 |
 | Window             |                      | A GUI object representing a window on screen                                                                                                                       |
 | SimpleController   |                      | A good controller for MVC design. It attaches separate functions to the Symbol identifying the type of notification                                                |
