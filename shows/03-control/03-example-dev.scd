@@ -412,3 +412,12 @@ Tdef(\onoff, {
 }).play;
 
 Tdef(\onoff).stop;
+
+
+
+// new timepoint
+p = PTimePoints(Pbind(
+	\timept, Pseq([0, 1, 2, 2], 3)
+)).asStream;
+
+TempoClock.sched(0, { p.next(()).postln });
