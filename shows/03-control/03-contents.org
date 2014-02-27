@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis
+* Granular synthesis						   :noexport:
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -283,7 +283,7 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
-* External control
+* External control						   :noexport:
 ** Basic concepts: GUI
 *** Custom interfaces
 **** So far, we have used the built-in \ci{ProxyMixer}.
@@ -1042,6 +1042,34 @@ Switch over to SuperCollider and start building...
        - Converted to \ci{\textbackslash midinote} based on \ci{\textbackslash scale}, \ci{\textbackslash root} and \ci{\textbackslash octave}.
        - \ci{b} and \ci{s} modifiers: \cd{4s} means degree 4, sharped. \ci{b} is flat.
 **** If you're using pitch, decide which one best fits the material.
+
+*** Scale patterns and tuning systems
+**** Diatonic: \clss{Scale} provides many scale patterns..
+     - The \ci{\textbackslash scale} event parameter specifies which
+       scale degrees map onto which semitones.
+       Makes sense only for \ci{\textbackslash degree}.
+     - Easy: \cd{\textbackslash scale, Scale.minor} or \cd{.major}.
+     - Modes: \ci{ionian}, \ci{dorian}, \ci{phrygian} etc.
+     - Use \cd{Scale.directory} to see a full list.
+**** Diatonic or chromatic: \clss{Tuning} for tuning systems.
+     - Default is \cd{\textbackslash tuning, Tuning.et12}.
+     - \ci{pythagorean}, \ci{kirnberger}, \ci{werckmeister} etc.
+
+*** Transposition
+**** Transposition depends on the kind of pitch.
+     - \ci{\textbackslash freq}: Can /multiply/ by a frequency ratio.
+     - \ci{\textbackslash midinote}: Can transpose /chromatically/ (by semitones).\\
+       Fractional semitones are OK: 0.5 = up a quarter-tone.
+     - \ci{\textbackslash degree}: Can transpose /diatonically/.
+**** Event parameters for transposition.
+     - \ci{\textbackslash ctranspose} :: Chromatic transposition. OK with \ci{\textbackslash midinote} and \ci{\textbackslash degree}.
+     - \ci{\textbackslash mtranspose} :: Diatonic transposition. OK with \ci{\textbackslash degree}.
+
+*** Exercise: Write pitch patterns
+**** Write a few patterns, using pitch in different ways.
+     - At least one chromatic and one diatonic.
+     - Play chords with arrays of pitches.
+     - You should start to see how your choice of pitch type influences what you can do.
 
 *** Representing rhythm
 **** Usually in \eglspl{beat}.
