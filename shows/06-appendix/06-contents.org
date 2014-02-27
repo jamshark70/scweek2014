@@ -933,6 +933,14 @@ o = SimpleController(~freq)
 });
 #+end_src
 
+*** Object design schematic
+**** Now, the data flow looks like this.
+     Key point: The lines of communication are simple and minimal.
+#+begin_center
+#+attr_latex: :height 1.8in
+[[../06-appendix/img/mvc-schematic.pdf]]
+#+end_center
+
 *** Exercise: Synchronize the button
 **** Exercise for you: MVC for the button control.
      Think through the components:
