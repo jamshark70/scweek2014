@@ -669,7 +669,7 @@ of control goes down.
        - Shorter and longer.
 
 * Synchronizing interfaces: Model-View-Controller
-** Model-View-Controller: What and why
+** Model-View-Controller object design
 *** What is Model-View-Controller?
 **** Model-View-Controller (MVC) is a software design for user interfaces.
      - Created in the 1980s as part of SmallTalk.
@@ -677,6 +677,24 @@ of control goes down.
 **** MVC does two main things to make interfaces easier to manage:
      - Divides the requirements of an interface into logical units.
      - Controls the flow of information between these units, to avoid confusion.
+
+*** Note: Audience					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+This section is a little more advanced. If you are just starting with
+SuperCollider, you don't need to worry about this right away. You can
+do a lot with the simple GUI techniques discussed in Part III.
+
+I'm including this material because it looks forward to your future
+needs. When you start a project, you might not know all the kinds of
+interfaces the piece will eventually need. The techniques in this
+section will help you build the ability to add or change interfaces
+into the code from the beginning. It's a small investment upfront that
+can save a lot of time later.
+
+Also, it addresses the practical problem of showing the same
+information on the computer screen and a phone or tablet.
 
 *** Parts of MVC
 **** MVC is made of:
@@ -774,7 +792,7 @@ w.front;
      - \clss{SimpleController} :: Responds to specific notification keys.
      \clss{SimpleController} allows you to write simpler functions, and it's a bit faster.
 
-*** TODO Notes on listeners			   :B_ignoreheading:noexport:
+*** MAYBE Notes on listeners			   :B_ignoreheading:noexport:
     :PROPERTIES:
     :BEAMER_env: ignoreheading
     :END:
@@ -847,17 +865,16 @@ name. Then we can treat this as an array directly.
 
 *** Updating the GUI from the notification
 **** \clss{SimpleController} can register a function to update the slider.
-     - How to set the slider's value?\pause\\
-       \cd{z.value = newValue;}
-     - Where does the new value come from?\pause\\
-       \cd{setArray[1]}\pause
+     - How to set the slider's value? \pause\cd{z.value = newValue;}\pause
+     - Where does the new value come from? \pause\cd{setArray[1]}\pause
+     - \mth{defer} is important here!
 #+name: mvc4
 #+caption: Add a SimpleController, which responds to 'set' notifications by updating the slider.
 #+begin_src {SuperCollider} -i
 u.remove;
 u = SimpleController(~freq)
 .put(\set, { |changer, what, setArray|
-   z.value = setArray[1];
+   defer { z.value = setArray[1] };
 });
 
 // Try it:
@@ -873,15 +890,6 @@ u.remove;
      - An object for the display (view = \ci{EZSlider}).
      - A function that changes the model based on user interaction (controller = action function).
      - A listener that changes the display based on the model (\clss{SimpleController}).
-
-*** Maybe not							   :noexport:
-**** Information flow:
-     - The controllers "own" the views.
-       - The controller talks to /its own/ views.
-       - The views talk only to their own controllers.
-     - A controller communicates changes directly to its model.
-     - The model broadcasts its changes.\\
-       It never talks directly to a specific controller.
 
 *** Compare to the earlier GUI code
 **** Just to differences between this and the earlier GUI code:
@@ -925,6 +933,90 @@ o = SimpleController(~freq)
 });
 #+end_src
 
-*** TODO Wrap up						   :noexport:
-    - Chart of data flow
-    - Adding the OSC controller was easy because we set up a good structure first
+*** Exercise: Synchronize the button
+**** Exercise for you: MVC for the button control.
+     Think through the components:
+     - What is the model?\\
+       (Hint: What is the button turning on and off?)
+     - \clss{OSCdef} to control the model by mobile.\\
+       From TouchOSC, @@latex:\cd{'/1/toggle1'}@@ will work.
+     - \clss{SimpleController} to update the GUI and phone.
+       - Notification keys: \ci{\textbackslash play} and \ci{\textbackslash stop}.
+       - \ci{\textbackslash play}: Set the button and toggle to 1.
+       - \ci{\textbackslash stop}: Set them to 0.
+       - Look back at previous examples to see how to set the interfaces.
+
+*** Cleaning up
+**** *IMPORTANT:* Clean up \clsspl{SimpleController} when finished.
+     - If you don't, they stay in memory until you quit.[fn:b0eb1b89]
+     - Same for \clss{Updater} or anything given to \mth{addDependant}.
+**** Two ways to clean them up.
+     - *By hand:* Call \mth{remove} to discard an old controller.
+     - *Automatically:* If the model gives a notification when it
+       dies, the controller can clean itself up!
+       - \clsspl{NodeProxy} send a \ci{\textbackslash clear} notification.
+       - When you do \cd{p.clear}, the dependents go away by themselves.
+#+name: mvc6
+#+caption: Using a NodeProxy's ``clear'' notification to remove dependents.
+#+begin_src {SuperCollider} -i
+u.put(\clear, { u.remove });
+o.put(\clear, { o.remove });
+#+end_src
+
+*** Note: Cleanup					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+The above works, of course, only if you still have a reference in a
+variable to the \clss{SimpleController}. If you reassigned \ci{u} or
+\ci{o} to another object, then you'll be removing the other object and
+the \clss{SimpleController} will stay in memory.
+
+One way to handle this is to keep a private reference in a
+\gls{declare}d variable. Include the \ci{\textbackslash clear}
+function when you first create the controller.
+
+#+begin_src {SuperCollider} -i
+(
+var controller;
+
+controller = SimpleController(~freq)
+.put(\clear, { controller.remove })
+.put(\set, { ... your action here ...});
+
+u = controller;
+)
+#+end_src
+
+Now, it doesn't matter what happens to \ci{u}, because
+\ci{\textbackslash clear} will act on the variable named
+\ci{controller}. This variable is private to that code block---you
+can't reassign it from outside---so you can be sure it will always
+point to that specific controller.
+
+In emergencies, if you still have the model in a variable, you can
+call \mth{releaseDependants} on it to get rid of all the controllers
+at once.
+
+*** MVC benefits
+**** MVC is more flexible to wire up multiple interfaces.
+     - Add and remove interfaces at any time.
+     - Controlled data flow can keep many interfaces in sync and avoid confusion.
+       - User action: View $\to$ controller $\to$ model.
+       - The model broadcasts changes to controllers:\\
+	 Model $\to$ controller $\to$ view.
+**** It gets easier with practice.
+     - Simple uses: This might seem too complicated.
+     - If there's any chance you'll need to expand the interface, go with MVC from the beginning.
+     - It /will/ save time later.
+
+*** DONE Wrap up						   :noexport:
+    - [X] Button control
+    - [X] Cleanup
+    - [X] Chart of data flow
+    - [X] Adding the OSC controller was easy because we set up a good structure first
+
+* Footnotes
+
+[fn:b0eb1b89] Or recompile the class library.
+

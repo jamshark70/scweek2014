@@ -304,6 +304,7 @@
 | reciprocal          |        | Calculates $\frac{1}{n}$, but slightly faster than \cd{1 / n}                                                                                                              |
 | reject              |        | Returns a new collection, containing items from another collection that do not satisfy a condition provided as a test function                                             |
 | release             |        | Tell a synth node on the server to fade out, according to the R segment of an ASR or ADSR envelope                                                                         |
+| releaseDependants   |        | Related to Model-View-Controller design, this is an emergency method to remove all controllers from a model                                                                |
 | remove              |        | Remove the given item from the collection. Returns the item, not the collection---so you can't write \cd{x.remove(1).remove(2)}. Also releases some object types           |
 | removeAll           |        | Removes all the given items from the collection                                                                                                                            |
 | removeAt            |        | Remove the item at the given index from the collection. Returns the item, not the collection                                                                               |
