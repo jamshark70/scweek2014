@@ -106,6 +106,52 @@ Pdelta : FilterPattern {
 }
 
 
+// Sync time-points to the barline
+// Provide time-points as \timept
+// pattern must be an event pattern!
+PTimePoints : FilterPattern {
+	var <>tolerance;
+	*new { |pattern, tolerance = 0.001|
+		^super.new(pattern).tolerance_(tolerance);
+	}
+	embedInStream { |inval|
+		var // now = thisThread.beats,
+		beatInBar = thisThread.clock.beatInBar,
+		stream = pattern.asStream,
+		event = stream.next(inval.copy), oldEvent, timept;
+		if(event.isNil) { ^inval };
+		if(event[\timept].isNil) {
+			^inval
+		};
+		timept = event[\timept] % thisThread.clock.beatsPerBar;
+		if(timept absdif: beatInBar > tolerance) {
+			inval = Event.silent(
+				(timept - beatInBar).wrap(tolerance, thisThread.clock.beatsPerBar + tolerance),
+				inval
+			).yield;
+			beatInBar = timept;
+		};
+		while {
+			oldEvent = event;
+			event = stream.next(inval);
+			event.notNil and: { event[\timept].notNil }
+		} {
+			timept = event[\timept] % thisThread.clock.beatsPerBar;
+			oldEvent[\dur] = (timept - beatInBar).wrap(tolerance, thisThread.clock.beatsPerBar + tolerance);
+			inval = oldEvent.yield;
+			beatInBar = timept;
+		};
+		if(oldEvent.notNil) {
+			// resync to barline
+			// there is no 'event' here so we have no idea how long oldEvent should be
+			// without assuming a reference point. Barline is the most logical reference.
+			oldEvent[\dur] = (0 - beatInBar).wrap(tolerance, thisThread.clock.beatsPerBar + tolerance);
+			^oldEvent.yield
+		} { ^inval }
+	}
+}
+
+
 // record scratching goes forward and backward thru the audio stream
 // Pscratch does the same for the output values of a pattern
 // memory is finite (can only go backward so far)
