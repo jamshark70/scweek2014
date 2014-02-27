@@ -18,6 +18,7 @@
 
 #+LATEX_HEADER: \usepackage{titlesec}
 #+LATEX_HEADER: \titleformat{\section}{}{\Large\textbf\thesection.}{1ex}{\filcenter\Large\textbf}
+#+LATEX_HEADER: \titleformat{\subsection}{}{\large\textbf\thesubsection.}{1ex}{\filcenter\large\textbf}
 
 #+LATEX_HEADER: \usepackage{fancyhdr}
 #+LATEX_HEADER: \pagestyle{fancy}
