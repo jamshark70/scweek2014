@@ -421,3 +421,72 @@ p = PTimePoints(Pbind(
 )).asStream;
 
 TempoClock.sched(0, { p.next(()).postln });
+
+
+
+// PTimePoints
+
+/**************
+ Listing 100. A quick-and-dirty sound to trigger in rhythm.
+ **************/
+
+p.clear;  // or p = ProxySpace.new; p.push;
+
+~sound = { |t_trig, freq = 660, amp = 0.1|
+   var sig = PinkNoise.ar(amp),
+   eg = EnvGen.kr(Env.perc(0.01, 0.2), t_trig);
+   sig = BPF.ar(sig, freq, 0.1);
+   (sig * eg).dup
+};
+~sound.play;
+
+
+/**************
+ Listing 101. Play a rhythm on the previous sound, using deltas.
+ **************/
+
+Pdefn(\dur).quant = 4;
+Pdefn(\dur, Pseq([1, 0.5, 0.5, 1, 1], inf));
+
+~player.quant = 4;
+~player = \psSet -> Pbind(
+   \freq, 660, \amp, 1,
+   \dur, Pdefn(\dur)
+);
+
+
+Pdefn(\timept).quant = 4;
+Pdefn(\timept, Pseq([0, 1.0, 1.5, 2, 3], inf));
+
+~player.quant = 4;
+~player = \psSet -> PTimePoints(Pbind(
+   \freq, 660, \amp, 1,
+   \timept, Pdefn(\timept).trace
+));
+
+~player.clear;
+
+/**************
+ Listing 102. Play a rhythm, using time points.
+ **************/
+
+Pdefn(\dur, Pdelta(Pseq([0, 1, 1.5, 2.5, 3], inf), 4));
+
+Pdefn(\timept, Pseq([0, 1, 1.5, 2.5, 3], inf).drop(1));
+
+p.clear;
+
+TempoClock.play({ TempoClock.beatsPerBar = 3 }, -1);
+TempoClock.tempo = 2;
+
+~player = \psSet -> PTimePoints(Pbind(
+	// randomly shuffled pitch classes
+	\row, Pshuf((0..11), inf),
+	\midinote, Pkey(\row) + 84,
+	\timept, Pkey(\row) * 0.25,
+	\amp, 5
+));
+
+TempoClock.default.gui;
+
+p.clear;

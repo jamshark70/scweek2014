@@ -1044,7 +1044,7 @@ Switch over to SuperCollider and start building...
 **** If you're using pitch, decide which one best fits the material.
 
 *** Scale patterns and tuning systems
-**** Diatonic: \clss{Scale} provides many scale patterns..
+**** Diatonic: \clss{Scale} provides many scale patterns.
      - The \ci{\textbackslash scale} event parameter specifies which
        scale degrees map onto which semitones.
        Makes sense only for \ci{\textbackslash degree}.
@@ -1131,19 +1131,81 @@ Pdefn(\dur, Pdelta(Pseq([0, 1, 1.5, 2.5, 3], inf), 4));
 **** Which is better?
      - I would use \clss{Pdelta} for a rhythm where the position within the bar is more important.
 
+*** PTimePoints
+**** Synchronizing to the bar line is a bit tricky with \clss{Pdelta}.
+     The example avoids the problem by:
+     - Setting \ci{quant} for both \ci{Pdefn(\textbackslash dur}} and the \clss{Pbind}.
+     - Putting a note on the downbeat.
+**** What if the downbeat is a rest?
+     - For techniques with \clss{Pdelta}, see the printed reference.
+     - Or, use \clss{PTimePoints}, which acts on a Pbind.
+
+*** PTimePoints and barlines
+**** \clss{TempoClock} controls barlines.
+     - Set it using \mth{beatsPerBar}.
+     - You should do this only on a barline! See Listing [[timept4]].
+     - Future barlines will be relative to the moment when the meter changed.
+#+name: timept3
+#+caption: Rewriting the previous example to use PTimePoints.
+#+begin_src {SuperCollider} -i
+~player.clear;
+
+~player.quant = 4;
+~player = \psSet -> PTimePoints(Pbind(
+   \freq, 660, \amp, 1,
+   \timept, Pseq([0, 1.0, 1.5, 2, 3], inf)
+));
+#+end_src
+
+*** Meter changes
+**** Just for fun, a Babbitt-style time-point series.
+     - More fun if the tempo is faster.
+     - 12 notes, 12 possible time points: 3/4 time.
+     - Note that we /schedule/ the meter change for the next barline.\\
+       \cd{-1} is a \ci{quant} value meaning "next barline."
+#+name: timept4
+#+caption: Set the meter to 3/4 time, and play a sequence where the pitches and time points come from the same series.
+#+begin_src {SuperCollider} -i
+TempoClock.play({ TempoClock.beatsPerBar = 3 }, -1);
+TempoClock.tempo = 2;  // beats/sec; 2 --> 120 bpm
+
+~player = \psSet -> PTimePoints(Pbind(
+   // randomly shuffled pitch classes
+   \row, Pshuf((0..11), inf),
+   \midinote, Pkey(\row) + 84,
+   \timept, Pkey(\row) * 0.25,
+   \amp, 5
+));
+
+TempoClock.default.gui;
+#+end_src
+
 *** \clss{Pdelta} and barlines				    :B_ignoreheading:
     :PROPERTIES:
     :BEAMER_env: ignoreheading
     :END:
 **** \clss{Pdelta} and barlines
-A side note: You may skip this for now.
+A side note, somewhat advanced. You may skip this for now.
 
-One thing to be careful of when using \clss{Pdelta}: If the very first
-time point is not exactly on the barline---that is, if the pattern
-should begin with the rest---\clss{Pdelta} does not automatically
-compensate.
+Neither approach (\clss{Pdelta} or \clss{PTimePoints}) is completely
+trouble free.
 
-There are two ways to handle this:
+\clss{PTimePoints} is generally easier. However, if
+@@latex:\ci{\textbackslash timept}@@ is coming from a \clss{Pdefn},
+you might occasionally get unexpected results. This is because
+\clss{PTimePoints} has to subtract the current time point number from
+the next---so, to generate the event to play right now, it has to read
+ahead and get the next event early. If you switch the
+\ci{\textbackslash timept} pattern by a proxy, you might think the
+first value from the proxy would be placed relative to "now," but it's
+actually relative to the next event's time point.
+
+To avoid this, replace \clss{PTimePoints} along with the time point
+pattern. /Pattern composition/, covered in the next section, is a nice
+way to do this. An example will appear at that time.
+
+With \clss{Pdelta}, you have to handle the barlines yourself, using
+one of two techniques:
 
 - Start the pattern with an offset from the barline. A
   \gls{quantization} time is a multiple of beats /and/ an offset,
@@ -1177,6 +1239,49 @@ Pdefn(\dur, Pdelta(
   because the frequency doesn't change.
 
 ** Composition: Combining patterns
+*** Simple patterns, working together
+**** Musical structure is a \emph{hierarchy}.
+     - Notes combine into phrases.
+     - Phrases combine into full "sentences" (self-contained thought).
+     - Sentences build up a section of a piece.
+     - A full piece has many sections.
+**** Musical problem with simple patterns: No hierarchy.
+     - The simple patterns discussed earlier just do one thing.
+     - This gets boring, quickly.
+**** Solution: Patterns /in combination/.
+     - Patterns within patterns.
+     - Patterns referring to each other.
+
+*** Note: Musicology					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+Ethnomusicologists would take issue with the blanket statement that
+musical structure /is/ hierarchy (which I admit I've
+oversimplified). Some of the world's music does not depend heavily on
+multiple layers of structure. A fine example is the music of the Aka
+pygmies of central Africa. Still, notes combine into repeated rhythmic
+and melodic cells in Aka music, so I think it's safe to say that music
+isn't free of structure.
+
+*** Use "canonical" style here
+**** For simplicity, "canonical" patterns are easier.
+     - Use the default \ci{SynthDef}.
+     - You can still assign to a proxy variable, e.g. @@latex:\ci{\textasciitilde player}@@.
+     - This makes it easier to replace the pattern.
+
+*** Sequence of phrases
+**** Just about anything can go into a sequence.
+     - \clss{Pseq} can stream out a list of numbers.
+     - It can also stream out a list of /patterns/!
+     - Each pattern runs to completion.\\
+       Then the next pattern takes over.
+**** Exercise: 8 short notes, 2 long notes.
+     1. Write a pattern to make 8 short, random, durations.
+     2. Write a pattern to make 2 long, random, durations.
+     3. Put them together in \clss{Pseq}.\\
+	How would you make it repeat forever?
+     4. Use this for \ci{\textbackslash dur} in a \clss{Pbind}.
 
 * Considerations for group composition				   :noexport:
 ** Unity and contrast

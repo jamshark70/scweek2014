@@ -191,6 +191,7 @@
 | Pshuf              |                      | Read items from a list in random order, using all items before repeating---i.e., ``shuffle'' the items                                                             |
 | Ptempo             |                      | A pattern that returns the current clock's tempo. Useful for scaling beats into seconds: $sec = beats \div tempo$                                                  |
 | Ptime              |                      | A pattern that returns the number of beats since the pattern started running                                                                                       |
+| PTimePoints        |                      | A filter pattern operating on event patterns (like Pbind). Write the time points into \ci{\textbackslash timept}, and PTimePoints will handle the timing           |
 | Pwhite             |                      | A Pattern that generates random numbers between low and high boundaries, with a linear distribution                                                                |
 | Pwrand             |                      | A Pattern to choose values randomly from an array, with a different probability for each item                                                                      |
 | Pxrand             |                      | A Pattern to choose values randomly from an array, without repeating the same one twice in a row                                                                   |
@@ -237,6 +238,7 @@
 | asWavetable         |        | Given a single cycle of a waveform, as a \ci{Signal} object, convert it to wavetable format. The resulting Wavetable will be twice as big as the Signal                    |
 | at                  |        | Retrieve an item from an indexed collection (e.g. Array or Dictionary) by its index. Shortcut syntax: \cd{collection[index]}                                               |
 | atKlank             |        | Get filter parameters from FormantTable, suitable for use in Klank                                                                                                         |
+| beatsPerBar         |        | A TempoClock's meter (time signature). You can change it, but only on a barline. That barline becomes the basis for future bar/beat calculations                           |
 | blockSize           |        | A variable in \ci{ServerOptions}, setting the number of samples in one control block. The default is 64                                                                    |
 | case                |        | A branching control structure. Takes pairs of conditions and actions; and executes the action for the first condition that is true                                         |
 | clip                |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                                 |
