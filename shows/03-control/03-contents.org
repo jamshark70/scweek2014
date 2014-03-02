@@ -1270,7 +1270,7 @@ isn't free of structure.
      - You can still assign to a proxy variable, e.g. @@latex:\ci{\textasciitilde player}@@.
      - This makes it easier to replace the pattern.
 
-*** Sequence of phrases
+*** Sequence of sequences
 **** Just about anything can go into a sequence.
      - \clss{Pseq} can stream out a list of numbers.
      - It can also stream out a list of /patterns/!
@@ -1282,6 +1282,42 @@ isn't free of structure.
      3. Put them together in \clss{Pseq}.\\
 	How would you make it repeat forever?
      4. Use this for \ci{\textbackslash dur} in a \clss{Pbind}.
+
+*** Pseq and other list patterns
+**** \clss{Pseq} handles /flow of control/ between other patterns.
+     - In regular programming, one statement follows another.\\
+       They run in sequence.
+     - \clss{Pseq} does the same for patterns.
+     - Using \ci{repeats}, it's also a \egls{looping} mechanism.\\
+       Like \mth{do} (which we saw before).
+**** Other list patterns can run the subpatterns out of order.
+     - Randomly: \clss{Prand}, \clss{Pwrand}, \clss{Pxrand}, \clss{Pshuf}.
+     - Other orderings: \clss{Place}, \clss{Pslide}, and more.
+
+*** Sequence of phrases
+**** List patterns may also contain \clsspl{Pbind}!
+     (This idea totally blew my mind.) You can:
+     - Write a \clss{Pbind} that plays exactly one phrase.\\
+       /All/ note parameters for that phrase are included.
+     - Write more \clsspl{Pbind} for other phrases.
+     - Put them together in a list pattern.
+**** A clear example is in the help system.
+     See "Pattern Guide 04: Words to Phrases."
+
+*** Modularity
+**** This is like modular synthesis, for sequencing.
+     Write smaller, self-contained units of code.
+     - Each unit is simpler to understand:\\
+       Play one phrase, or make one component of a synth.
+     - Combine them into bigger structures.
+**** /Modularity/ is a crucial programming concept.
+     - Big chunks of code break easily.
+     - Smaller modules that work together are easier to understand and control.
+
+*** Next slides							   :noexport:
+**** Pdict, Psym (naming patterns)
+**** Changeable parameters (initial pattern args vs. streams)
+**** Pkey
 
 * Considerations for group composition				   :noexport:
 ** Unity and contrast

@@ -182,6 +182,8 @@
 | Pexprand           |                      | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
 | Pgeom              |                      | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
 | Pkey               |                      | A pattern that reads a value from the given name from the event currently being processed. Child patterns can share information this way                           |
+| Place              |                      | Interlaces values from subarrays. See its help file for details                                                                                                    |
+| Pslide             |                      | ``Slides'' across an array of items. For instance, 0 1 2 3 1 2 3 4 2 3 4 5 and so on                                                                               |
 | Platform           |                      | Holds settings and file paths that are specific to the operating system                                                                                            |
 | Pn                 |                      | A pattern that repeats a value or pattern /n/ times. If /n/ is \ci{inf}, it will repeat as many times as needed                                                    |
 | Prand              |                      | A Pattern to choose values randomly from an array                                                                                                                  |
