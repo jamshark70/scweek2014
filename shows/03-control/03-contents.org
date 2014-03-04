@@ -1240,11 +1240,26 @@ Pdefn(\dur, Pdelta(
 
 ** Composition: Combining patterns
 *** Simple patterns, working together
-**** Musical structure is a \emph{hierarchy}.
-     - Notes combine into phrases.
-     - Phrases combine into full "sentences" (self-contained thought).
-     - Sentences build up a section of a piece.
-     - A full piece has many sections.
+#+begin_latex
+\begin{block}{Musical structure is a \emph{hierarchy}.\mode<article>{\footnote{
+Ethnomusicologists would take issue with the blanket statement that
+musical structure \emph{is} hierarchy (which I admit I've
+oversimplified). Some of the world's music does not depend heavily on
+multiple layers of structure. A fine example is the music of the Aka
+pygmies of central Africa. Still, notes combine into repeated rhythmic
+and melodic cells in Aka music, so I think it's safe to say that music
+isn't free of structure.
+    }
+  }
+}
+\begin{itemize}
+\item Notes combine into phrases.
+\item Phrases combine into full "sentences" (self-contained thought).
+\item Sentences build up a section of a piece.
+\item A full piece has many sections.
+\end{itemize}
+\end{block}
+#+end_latex
 **** Musical problem with simple patterns: No hierarchy.
      - The simple patterns discussed earlier just do one thing.
      - This gets boring, quickly.\pause
@@ -1252,7 +1267,7 @@ Pdefn(\dur, Pdelta(
      - Patterns within patterns.
      - Patterns referring to each other.
 
-*** Note: Musicology					    :B_ignoreheading:
+*** Note: Musicology				   :B_ignoreheading:noexport:
     :PROPERTIES:
     :BEAMER_env: ignoreheading
     :END:
