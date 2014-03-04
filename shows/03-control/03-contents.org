@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis						   :noexport:
+* Granular synthesis
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -283,7 +283,7 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
-* External control						   :noexport:
+* External control
 ** Basic concepts: GUI
 *** Custom interfaces
 **** So far, we have used the built-in \ci{ProxyMixer}.
@@ -981,7 +981,7 @@ OSCdef(\sl1).free;
      :BEAMER_env: quote
      :END:
      A simple idea by itself is boring.\\<all>
-     Lots of simple ideas working together make music.
+     Lots of simple ideas, working together, make music.
 
 *** Workflow
 **** A typical way to develop interesting musical element:
@@ -1247,7 +1247,7 @@ Pdefn(\dur, Pdelta(
      - A full piece has many sections.
 **** Musical problem with simple patterns: No hierarchy.
      - The simple patterns discussed earlier just do one thing.
-     - This gets boring, quickly.
+     - This gets boring, quickly.\pause
 **** Solution: Patterns /in combination/.
      - Patterns within patterns.
      - Patterns referring to each other.
@@ -1266,8 +1266,10 @@ isn't free of structure.
 
 *** Use "canonical" style here
 **** For simplicity, "canonical" patterns are easier.
+     - This is about flow of control.\\
+       Sound is less important (for now).
      - Use the default \ci{SynthDef}.
-     - You can still assign to a proxy variable, e.g. @@latex:\ci{\textasciitilde player}@@.
+     - You can still assign the pattern to a proxy variable, e.g. @@latex:\ci{\textasciitilde player}@@.
      - This makes it easier to replace the pattern.
 
 *** Sequence of sequences
@@ -1276,11 +1278,17 @@ isn't free of structure.
      - It can also stream out a list of /patterns/!
      - Each pattern runs to completion.\\
        Then the next pattern takes over.
-**** Exercise: 8 short notes, 2 long notes.
-     1. Write a pattern to make 8 short, random, durations.
-     2. Write a pattern to make 2 long, random, durations.
+
+*** Exercise: Two rhythmic levels
+**** Exercise: 8 short notes, 2 long notes, repeated.
+     - Key idea: Break a problem down into smaller parts.
+     - Small parts are easier to write.
+     - Then put them together into bigger pieces.
+**** To write:\pause
+     1. Write a pattern to make 8 short, random, durations.\pause
+     2. Write a pattern to make 2 long, random, durations.\pause
      3. Put them together in \clss{Pseq}.\\
-	How would you make it repeat forever?
+	How would you make it repeat forever?\pause
      4. Use this for \ci{\textbackslash dur} in a \clss{Pbind}.
 
 *** Pseq and other list patterns
@@ -1304,7 +1312,71 @@ isn't free of structure.
 **** A clear example is in the help system.
      See "Pattern Guide 04: Words to Phrases."
 
-*** Modularity
+*** Using phrase patterns by name
+**** Easier to read: Give /names/ to the phrase patterns.
+     - Write a \clss{Dictionary} of names and patterns.\\
+       \clss{Event} syntax is easier: \cd{(name: pattern, ...)}.
+     - Then use one of these to stream them out:
+       - \clss{Psym} if the dictionary holds event patterns.
+       - \clss{Pnsym} if it holds value patterns.
+**** Both follow this outline:
+     \cd{Psym(patternOfNames, dictionary)}.
+
+*** Exercise
+    1. Rewrite the last exercise to use \clss{Pnsym} for rhythm.
+    2. Add more rhythm phrases, with names.
+**** Points to consider:
+     - Writing the dictionary should be fairly easy.
+     - What is the \ci{patternOfNames} that would behave exactly like the last exercise?
+     - Also try putting the \ci{patternOfNames} into a \clss{Pdefn}.
+       - \cd{Pdefn(\textbackslash names, Prand([\textbackslash short8, \textbackslash long2], inf));}
+       - \cd{Psym(Pdefn(\textbackslash names), (...))}.
+       - Now you can play with the name pattern separately.
+
+*** Summary: Sequences of patterns
+**** We now have ways to make /hierarchical/ musical structures.
+     - Short, simple phrases.
+     - Streamed out, one after the other, in various orders:
+       - \eGls{looping} in the same order: \clss{Pseq}.
+       - Random order: \clss{Prand}, \clss{Pwrand}, \clss{Pxrand}, \clss{Pshuf}.
+     - As it gets more complex, use phrase names for legibility.
+       - Store phrases in a \clss{Dictionary}, with names.
+       - Decide the phrase order (\ci{patternOfNames}).
+       - Play them in that order (\clss{Psym}, \clss{Pnsym}).
+**** Remember: "Lots of simple ideas, working together, make music."
+
+*** Looping and branching in patterns
+**** Computers decide what to do based on:
+     - \eGls{looping} :: Repeating the same sequence of actions.
+     - \eGls{branching} :: *If* this, *then* do that; *else* do the other.\glsadd{if}
+**** \clss{Pseq} is a looping structure for patterns.
+     If you're looping only one thing, see also \clss{Pn}.
+**** Branching for patterns:
+     - Random-order list patterns are one form of branching.
+     - Also, branch based on a condition: \clss{Pif}.
+     - Or choose, per event, from several branches: \clss{Psym1}, \clss{Pnsym1}, \clss{Pswitch1}.
+
+*** Pif
+**** \clss{Pif} chooses which branch for every yielded value.
+     Its arguments:
+     - A pattern yielding \ci{true} or \ci{false}.
+     - The pattern to evaluate when the first is true.
+     - The pattern to evaluate when the first is false.
+**** Example: 80% short notes, 20% long notes.
+     - \mth{coin} is a weighted coin toss.
+#+name: pif1
+#+caption: A simple example of Pif, to choose short notes 80% of the time.
+#+begin_src {SuperCollider} -i
+~player = Pbind(
+   \freq, Pexprand(200, 800, inf),
+   \dur, Pif(Pfunc { 0.8.coin },
+      Pwhite(0.05, 0.15, inf),
+      Pwhite(0.4, 0.75, inf)
+   )
+);
+#+end_src
+
+*** MAYBE Modularity						   :noexport:
 **** This is like modular synthesis, for sequencing.
      Write smaller, self-contained units of code.
      - Each unit is simpler to understand:\\
@@ -1314,10 +1386,14 @@ isn't free of structure.
      - Big chunks of code break easily.
      - Smaller modules that work together are easier to understand and control.
 
-*** Next slides							   :noexport:
-**** Pdict, Psym (naming patterns)
-**** Changeable parameters (initial pattern args vs. streams)
-**** Pkey
+*** Next slides 						   :noexport:
+**** DONE Pdict, Psym (naming patterns)
+**** TODO Branching (Pif, Pswitch1, Psym1)
+**** TODO Changeable parameters (initial pattern args vs. streams)
+     Also Plazy
+**** TODO Pkey
+
+*** Summary: Combining patterns
 
 * Considerations for group composition				   :noexport:
 ** Unity and contrast
