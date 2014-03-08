@@ -972,7 +972,7 @@ OSCdef(\sl1).free;
 ** Central hub
 ** Turning faders into buttons: Thresholds
 
-* Toward complex composition
+* Toward complex composition					   :noexport:
 ** Simple ideas
 *** The trick
 **** The trick to making music by programming:
@@ -1424,7 +1424,7 @@ isn't free of structure.
 *** Summary: Combining patterns
 
 
-* Considerations for group composition				   :noexport:
+* Considerations for group composition
 ** Unity and contrast						   :noexport:
 *** You take the lead
     From here, we will do less guided explanation of techniques, and
@@ -1432,6 +1432,99 @@ isn't free of structure.
     - Larger modular synths;
     - Pattern sequences with more musicality;
     - Control in performance by external devices.
+
+** Group composition: Technical issues
+
+** Group composition: Creative issues
+*** Unity and contrast
+**** Music finds a balance between two opposites.
+     - Unity :: The elements that hold the music together.
+     - Contrast :: Variety, change, renewed interest.
+**** These ideas will guide our composition process.
+     Decisions to make:
+     - What musical elements do we need?
+     - Who is responsible for each element?
+
+*** Melody
+**** Melodic /unity/.
+     - Hearing the same melody at different times.\\
+       Slight variations work just as well.
+     - Using melodic /cells/ to build different melodies.
+**** Melodic /contrast/.
+     - Introducing new melodies or new variations.
+     - Dividing the piece into /sections/ based on different themes.
+     - Without conventional notes:
+       - /Pitch register/ can distinguish themes and sections.
+       - @@latex:Gy\"orgy Ligeti@@, /Melodien/.
+       - Trevor Wishart, /Vox 5/.
+
+*** Harmony
+**** Harmonic factors:
+     - Harmony: Yes or no?
+     - How many notes at once?\\
+       Many notes $\to$ more complex chords.
+     - Modal or chromatic.\\
+       Modes: Usually diatonic or pentatonic scales.
+     - Consonant or dissonant.
+     - Tuning systems.\\
+       - Not limited to 12-tone \gls{equal temperament}.
+       - The whole piece shouldn't use too many tuning systems.
+**** Harmonic contrast:
+     - Modulating from one key area to another.
+     - Density (number of notes) is powerful.
+
+*** Rhythm
+**** Rhythmic factors:
+     - Strong pulse or weak/no pulse.\\
+       Strong pulse: Durations are integer multiples of a base value.
+     - Fast or slow.
+     - Consistent or inconsistent density.\\
+       I.e., small or big differences between long and short durations?
+**** Unity and contrast
+     /Unity/:
+     - Establish a rhythmic "identity" for an element.
+     - Several elements coordinated by the same pulse (tempo).
+     /Contrast/:
+     - Elements with different identities.
+     - Changing one or more rhythmic factors.
+
+*** Texture
+**** Textural factors:
+     - Type of texture, especially:
+       - /Homophonic/: Lead part, with accompaniment.
+       - /Polyphonic/: Several interdependent parts.
+       - /Heterophonic/: One "melody," played by several parts with different "decoration."
+     - Density: How much "white space"?\\
+       White space: Silence, or empty frequency bands.
+**** Texture is especially powerful for contrast.
+
+*** Timbre (tone color)
+**** Timbre is /very hard/ to talk about.
+     - Pierre Schaeffer, /Treatise on Musical Objects/ (1966).
+     - Denis Smalley's research on /spectromorphology/.
+**** For this project, keep it simple.
+     Timbral factors:
+     - /Pitched/ or /noisy/.
+     - /Narrow/ or /wide/ range of frequencies.
+     - /Steady/ or /changing/.\\
+       \eGlspl{envelope}, \eglspl{LFO} or /mobile control/ applied to filter frequency, FM modulation index etc.
+
+*** Brainstorming
+**** Take a few minutes to think about sounds, textures, patterns you'd like to explore.
+     Here are those musical features again:
+#+attr_latex: :align |l|p{0.75\textwidth}|
+| *Feature* | *Factors*                                                                       |
+|-----------+---------------------------------------------------------------------------------|
+| Melody    | Themes, melodic cells, pitch register                                           |
+| Harmony   | Number of notes, consonance vs. dissonance, modal vs. chromatic, tuning systems |
+| Rhythm    | Strength of pulse, speed, density                                               |
+| Texture   | Type of texture, density                                                        |
+| Timbre    | Pitch or noise, narrow- or wide-band, steady or changing                        |
+
+*** Returning to unity and contrast
+**** Your different ideas will provide contrast!
+     - Where, among these ideas, can we create unity?
+     - Especially /common materials/.
 
 * Removed							   :noexport:
 *** Branching: Case
