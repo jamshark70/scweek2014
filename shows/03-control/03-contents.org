@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis
+* Granular synthesis						   :noexport:
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -283,7 +283,7 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
-* External control
+* External control						   :noexport:
 ** Basic concepts: GUI
 *** Custom interfaces
 **** So far, we have used the built-in \ci{ProxyMixer}.
@@ -1238,7 +1238,7 @@ Pdefn(\dur, Pdelta(
   other child patterns. That's not an issue in the above example
   because the frequency doesn't change.
 
-** Composition: Combining patterns
+** Composition: Phrase structures
 *** Simple patterns, working together
 #+begin_latex
 \begin{block}{Musical structure is a \emph{hierarchy}.\mode<article>{\footnote{
@@ -1360,6 +1360,7 @@ isn't free of structure.
        - Play them in that order (\clss{Psym}, \clss{Pnsym}).
 **** Remember: "Lots of simple ideas, working together, make music."
 
+** deprecated							   :noexport:
 *** Looping and branching in patterns
 **** Computers decide what to do based on:
      - \eGls{looping} :: Repeating the same sequence of actions.
@@ -1371,7 +1372,7 @@ isn't free of structure.
      - Also, branch based on a condition: \clss{Pif}.
      - Or choose, per event, from several branches: \clss{Psym1}, \clss{Pnsym1}, \clss{Pswitch1}.
 
-*** Pif
+*** MAYBE Pif							   :noexport:
 **** \clss{Pif} chooses which branch for every yielded value.
      Its arguments:
      - A pattern yielding \ci{true} or \ci{false}.
@@ -1391,6 +1392,17 @@ isn't free of structure.
 );
 #+end_src
 
+*** Pkey: Sharing data in Pbind
+**** \clss{Pkey} reads an earlier value inside a \clss{Pbind}.
+     - Base one value on another value.
+     - We saw this yesterday, briefly, in Listing [[segxf2]].\\
+       There, \ci{\textbackslash time} should equal \ci{\textbackslash dur}.\\
+       \cd{\textbackslash time, Pkey(\textbackslash dur)} copies the value.
+     - You can do math on \clss{Pkey} (just like any pattern).\\
+       E.g., filter frequency = 4 times the note's frequency.
+       \cd{\textbackslash ffreq, Pkey(\textbackslash freq) * 4}.
+
+
 *** MAYBE Modularity						   :noexport:
 **** This is like modular synthesis, for sequencing.
      Write smaller, self-contained units of code.
@@ -1403,15 +1415,17 @@ isn't free of structure.
 
 *** Next slides 						   :noexport:
 **** DONE Pdict, Psym (naming patterns)
-**** TODO Branching (Pif, Pswitch1, Psym1)
+**** MAYBE Branching (Pif, Pswitch1, Psym1)
 **** TODO Changeable parameters (initial pattern args vs. streams)
      Also Plazy
 **** TODO Pkey
+**** TODO Pchain
 
 *** Summary: Combining patterns
 
+
 * Considerations for group composition				   :noexport:
-** Unity and contrast
+** Unity and contrast						   :noexport:
 *** You take the lead
     From here, we will do less guided explanation of techniques, and
     focus more on your creativity.
