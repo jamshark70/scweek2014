@@ -51,7 +51,7 @@
 #+include: "../04-programming/04-contents.org" :minlevel 1
 
 * Appendix						      :ignoreheading:
-#+latex: \clearpage\part{Appendix: Modal Synthesis}
+#+latex: \clearpage\part{Appendix: Additional Topics}
 #+include: "../06-appendix/06-contents.org" :minlevel 1
 
 * Glossary						      :ignoreheading:
