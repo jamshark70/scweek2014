@@ -19,15 +19,13 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Effects and mixing
-** Mechanics: Applying effects
+* Canonical-style synthesis
+** SynthDefs
+** Groups and busses
+** Order of execution
 *** Things							   :noexport:
-    - Within a NodeProxy
-    - Between NodeProxies
-    - Sends, MixerChannels
-** Common effects
-*** Things							   :noexport:
-    - Distortion
-    - Chorus
-    - Compander
-    - Reverb
+
+* MAYBE Review
+
+* Performance
+
