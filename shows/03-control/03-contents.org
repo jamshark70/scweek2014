@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis						   :noexport:
+* Granular synthesis
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -283,7 +283,7 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
-* External control						   :noexport:
+* External control
 ** Basic concepts: GUI
 *** Custom interfaces
 **** So far, we have used the built-in \ci{ProxyMixer}.
@@ -972,7 +972,7 @@ OSCdef(\sl1).free;
 ** Central hub
 ** Turning faders into buttons: Thresholds
 
-* Toward complex composition					   :noexport:
+* Toward complex composition
 ** Simple ideas
 *** The trick
 **** The trick to making music by programming:
@@ -1416,10 +1416,10 @@ isn't free of structure.
 *** Next slides 						   :noexport:
 **** DONE Pdict, Psym (naming patterns)
 **** MAYBE Branching (Pif, Pswitch1, Psym1)
-**** TODO Changeable parameters (initial pattern args vs. streams)
+**** MAYBE Changeable parameters (initial pattern args vs. streams)
      Also Plazy
-**** TODO Pkey
-**** TODO Pchain
+**** MAYBE Pkey
+**** MAYBE Pchain
 
 *** Summary: Combining patterns
 
@@ -1433,7 +1433,7 @@ isn't free of structure.
     - Pattern sequences with more musicality;
     - Control in performance by external devices.
 
-** Group composition: Technical issues
+** TODO Group composition: Technical issues
 
 ** Group composition: Creative issues
 *** Unity and contrast
@@ -1525,6 +1525,10 @@ isn't free of structure.
 **** Your different ideas will provide contrast!
      - Where, among these ideas, can we create unity?
      - Especially /common materials/.
+**** For the rest of today...
+     - Make some decisions about materials.
+     - Start coding!\\
+       When you run into trouble, /ask me/.
 
 * Removed							   :noexport:
 *** Branching: Case
