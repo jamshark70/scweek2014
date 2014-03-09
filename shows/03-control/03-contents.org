@@ -63,7 +63,7 @@
 
 *** Start simple: Individual grains
 **** \Gls{granular} UGens have a number of parameters.
-     - If we do too many at once, it's confusing.
+     - If we try to cover all of them at once, it's confusing.
 **** Parameters needed for single \glspl{grain}:
      - *Trigger:* We'll use \ugen{Impulse}, controlled by frequency.
      - *Duration*.
@@ -72,6 +72,16 @@
 #        - 0 = buffer start, 1 = buffer end.
 #        - Why? \Glspl{Buffer} may be of different sizes.
 #        - If it's normalized, the position input can be the same for any buffer.
+
+*** Load a buffer
+**** The examples assume that \ci{b} is a \clss{Buffer}.
+     - Load the standard example sound, or another of your choice.
+#+name: sfgran1
+#+caption: Read SuperCollider's classic Apollo 11 example sound into a buffer.
+#+begin_src {SuperCollider} -i
+b.free;
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+#+end_src
 
 *** TGrains UGen
 **** Basic granulator: \ugen{TGrains}.
@@ -88,7 +98,7 @@ p.clear;  // or p = ProxySpace.new; p.push;
 ~grains = { |tfreq = 5, graindur = 0.2, pan = 0, pos = 0.5,
    amp = 0.2|
    var trig = Impulse.ar(tfreq);
-   GrainBuf.ar(2, trig, graindur, b, 1, pos, 2, pan) * amp;
+   TGrains.ar(2, trig, b, 1, pos, graindur, pan, amp);
 };
 ~grains.play;
 )
@@ -305,15 +315,6 @@ p.clear;
 **** Experiment with GUIs in your own work, after the workshop.
      When you need a bigger GUI, look more deeply into the GUI system.
 
-*** Main concepts
-**** By far, the most important concept is \egls{callback}.
-     - User interaction needs to "call back" into your code.
-     - GUI, MIDI, OSC, HID interfaces all depend on this idea.
-**** Other concepts
-     - View :: A general term for a GUI widget.
-     - Spec :: A \clss{ControlSpec}, mapping a control onto a range of values.
-#     - Layout :: An automated way to position views in a window.
-
 *** Buttons and faders
 **** Only two categories of user-interface objects:[fn:6607d9b8]
      - Faders :: Represent a range of values. Sliders, knobs, 2D canvases are all faders.
@@ -324,6 +325,15 @@ p.clear;
        range.
      - Buttons are good for starting and stopping actions.
      - When we get into mobile control, we will see how to make a fader act like a button.
+
+*** Main coding concepts
+**** By far, the most important concept is \egls{callback}.
+     - User interaction needs to "call back" into your code.
+     - GUI, MIDI, OSC, HID interfaces all depend on this idea.
+**** Other concepts
+     - View :: A general term for a GUI widget.
+     - Spec :: A \clss{ControlSpec}, mapping a control onto a range of values.
+#     - Layout :: An automated way to position views in a window.
 
 *** A simple slider
 **** Let's control pitch with a \clss{Slider}.
@@ -445,6 +455,21 @@ b.action = { |view|
        @@latex:\cd{["label", textColor, backgroundColor]}@@.\\
        You can leave out the colors: @@latex: \cd{["label"]}@@.\\
        You can't leave out the sub-array brackets!
+
+*** Different actions for button states
+#+begin_src {SuperCollider} -i
+b.action = { |view|
+   if(view.value == 1) {
+      ~sound.play;
+   } {
+      ~sound.stop;
+   };
+};
+#+end_src
+**** New coding structure: \mth{if}.
+     - What do you think it's doing?\pause
+     - *If* (condition) *then* \{ action \} *else* \{ other action \}.
+     - The most basic /decision-making/ technique.
 
 *** Setting many properties at once
 **** This is a common pattern in GUIs:
@@ -716,8 +741,10 @@ rate.
        - Command \eglspl{path}, such as \ci{"/1/fader"}.
 
 *** OSCFunc tracing: Watching OSC come in
-**** Issue the following commands.
-     Wait a few seconds in between.
+**** Important idea: /Inspect/ the input!
+     The device will tell you what commands it's sending.
+     - Issue the following commands.
+     - Wait a few seconds in between.
 #+name: osc1
 #+caption: How to trace incoming OSC messages.
 #+begin_src {SuperCollider} -i
