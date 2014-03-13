@@ -47,8 +47,8 @@
 #+include: "../03-control/03-contents.org" :minlevel 1
 
 * Part 4 						      :ignoreheading:
-#+latex: \clearpage\part{Programming Concepts for Composition}
-#+include: "../04-programming/04-contents.org" :minlevel 1
+#+latex: \clearpage\part{Effects and Mixing}
+#+include: "../04-effects/04-contents.org" :minlevel 1
 
 * Appendix						      :ignoreheading:
 #+latex: \clearpage\part{Appendix: Additional Topics}
