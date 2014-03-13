@@ -345,14 +345,14 @@ a.m.ar(2);  // initialize to stereo
        \cd{Env.perc}.
      - \mth{addMix}: Create a send for the source.\\
        0.7 is the initial level for the send's volume control.
-#+name: sharedfx1
+#+name: sharedfx2
 #+caption: A ProxySubmix, feeding audio into a simple reverb effect.
 #+begin_src {SuperCollider} -i
 ~src = { |amp = 8|
    var sig = PinkNoise.ar(amp),
    trig = Dust.kr(2.5) > 0,
    freq = TExpRand.kr(200, 1200, trig),
-   env = Decay2.kr(trig, 0.01, 0.3);
+   env = EnvGen.kr(Env.perc(0.01, 0.3), trig);
    BPF.ar(sig, freq, 0.1, env).dup
 };
 ~src.play;  // listen to the dry signal first
@@ -361,6 +361,26 @@ a.m.addMix(~src, 0.7);
 #+end_src
 
 *** Graphical mix control
+**** The sends' volume controls are important.
+     - Some sounds want a lot of reverb.\\
+       Others sounds terrible with the same reverb level.
+     - The volume controls (0.7 in Listing [[sharedfx2]]) allow each
+       source to have its own level of reverb.
+     - In code, set the volume level: \cd{a.m.set(\textbackslash snd\textunderscore src, level)}.\\
+       This is how you can change reverb level by mobile.
+**** \clss{ProxySubmix} collects all the send volumes in one place.
+     - Call \ci{gui} on the submix object.
+     - You get a window with several \ci{snd\textunderscore} controls.\\
+       Plus one more: \ci{lev\textunderscore ALL}, which amplifies the whole submix.
+     - Dry mix levels are in the \clss{ProxySpace}'s GUI.
+     - Easy access to all the mixing controls!
+
+*** Exercise for you
+    1. Write another source proxy.
+       - Percussive envelope, as above.
+       - Use a pitched oscillator.
+    2. Plug it into the submix (\ci{a.m}).
+    3. Adjust its level by GUI.
 
 *** Summary: Shared effects
 

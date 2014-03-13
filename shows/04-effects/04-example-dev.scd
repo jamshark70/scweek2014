@@ -338,13 +338,17 @@ a.m.ar(2);
 	var sig = PinkNoise.ar(amp),
 	trig = Dust.kr(2.5) > 0,
 	freq = TExpRand.kr(200, 1200, trig),
-	env = Decay2.kr(trig, 0.01, 0.3);
+	// env = Decay2.kr(trig, 0.01, 0.3);
+	env = EnvGen.kr(Env.perc(0.01, 0.3), trig);
 	BPF.ar(sig, freq, 0.1, env).dup
 };
 ~src.play;
 
-a.m.addMix(~src, 0);
-// a.m.addMix(~src, 0.7);
+// a.m.addMix(~src, 0);
+a.m.addMix(~src, 0.7);
+
+~src.vol = 0;
+
 
 // automation
 ~fadeInRvb = {
