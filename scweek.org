@@ -149,6 +149,59 @@ You need to use a regexp to find out what class is used:
 You need to check if TITLECMD is nil before wrapping it within a frame.
 Ideally before defining BEAMER-CLASS-P.
 
+** TODO [#A] Log "<--" issue
+	// play proxy as source of receiver
+	<-- { | proxy |
+		var bundle = MixedBundle.new;
+		this.source = proxy;
+
+		if(proxy.monitorGroup.isPlaying) {
+			bundle.addAll(server.makeBundle(false, { proxy.stop(fadeTime: 0.5) }));
+			if(this.monitorGroup.isPlaying.not) {
+				this.playToBundle(bundle, fadeTime:0.1)
+			}
+		};
+		bundle.add(proxy.moveBeforeMsg(this));
+		bundle.send(server, server.latency);
+	}
+
+p = ProxySpace.new.push;
+
+~saw = { Saw.ar(440, 0.1).dup };
+~saw.play;
+
+~chorus <-- ~saw;
+
+~chorus = {
+	var in = ~saw.ar;
+	in + DelayL.ar(in, 0.05, 0.02 + SinOsc.kr([0.1, 0.11], 0, 0.014));
+};
+
+p.clear;
+
+*** Email draft [2014-03-12 Wed]
+I was trying out NodeProxy's <-- method, and noticed that there's an audible gap between the old proxy's fadeout and the new one's fadein.
+
+p = ProxySpace.new.push;
+
+~saw = { Saw.ar(440, 0.1).dup };
+~saw.play;
+
+~chorus <-- ~saw;
+
+The reason is the new one uses server latency when it plays, but the old one releases immediately (no latency).
+
+This change makes them overlap more cleanly.
+
+- proxy.stop(fadeTime: 0.5);
++ bundle.addAll(server.makeBundle(false, { proxy.stop(fadeTime: 0.5) }));
+
+I didn't check very carefully... maybe there's a stopToBundle method that would be more elegant.
+
+The old and new phases don't quite line up. It occurred to me that it might be cleaner to set the new proxy's source to a function that reads from the old proxy, to minimize phasing problems. I was just playing around with that, but then ran into a problem with Node.orderNodesMsg... so I'll have to come back to this after sending another message about the other problem...
+
+hjh
+
 * Content
 ** TODO Exercises
 ** TODO Notes on play/stop? (Finish later, move to day one)
