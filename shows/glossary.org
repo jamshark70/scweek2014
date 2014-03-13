@@ -4,6 +4,7 @@
 |------------------------+---------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ADSR                   |               | An Attack-Decay-Sustain-Release envelope                                                                                                                                              |
 | aliasing               |               | In digital sampling, frequencies above the Nyquist frequency ``fold over'' and are heard as lower frequencies. This is \emph{aliasing}                                                |
+| allpass                |               | A filter (really, delay line) that has no effect on a sound's frequency content, but changes the phases. No audible effect until you mix it with the original                         |
 | allpass filter         |               | A feedback-delay filter that does not change the strength of the frequencies, only the phases                                                                                         |
 | amplitude modulation   |               | Multiplying two signals together. If both signals' frequencies are in the range of human hearing, interesting things happen                                                           |
 | argument               |               | An input to a function or method, provided at the time of calling it                                                                                                                  |
@@ -23,6 +24,7 @@
 | callback               |               | A function that executes in response to an event in some other part of the system. If you make a GUI button, a click needs to ``call back'' into your code                            |
 | carrier                |               | In frequency or phase modulation synthesis, the signal being modulated. The carrier is connected to the audio output                                                                  |
 | chaotic                |               | Chaotic functions are dynamic systems with large differences in the results based on small differences in the inputs. They sound like something between normal waves and random noise |
+| chorus                 |               | An effect that detunes a signal by delaying it slightly, and changing the delay time. Chorus uses a standard delay line, e.g. \ci{DelayL}                                             |
 | class                  | classes       | An object definition, consisting of variables (for data storage) and methods (for the object's operations)                                                                            |
 | clock                  |               | A scheduler. Functions or Routines scheduled on the clock will wake up at the given time, and they will reschedule if the return value is a number                                    |
 | collection             |               | An object that contains several other objects, and supports individual access (``at'') and/or iteration (``do'', ``collect'')                                                         |
@@ -51,6 +53,7 @@
 | exponential            |               | A unit of measurement that works by multiplication. If $f$ is a frequency, ``up an octave'' is $2f$                                                                                   |
 | feedback-delay filter  |               | A filter based on delay a signal, and feeding the delayed copy back to the input. Comb and Allpass filters are feedback-delay types                                                   |
 | filter                 |               | A signal processor that changes a sound's spectrum                                                                                                                                    |
+| flanger                |               | An effect that adds a metallic, buzzing ``whoosh'' to a sound. It works like chorus, but uses a feedback delay, e.g. \ci{CombL}                                                       |
 | formant                |               | A formant is one of the resonances in the vocal cavity, coloring the ``buzz'' coming from the vocal cords. The right combination of formants can produce vowel sounds                 |
 | frame                  |               | In a multichannel sound file or buffer, a frame is one sample for each channel, all at the same time index                                                                            |
 | frequency modulation   |               | A type of synthesis that produces complex spectra by modulating the frequency of a simple waveform                                                                                    |
@@ -102,6 +105,7 @@
 | pattern                |               | An object that describes a stream of values without requiring the programming logic to be repeated. The pattern object makes Streams that perform the calculations                    |
 | phase                  |               | The starting angle, usually given in radians, of a sine wave or any cyclical waveform---effectively, a horizontal shift that doesn't affect the wave's shape                          |
 | phase modulation       |               | Similar to frequency modulation, but the modulator is applied to the oscillator's phase input. This avoids a problem of FM, in which the frequency may deviate off center             |
+| phaser                 |               | An effect that adds a spacey ``whoosh'' to a sound. It works like chorus, but uses an allpass delay, e.g. \ci{AllpassL}                                                               |
 | pitch class            | pitch classes | A pitch number, without considering the octave. Usually C = 0, going up to B = 11                                                                                                     |
 | polymorphism           |               | In Object-Oriented Programming, a single method name can do different things to different objects. Functions and Events both \ci{play}, but not the same way                          |
 | proxy                  | proxies       | A placeholder that allows you to define connections between modules independent of each module's content                                                                              |
@@ -115,6 +119,7 @@
 | rate                   |               | Of a UGen, its calculation rate: audio rate, control rate or initial rate                                                                                                             |
 | receiver               |               | In a method call, the object that determines which method definition is used                                                                                                          |
 | releaseNode            |               | In an envelope, the breakpoint where the envelope generator will pause (or loop back) as long as ``gate'' > 0                                                                         |
+| reverb                 |               | Short for ``reverberation.'' Simulates the effect of a sound bouncing off surfaces in a room. Adds realism to a mix                                                                   |
 | ring time              |               | In Ringz, Klank and Formlet, the time for the filter's resonance to decay to -60 dB. The longer the ring time, the narrower the bandwidth (higher Q)                                  |
 | ringing filter         |               | A filter that "rings" at the given frequency in response to a burst of noise. Its impulse response is a decaying sine wave. See Ringz, Klank and Formlet                              |
 | sample-and-hold        |               | A standard synthesizer trick for random-number generation: \emph{sample} a value from a waveform and \emph{hold} it until the next sample                                             |
@@ -136,7 +141,7 @@
 | view                   |               | A GUI widget onscreen, like a slider, knob or button. A view is also the physical interface component of MVC design                                                                   |
 | wavetable              |               | A single cycle of a waveform stored in a sampling buffer, or an oscillator that plays back the wavetable at a given frequency                                                         |
 | wavetable format       |               | A way of storing repeating waveforms to make wavetable oscillators more efficient. A wavetable buffer needs twice as many numbers as audio samples in the waveform                    |
-
+| send                   |               | The mechanism for shared effects in a conventional mixing board. A send copies the signal to another target; you hear both the original and processed copies                          |
 
 # | sustain                |         | In an event, the number of beats to wait before closing a sustaining envelope's gate                                                                                                  |
 
@@ -169,6 +174,7 @@
 | MIDIdef            |                      | MIDIdef is global, named storage for MIDIFuncs, just like OSCdef is global storage for OSCFuncs                                                                    |
 | MIDIFunc           |                      | Receives incoming MIDI messages. Its design is very much like OSCFunc; only the specific parameters differ                                                         |
 | MIDIOut            |                      | Sends MIDI messages to hardware or other applications                                                                                                              |
+| MixerChannel       |                      | An extension class in the ``ddwMixerChannel'' quark, inspired by the mixing and routing controls found in recording studios and DAWs                               |
 | NetAddr            |                      | Represents a port for network communication: an IP address (e.g. \cd{"127.0.0.1"}) and a port number                                                               |
 | NodeProxy          | NodeProxies          | A hot-swappable placeholder for a Synth on the server                                                                                                              |
 | OSCdef             |                      | Like Pdef and Tdef, OSCdef is global storage for OSCFunc responders                                                                                                |
@@ -181,20 +187,21 @@
 | Pdict              |                      | A Pattern that looks up subpatterns from a Dictionary, and embeds the subpatterns into the output stream in turn                                                   |
 | Pexprand           |                      | A Pattern that generates random numbers with an exponential distribution. The values tend toward the low end                                                       |
 | Pgeom              |                      | A Pattern yielding a geometric series. Each value is the previous value times a given growth factor                                                                |
+| Pif                |                      | A branching pattern: \cd{Pif(booleanPatt, truePatt, falsePatt)}. The condition is evaluated for every output value---the true and false branches are interleaved   |
 | Pkey               |                      | A pattern that reads a value from the given name from the event currently being processed. Child patterns can share information this way                           |
 | Place              |                      | Interlaces values from subarrays. See its help file for details                                                                                                    |
 | Platform           |                      | Holds settings and file paths that are specific to the operating system                                                                                            |
 | Pn                 |                      | A pattern that repeats a value or pattern /n/ times. If /n/ is \ci{inf}, it will repeat as many times as needed                                                    |
-| Pif                |                      | A branching pattern: \cd{Pif(booleanPatt, truePatt, falsePatt)}. The condition is evaluated for every output value---the true and false branches are interleaved   |
-| Pswitch1           |                      | A branching pattern, like \ci{Psym1} and \ci{Pnsym1}, but it takes an \emph{array} of patterns instead of a dictionary, and it uses numbers instead of names       |
 | Pnsym              |                      | Like \ci{Psym}, but the named patterns should yield simple values, not events                                                                                      |
 | Pnsym1             |                      | Like \ci{Psym1}, but the named patterns should yield simple values, not events                                                                                     |
 | Prand              |                      | A Pattern to choose values randomly from an array                                                                                                                  |
 | ProxySpace         |                      | An Environment that automatically makes a NodeProxy from any item in it                                                                                            |
+| ProxySubmix        |                      | A JITLib class that implements \emph{sends}. Add proxies to it, and they can all feed together into a shared effect                                                |
 | Pseq               |                      | A Pattern to return values from an array, one by one                                                                                                               |
 | Pseries            | Pseries              | A Pattern yielding an arithmetic series. Each value is the previous value plus a given step size                                                                   |
 | Pshuf              |                      | Read items from a list in random order, using all items before repeating---i.e., ``shuffle'' the items                                                             |
 | Pslide             |                      | ``Slides'' across an array of items. For instance, 0 1 2 3 1 2 3 4 2 3 4 5 and so on                                                                               |
+| Pswitch1           |                      | A branching pattern, like \ci{Psym1} and \ci{Pnsym1}, but it takes an \emph{array} of patterns instead of a dictionary, and it uses numbers instead of names       |
 | Psym               |                      | Higher-level pattern structure. Given a Dictionary \cd{(name: pattern, name: pattern...)} and a pattern returning the names, evaluate the pattern for each name    |
 | Psym1              |                      | A branching structure for patterns. Like \ci{Psym}, but it yields one event from a named pattern before switching to another name                                  |
 | Ptempo             |                      | A pattern that returns the current clock's tempo. Useful for scaling beats into seconds: $sec = beats \div tempo$                                                  |
@@ -235,6 +242,8 @@
 |---------------------+--------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ++                  |        | Concatenate (join) two arrays: \cd{[0, 1, 2] ++ [10, 11, 12]} $\to$ \cd{[0, 1, 2, 10, 11, 12]}                                                                             |
 | add                 |        | For SynthDefs, add the definition into the server so that it can be played. For Collections, add a new item                                                                |
+| addDependant        |        | \cd{model.addDependant(listener)} registers \ci{listener} as a dependent of \ci{model}. The listener will receive notifications from the model                             |
+| addMix              |        | A method of \ci{ProxySubmix}, equivalent to creating a send for a channel in an audio workstation                                                                          |
 | addSpec             |        | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                          |
 | adsr                |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                               |
 | alloc               |        | \cd{Buffer.alloc(server, numFrames, numChannels)} reserves memory in the server for a new buffer                                                                           |
@@ -249,6 +258,7 @@
 | beatsPerBar         |        | A TempoClock's meter (time signature). You can change it, but only on a barline. That barline becomes the basis for future bar/beat calculations                           |
 | blockSize           |        | A variable in \ci{ServerOptions}, setting the number of samples in one control block. The default is 64                                                                    |
 | case                |        | A branching control structure. Takes pairs of conditions and actions; and executes the action for the first condition that is true                                         |
+| changed             |        | This method broadcasts a notification from the receiver to any dependents that have been registered with \ci{addDependant}                                                 |
 | clip                |        | Constrain a number within a range. If the number is outside the range, clip it to the low or high boundary                                                                 |
 | clump               |        | Group the items of a flat array into equally-sized chunks. \cd{[0, 1, 2, 3, 4].clump(2)} returns \cd{[[0, 1], [2, 3], [4]]}                                                |
 | coin                |        | A weighted coin toss: \cd{0.coin} is always false; \cd{1.coin} is always true. \cd{0.5.coin} is equally weighted. The receiver may also be a pattern of numbers            |
@@ -320,6 +330,7 @@
 | remove              |        | Remove the given item from the collection. Returns the item, not the collection---so you can't write \cd{x.remove(1).remove(2)}. Also releases some object types           |
 | removeAll           |        | Removes all the given items from the collection                                                                                                                            |
 | removeAt            |        | Remove the item at the given index from the collection. Returns the item, not the collection                                                                               |
+| removeDependant     |        | \cd{model.removeDependant(listener)} disconnects that particular listener from the model                                                                                   |
 | reset               |        | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                                  |
 | resourceDir         |        | \cd{Platform.resourceDir} points to a directory of extra resources, which are part of a normal SC installation                                                             |
 | round               |        | Round a number to the nearest division---by default, 1 (integers) but it may also be fractional                                                                            |
@@ -348,16 +359,13 @@
 | symmetricDifference |        | Given two sets, return the items that exist in only one of the two, but not both. May also be written \cd{setA -- setB}                                                    |
 | sync                |        | In a Routine, call \ci{sync} on a server to wait for any pending asynchronous operations to finish                                                                         |
 | union               |        | Given two sets, return their \emph{union}: the items that exist in either set, or both. May also be written \cd{setA \textbar setB}                                        |
+| update              |        | This method receives notifications sent by \ci{changed}                                                                                                                    |
 | value               |        | Evaluate an object. Usually this is the object itself. Functions evaluate themselves and return the result. Other kinds of objects do special things when value'd          |
 | values              |        | Called on a Dictionary, returns a list (array) of the values. It must be an array, to allow duplicate values                                                               |
 | wait                |        | In a Routine, same as \ci{yield}, but works only for numbers. Used for deltas (wait times).                                                                                |
 | while               |        | A looping structure common in many programming languages. If a condition is true, run the loop body again. If false, stop                                                  |
 | wrap                |        | Constrain a number within a range. If the number goes above the upper boundary, it wraps around to the lower boundary                                                      |
 | yield               |        | Within a Routine or Task, return a value to the caller and wait for the next request                                                                                       |
-| changed             |        | This method broadcasts a notification from the receiver to any dependents that have been registered with \ci{addDependant}                                                 |
-| update              |        | This method receives notifications sent by \ci{changed}                                                                                                                    |
-| addDependant        |        | \cd{model.addDependant(listener)} registers \ci{listener} as a dependent of \ci{model}. The listener will receive notifications from the model                             |
-| removeDependant     |        | \cd{model.removeDependant(listener)} disconnects that particular listener from the model                                                                                   |
 
 
 * UGens								   :noexport:

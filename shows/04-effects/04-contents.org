@@ -25,6 +25,345 @@
     - Within a NodeProxy
     - Between NodeProxies
     - Sends, MixerChannels
+
+*** Effects bring the sound to life
+**** Effects are everywhere.
+     - In pop or electronic music, you almost never hear any unprocessed sound.
+     - Dry recordings are boring.
+     - EQ, reverb, chorus etc. make the sound seem more alive.
+**** First issue: How to connect effects.
+     We'll look at three ways:
+     - Between \clsspl{NodeProxy} in a \clss{ProxySpace}.\\
+       We've seen this: filters in subtractive synthesis.
+     - Source and effect within one \clss{NodeProxy}.\\
+       This is like /insert/ effects in a DAW.
+     - \clss{MixerChannel} for routing and mixing.\\
+       Brings mixing controls together in one place.
+
+*** Multiple sources and effects
+**** With several sources and effects, three main structures:
+#+begin_center
+#+begin_latex
+\begin{tabular}{|c|c|c|}
+\textbf{Serial} & \textbf{Parallel} & \textbf{Shared}\\
+\hline
+\includegraphics[width=.3\linewidth]{../04-effects/img/serial-effects.pdf}
+&
+\includegraphics[width=.3\linewidth]{../04-effects/img/parallel-effects.pdf}
+&
+\includegraphics[width=.3\linewidth]{../04-effects/img/shared-effects.pdf}
+\\
+\hline
+\emph{Insert} effects & \multicolumn{2}{|c|}{\emph{Send} effects}
+\end{tabular}
+#+end_latex
+#+end_center
+
+*** Effects: Output /and/ input
+**** Effects need audio input and output.
+     - Oscillators may have only audio output.\\
+       (Control inputs like \ci{freq} are not the same.)
+     - Effects have to bring an audio signal in.\\
+       Then they process it, and send out a modified signal.
+**** \egls{JITLib} gives you two ways to bring audio in.
+     - Calling \mth{ar} on a \clss{NodeProxy}.\\
+       We've already done this---just a new use for effects.
+     - New: The \ci{\textbackslash filter} adverb.\\
+       Used for inserts and the \clss{MixerChannel} approach.
+
+*** Effect routing by NodeProxy access
+**** Remember subtractive synthesis: Oscillator $\to$ filter.
+     In modular style, that was:
+#+begin_src {SuperCollider} -i
+~oscil = { Saw.ar(...) };
+~filter = { RLPF.ar(~oscil.ar, ...) };
+#+end_src
+**** We /can/ use the same for other effects.
+     But, it has some limitations:
+     - Good for /serial/ and /parallel/ effect processing.
+     - Bad for /shared/ effects.
+
+*** Problem: Adding an effect to an existing sound
+**** For insert effects, /last/ effect $\to$ output.
+     "Serial" processing, above.
+**** Usual workflow: Start with the source.
+     - At first, \mth{play} the source proxy.
+     - Then add an effect. Now the effect should \mth{play}.
+     - So you need to switch the proxy that's playing.
+**** Solution: The \ci{<--} operator.
+     - \cd{\textasciitilde target <-- \textasciitilde source;}
+     - "Moves" the source into the target:
+       - The target gets the source's contents.
+       - Then, it plays the target and stops the source.
+     - Sound should not change much.
+
+*** Example: Saw into chorus
+**** \ci{<--} says that we want \ci{\textasciitilde chorus} to play now.
+     - \ci{\textasciitilde saw} keeps going /and/ it's copied into \ci{\textasciitilde chorus}.
+     - Then we can replace \ci{\textasciitilde chorus} with an effect.
+       (Run all the \ci{\textasciitilde chorus} lines together, and
+       the glitch disappears.)\glsadd{chorus}
+#+name: routing1
+#+caption: Transferring a source to a second proxy, so that the second proxy can become an effect.
+#+begin_src {SuperCollider} -i
+p = ProxySpace.new.push;
+
+~saw = { Saw.ar(440, 0.1).dup };
+~saw.play;
+
+~chorus <-- ~saw;
+
+~chorus = {
+   var in = ~saw.ar;
+   in + DelayL.ar(in, 0.05, 0.02 + SinOsc.kr([-0.1, 0.11], 0, 0.014));
+};
+
+p.clear;
+#+end_src
+
+*** One proxy, many objects for effects in series
+**** Effects belonging to one proxy can live in that proxy.
+     - Proxies have several /slots/, accessed like an array.\glsadd{chorus}
+     - So far, we have used slot 0 only.
+     - Slots 1, 2 etc. can be effects with the \ci{\textbackslash filter} adverb.
+#+name: routing2
+#+caption: Putting an effect into the same proxy with its source.
+#+begin_src {SuperCollider} -i
+p = ProxySpace.new.push;  // if needed
+
+~saw = { Saw.ar(440, 0.1).dup };
+~saw.play;
+
+~saw[1] = \filter -> { |in|
+   in + DelayL.ar(in, 0.05, 0.02 + SinOsc.kr([-0.1, 0.11], 0, 0.014));
+};
+
+p.clear;
+#+end_src
+
+*** "Filter" input signal by argument
+**** The last example has no \cd{\textasciitilde saw.ar}.
+     - But it still gets the input signal... from \cd{\textbar in\textbar}.
+     - \ci{\textbackslash filter} reserves the first argument for the input signal.
+     - Any other arguments behave as we have seen:\\
+       They become control inputs, and they appear in the GUI.
+**** Exercise for you:
+     - Modify Listing [[routing2]] to add a \ci{depth} argument to \ci{\textasciitilde saw[1]}.
+     - \ci{depth} will take the place of \ci{0.014}.
+     - Very important to add a spec!\\
+       The depth must not be higher than 0.02.
+
+*** Easy way to handle chains of effects
+**** For example, drum processing.
+     - EQ to remove garbage from the sound.
+     - Compression.
+     - More EQ to blend the sound into the mix.
+**** This is easy with proxy slots.
+#+begin_src {SuperCollider} -i
+~kick = { ... buffer player ... };
+~kick[1] = \filter -> { |in|
+   ... destructive EQ...
+};
+~kick[2] = \filter -> { |in|
+   ... compressor...
+};
+~kick[3] = \filter -> { |in|
+   ... constructive EQ...
+};
+#+end_src
+
+*** Insert effects: Wet/dry balance
+**** VST-style effects usually have a /Mix/ setting.
+     This is the balance between the dry and wet signals.
+     - Dry :: The original, unprocessed input signal.
+     - Wet :: The result of effect processing.
+**** \ci{\textbackslash filter}s automatically create a \ci{wet} control for you.
+     - The control will show up in the GUI.
+     - Better way to imitate a traditional chorus effect:
+       - The effect proxy returns only the \ugen{DelayL} (no \cd{in +}).
+       - Set \ci{wet1} to 0.5, to blend with the original.
+
+*** Chorus, using built-in "wet" control
+\glsadd{chorus}
+#+name: routing3
+#+caption: Using the wet/dry control to implement chorusing in the standard, DAW way.
+#+begin_src {SuperCollider} -i
+~saw.addSpec(\wet1, [0, 1]);
+~saw.set(\wet1, 0.5);
+~saw[1] = \filter -> { |in|
+   DelayL.ar(in, 0.05, 0.02 + SinOsc.kr([-0.1, 0.11], 0, 0.014));
+};
+
+p.clear;
+#+end_src
+
+*** Summary: Insert effects
+**** Easiest way: \ci{\textbackslash filter} adverb.
+     - Input signal comes to the first function argument.\\
+       Call it \ci{in}---easy to remember.
+     - The function should return only the processed signal.
+     - Assign to a later slot in the \clss{NodeProxy}:\\
+       @@latex:\cd{\textasciitilde proxy[1] = \textbackslash filter -> \{ \textbar in\textbar ... \}}.@@
+     - Use the @@latex:\ci{wet\#}@@ control for balance.\\
+       @@latex:\#@@ is the slot number, e.g. \ci{wet1}.
+
+** Shared effects
+*** Many signals $\to$ one effect
+**** Some effects work well with several signals going in.
+     Especially \egls{reverb}.
+     - In real life, you have many sound sources in one room.
+     - They are all subject to (roughly) the same reverb characteristics.
+     - In an electronic mix, you can do the same:
+       - Mix several sounds together.
+       - Feed the mix into one reverb.
+
+*** DAWs: Sends
+**** {1.0\textwidth}{3in}				      :B_overlayarea:
+     :PROPERTIES:
+     :BEAMER_env: overlayarea
+     :END:
+***** DAWs handle this with \eglspl{send}.
+***** O1-main							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 1
+      :END:
+****** Left							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.6
+       :END:
+	Normal signal flow:
+	- Source...
+	- ... into volume fader...
+	- ... into hardware output.
+****** Right							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.4
+       :END:
+#+begin_center
+#+attr_latex: :height 1.2in
+[[../04-effects/img/01-send-schematic-main.pdf]]
+#+end_center
+
+***** O2-send							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 2
+      :END:
+****** Left							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.6
+       :END:
+	A \egls{send} splits the signal in another direction.
+	- The send has its own volume control.
+	- This is a /pre-fader/ send:\\
+	  The send comes directly from the source, /before/ the volume control.
+****** Right							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.4
+       :END:
+#+begin_center
+#+attr_latex: :height 1.2in
+[[../04-effects/img/02-send-schematic-send.pdf]]
+#+end_center
+
+***** O3-reverb							  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 3
+      :END:
+****** Left							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.6
+       :END:
+	The copy goes through some effect processing.\\
+	The effect mixes into the main output.
+****** Right							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.4
+       :END:
+#+begin_center
+#+attr_latex: :height 1.2in
+[[../04-effects/img/send-schematic-all.pdf]]
+#+end_center
+
+***** O4-post-fader						  :B_onlyenv:
+      :PROPERTIES:
+      :BEAMER_env: onlyenv
+      :BEAMER_act: 4
+      :END:
+****** Left							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.6
+       :END:
+       A /post-fader/ send takes the signal from the volume control.
+       - This is more realistic for reverb:\\
+	 As the source gets quieter, the reverb should get quieter too.
+****** Right							      :BMCOL:
+       :PROPERTIES:
+       :BEAMER_col: 0.4
+       :END:
+#+begin_center
+#+attr_latex: :height 1.2in
+[[../04-effects/img/send-schematic-all-postfader.pdf]]
+#+end_center
+
+*** JITLib: ProxySubmix
+**** In JITLib, we can do the same thing using \clss{ProxySubmix}.
+     - \Glspl{send} /mix/ a selected group of signals together.\\
+       In effect, this is a /submix/.
+     - \clss{ProxySubmix} represents a group of \glspl{send}.
+     - The effect needs only one source, then.
+     - Like other proxies, you can make the \clss{ProxySubmix} early.
+
+*** Simple reverb with a ProxySubmix
+**** To use:
+     1. Create the \clss{ProxySubmix}.
+     2. Initialize it to the number of channels you need.\\
+	For reverb, normally stereo: two channels.
+     3. Use the submix in the reverb effect.\\
+	Note: In this case, the effect's /Mix/ should be 1.0.
+#+name: sharedfx1
+#+caption: A ProxySubmix, feeding audio into a simple reverb effect.
+#+begin_src {SuperCollider} -i
+p.clear;  // p = ProxySpace.new.push;
+a = ();   // storage, outside ProxySpace
+
+a.m = ProxySubmix(\revin);  // ProxySubmix needs a name
+a.m.ar(2);  // initialize to stereo
+
+~rev = {
+   var in = a.m.ar;
+   FreeVerb2.ar(in[0], in[1], 1, 0.8, 0.2);
+};
+~rev.play;
+#+end_src
+
+*** Sound source
+**** The sound source is a regular \clss{NodeProxy}.
+     - Reverb is easier to hear with short, percussive sounds:\\
+       \cd{Env.perc}.
+     - \mth{addMix}: Create a send for the source.\\
+       0.7 is the initial level for the send's volume control.
+#+name: sharedfx1
+#+caption: A ProxySubmix, feeding audio into a simple reverb effect.
+#+begin_src {SuperCollider} -i
+~src = { |amp = 8|
+   var sig = PinkNoise.ar(amp),
+   trig = Dust.kr(2.5) > 0,
+   freq = TExpRand.kr(200, 1200, trig),
+   env = Decay2.kr(trig, 0.01, 0.3);
+   BPF.ar(sig, freq, 0.1, env).dup
+};
+~src.play;  // listen to the dry signal first
+
+a.m.addMix(~src, 0.7);
+#+end_src
+
+*** Graphical mix control
+
+*** Summary: Shared effects
+
 ** Common effects
 *** Things							   :noexport:
     - Distortion
