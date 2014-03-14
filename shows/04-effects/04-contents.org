@@ -346,7 +346,7 @@ a.m.ar(2);  // initialize to stereo
      - \mth{addMix}: Create a send for the source.\\
        0.7 is the initial level for the send's volume control.
 #+name: sharedfx2
-#+caption: A ProxySubmix, feeding audio into a simple reverb effect.
+#+caption: A percussive audio source, added into the reverb ProxySubmix.
 #+begin_src {SuperCollider} -i
 ~src = { |amp = 8|
    var sig = PinkNoise.ar(amp),
@@ -383,10 +383,93 @@ a.m.addMix(~src, 0.7);
     3. Adjust its level by GUI.
 
 *** Summary: Shared effects
+**** For shared objects, /mix/ the sources into the effect.
+     \clss{ProxySubmix} does this.
+     1. Create it, with a name: \cd{ProxySubmix(\textbackslash name)}.
+     2. Initialize its number of channels: \cd{a.m.ar(2)}.
+     3. \mth{addMix} to feed sources into it.
+	- Sends are /post-fader/ by default.
+	- For /pre-fader/: \cd{a.m.addMix(\textasciitilde proxy, level, false)}.
+     4. \cd{a.m.gui} to bring up a separate mixer for the effect.
 
 ** Common effects
-*** Things							   :noexport:
-    - Distortion
-    - Chorus
-    - Compander
-    - Reverb
+*** Building common effects
+**** This section walks through the construction of a few common effects.
+     - Chorus
+     - Distortion
+     - EQ
+     - Compression (dynamics processing)
+     - Reverb
+
+*** Chorus
+**** \eGls{chorus} imitates the sound of several players together.
+     Human players are:
+     - Not exactly in time.\\
+       We can come within a few milliseconds, but no closer.
+     - Not exactly in tune. (Close---within a few Hz.)
+     The imperfections make the sound more interesting.
+**** Chorus uses a short delay to get both effects.
+     - The delay is inherently a time offset.
+     - Changing the delay time affects pitch, by the Doppler effect.
+
+*** Delays and Doppler
+#+begin_center
+#+attr_latex: :height 1.2in
+[[./img/doppler-shorten.pdf]]
+#+end_center
+**** Doppler shift from changing delay time?
+     - Here, we start with a 1.2 second delay.
+     - After 1 sec, the delay is 1 sec.\\
+       That is: At time 2.0, we hear audio from 1.0 sec.
+     - The delay puts out 1.0 sec of audio /in 0.8 sec/!\\
+       The pitch /must/ change.
+
+*** Synth example based on the chart
+#+name: chorus1
+#+caption: A brief demonstration of Doppler shift, resulting from the delay time becoming shorter.
+#+begin_src {SuperCollider} -i :var extract='t
+a = {
+   var sig = SinOsc.ar(440, 0, 0.1),
+   delaytime = Line.kr(1.2, 0.2, 2),
+   delay = DelayL.ar(sig, 1.2, delaytime),
+   eg1 = EnvGen.kr(Env.linen(0.01, 0.98, 0.01)),
+   eg = EnvGen.kr(Env.linen(0.01, 1.98, 0.01), doneAction: 2);
+   (((sig * eg1) + delay) * eg).dup
+}.play;
+#+end_src
+
+*** Simple chorus in SC
+**** Let's take apart the earlier chorus example.
+     See Listing [[routing3]].
+#+begin_src {SuperCollider}
+DelayL.ar(in, 0.05, 0.02 + SinOsc.kr([-0.1, 0.11], 0, 0.014));
+#+end_src
+     - \ugen{DelayL}: The delay line.
+     - Delay time: \cd{0.02 + SinOsc...}.
+       - 0.02 is 20 ms /pre-delay/.
+       - \ugen{SinOsc} makes the delay go up and down, slowly.
+       - \cd{[-0.1, 0.11]}: Two frequencies, producing two sines and two delays.\\
+	 Detuning twice makes a richer sound.\\
+	 --0.1 makes one go down while the other goes up.
+       - \cd{0.014}: The effect's /width/. It *must* be < predelay.\\
+	 What bad thing will happen if width > predelay?
+
+*** Chorus depends on the mix
+**** The delay line only changes the sound's tuning.
+     - It doesn't make the rich ensemble sound by itself.
+     - For that, mix the original sound into the delay.
+     - The easiest way, as above, is using the \ci{\textbackslash filter}'s \ci{wet} control.
+     - Normally this is 0.5 for chorus.
+
+*** Making a general chorus effect
+**** As in synthesis...
+     Start with a prototype, then add controls.\\
+     What controls can we add here?\pause
+     - Predelay :: The "center" delay time.\\ The actual delay time varies above and below.
+     - Width :: How far above and below the center.
+     - Frequency :: How fast to change the delay time.
+     Notes:
+     - The pitch changes more with a larger width and frequency.
+     - Usually both are fairly small.
+**** Exercise: Add parameters to the chorus that we've already seen.
+     Make sure to \mth{addSpec}, so that they don't go out of range in the GUI.

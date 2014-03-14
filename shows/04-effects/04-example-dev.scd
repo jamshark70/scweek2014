@@ -339,16 +339,19 @@ a.m.ar(2);
 	trig = Dust.kr(2.5) > 0,
 	freq = TExpRand.kr(200, 1200, trig),
 	// env = Decay2.kr(trig, 0.01, 0.3);
-	env = EnvGen.kr(Env.perc(0.01, 0.3), trig);
-	BPF.ar(sig, freq, 0.1, env).dup
+	env = EnvGen.kr(Env.perc(0.01, 0.3), trig),
+	pan = env * TRand.kr(0.5, 1.0, trig) * (TIRand.kr(0, 1, trig) * 2 - 1);
+	Pan2.ar(BPF.ar(sig, freq, 0.1, env), pan)
 };
 ~src.play;
 
 // a.m.addMix(~src, 0);
-a.m.addMix(~src, 0.7);
+a.m.addMix(~src, 0.7/*, mono: false*/);
 
 ~src.vol = 0;
 
+p.gui;
+a.m.gui;
 
 // automation
 ~fadeInRvb = {
@@ -364,3 +367,27 @@ NdefGui(a.m, 8);
 
 p.clear;
 a.m.clear;
+
+// stereo really working?
+a.m.inspect;
+a.m.objects.indices;
+
+s.sendMsg(\n_trace, a.m.objects[1].nodeID);
+
+a.m.clear;
+
+ProxySubmix.findRespondingMethodFor(\clear);
+
+
+
+// doppler
+a = {
+	var sig = SinOsc.ar(440, 0, 0.1),
+	delaytime = Line.kr(1.2, 0.2, 2),
+	delay = DelayL.ar(sig, 1.2, delaytime),
+	eg1 = EnvGen.kr(Env.linen(0.01, 0.98, 0.01)),
+	eg = EnvGen.kr(Env.linen(0.01, 1.98, 0.01), doneAction: 2);
+	(((sig * eg1) + delay) * eg).dup
+}.play;
+
+a.trace;
