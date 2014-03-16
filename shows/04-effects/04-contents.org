@@ -392,14 +392,14 @@ a.m.addMix(~src, 0.7);
 	- For /pre-fader/: \cd{a.m.addMix(\textasciitilde proxy, level, false)}.
      4. \cd{a.m.gui} to bring up a separate mixer for the effect.
 
-** Common effects
+** Common effects: Chorus
 *** Building common effects
 **** This section walks through the construction of a few common effects.
      - Chorus
      - Distortion
      - EQ
-     - Compression (dynamics processing)
      - Reverb
+#     - Compression (dynamics processing)
 
 *** Chorus
 **** \eGls{chorus} imitates the sound of several players together.
@@ -415,7 +415,7 @@ a.m.addMix(~src, 0.7);
 *** Delays and Doppler
 #+begin_center
 #+attr_latex: :height 1.2in
-[[./img/doppler-shorten.pdf]]
+[[../04-effects/img/doppler-shorten.pdf]]
 #+end_center
 **** Doppler shift from changing delay time?
      - Here, we start with a 1.2 second delay.
@@ -473,3 +473,319 @@ DelayL.ar(in, 0.05, 0.02 + SinOsc.kr([-0.1, 0.11], 0, 0.014));
      - Usually both are fairly small.
 **** Exercise: Add parameters to the chorus that we've already seen.
      Make sure to \mth{addSpec}, so that they don't go out of range in the GUI.
+
+*** Refinements to chorus
+**** More delays = richer effect.
+     - Slight differences also get a better sound.
+     - Try adding a small random offset to:
+       - Pre-delay
+       - Frequency
+       - Phase
+**** For more ideas for chorus, see:
+     /Sound On Sound/ "Synth Secrets" no. 62 (June 04).\\<all>
+     http://www.soundonsound.com/sos/jun04/articles/synthsecrets.htm
+
+** Common effects: Distortion
+*** Distortion
+**** Distortion flattens the peaks of an input sound.
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :END:
+     - The top is a pure sine wave.
+     - The bottom is the same wave, distorted by \mth{tanh}.
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.4
+     :END:
+     #+begin_center
+     #+attr_latex: :height 1.25in
+     [[../04-effects/img/sine-distorted.png]]
+     #+end_center
+
+*** Distortion's effect on spectrum
+**** Distortion /adds harmonics/ to the sound's spectrum.
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :END:
+     - *Top:* Spectrum of a sine wave at 440 Hz.\\
+       As expected, energy is concentrated in one place.
+     - *Bottom:* Spectrum of a distorted sine wave.\\
+       440 Hz is still strong, and we also get energy at multiples of 440 Hz.
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.4
+     :END:
+     #+begin_center
+     #+attr_latex: :height 1.25in
+     [[../04-effects/img/sine-dist-spectrum.png]]
+     #+end_center
+
+*** Distortion and waveshaping
+**** \eGls{waveshaping} uses a table to transform the input.
+     The table represents a \egls{transfer function}, which maps the input onto the output.
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :END:
+     - *Top:* A linear transfer function.\\
+       $x = y$: /No change/ in sound.
+     - *Middle:* Mild distortion.
+       - Near the middle, it's basically a straight line.\\
+	 Quiet input, not much change in sound.
+       - The edges are flatter.\\
+	 Loud input, more extreme effect.
+     - *Bottom:* More extreme distortion.\\
+       - Quiet input gets louder very quickly.
+       - Loud input gets "crushed" more.
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.4
+     :END:
+     #+begin_center
+     #+attr_latex: :height 2.2in
+     [[../04-effects/img/distortion-xfer-funcs.png]]
+     #+end_center
+
+*** Easy distortion
+**** Usual structure of a distortion effect:
+     1. *Pre-amplifier:* Controls the effect's intensity.
+	- Distortion is heavier when the input is louder.
+     2. *Distortion operator:* Four predefined types.
+	- \mth{distort} :: Moderate distortion.\\
+	  Formula: $\frac{x}{\lvert x\rvert+1}$.
+	- \mth{softclip} :: Mild distortion.\\
+	  Below --6 dB, no distortion at all.
+	- \mth{tanh} :: Harsher distortion.\\
+	  The /hyperbolic tangent/ of the input.
+     3. *Post-amplifier:* Reduce the volume to fit into the mix.
+
+*** Easy distortion example
+    *Note:* The example puts the effect into slot \cd{[1]}. Distortion is usually an insert effect, so this is the right way..
+#+name: dist1
+#+caption: A very simple distortion effect, with preamp and postamp parameters.
+#+begin_src {SuperCollider} -i
+p.clear;  // p = ProxySpace.new.push;
+
+~kick.ar(2);  // initialize stereo
+~kick[1] = \filter -> { |in, preamp = 0.5, postamp = 0.1|
+   (in * preamp).tanh * postamp
+};
+~kick.addSpec(\preamp, [0.25, 20, \exp]);
+~kick.addSpec(\postamp, \amp);
+#+end_src
+
+*** Distortion and crunchy dance kick drums
+**** A common kick drum in dance music is a sinewave.
+     - Frequency slides quickly from high to low: an \egls{envelope}.\\
+       Note that you have to write the starting frequency twice.
+     - Distortion makes it dirtier.
+     - For simplicity, we'll generate the trigger by \ugen{Impulse}.
+     - For composition, you would want a \ci{t\textunderscore trig} control, and drive it by a pattern.
+#+name: dist2
+#+caption: A simple synthetic kick drum, to feed into the distortion above.
+#+begin_src {SuperCollider} -i
+~kick[0] = {
+   var trig = Impulse.ar(2),
+   freq = EnvGen.ar(Env([400, 400, 50], [0, 0.07], \exp), trig),
+   ampeg = EnvGen.ar(Env.perc(0.01, 0.4), trig),
+   sig = SinOsc.ar(freq);
+   (sig * ampeg).dup
+};
+#+end_src
+
+*** Note: Freq EnvGen					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+Let's look at it more closely at that frequency envelope. *This is
+important!* It's a very common question on the SuperCollider users
+mailing list: How do you make a line that you can retrigger any time?
+You will certainly forget this point sometime. In fact, while writing
+the example, /I/ forgot it---and I have over ten years experience in
+SC!
+
+#+begin_src {SuperCollider}
+EnvGen.ar(Env([400, 400, 50], [0, 0.07], \exp), trig)
+#+end_src
+
+Why does the higher end (400) appear twice? It's because of the
+behavior of retriggering an envelope. You might think a trigger means
+to "go back to the beginning," but that's not exactly right. It tells
+\ugen{EnvGen} to go to /segment 0/.
+
+\ugen{EnvGen} knows:
+
+- its current value;
+- the target value of the segment it's currently playing;
+- how long it should take to reach the target value.
+
+So, the trigger actually means: "Starting right now, slide to
+\ci{value}$_0$, and take \ci{time}$_0$ to do it." What's confusing is
+that the first 400 is /not/ \ci{value}$_0$---the /second/ one is.
+
+#+begin_center
+#+attr_latex: :align |c|c|c|
+| *Env part* | *Value* | *Time* |
+|------------+---------+--------|
+| Initial    |     400 |        |
+|------------+---------+--------|
+| Segment 0  |     400 |      0 |
+| Segment 1  |      50 |   0.07 |
+#+end_center
+
+If you write the envelope as @@latex:\cd{Env([400, 50], [0.07],
+\textbackslash exp)}@@, then the first envelope segment goes
+/to/ 50. An incoming trigger will cause \ugen{EnvGen} to transition
+/from/ 50 (its current level) /to/ 50, producing... no change in the
+sound.
+
+To retrigger a line, you have to have an envelope whose first segment
+goes to the start of the line very quickly, and to do that, you have
+to provide the starting value twice: once as the envelope's initial
+value, and once as the target of the first segment.
+
+*** Shaper UGen
+**** \ugen{Shaper} lets you use an arbitrary transfer function.
+     At right, a sinewave being waveshaped by another sinewave.
+**** Left							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :END:
+      1. Create a \clss{Signal} with the transfer function values.\\
+       	 The array size must be a power of two: 256, 512, 1024 etc.
+      2. Convert the Signal into a \clss{Wavetable}: \mth{asWavetable}.
+      3. Load the wavetable into a buffer: \mth{sendCollection}.
+      4. Now you can use it as the buffer input to \ugen{Shaper}.
+**** Right							      :BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.4
+     :END:
+     #+begin_center
+     #+attr_latex: :height 1.25in
+     [[../04-effects/img/sine-shaped-by-sine.png]]
+     #+end_center
+
+*** Notes on Shaper example
+**** Note the techniques to fill the buffer.
+     - The transfer function is a sinewave, so we can use \mth{sineFill}.\\
+       See also \clss{Buffer}'s \mth{sine1}, \mth{sine2} and \mth{sine3} methods.
+     - You can also convert any array by \cd{array.as(Signal).asWavetable}.
+     - The last couple of statements change the transfer function.\\
+       You can do this while playing---experiment to get the right sound.
+**** *IMPORTANT:* \ugen{Shaper} input must not go outside --1 .. 1!
+     - The example uses \ugen{Limiter} to control this.
+
+*** Shaper example
+#+name: dist3
+#+caption: Replace the tanh distortion with Shaper distortion.
+#+begin_src {SuperCollider} -i
+x = Signal.sineFill(512, [1]);  // x.plot to see
+b = Buffer.sendCollection(s, x.asWavetable, 1,
+   action: { "done".postln });
+
+~kick[1] = \filter -> { |in, postamp = 0.1|
+   in = Limiter.ar(in, 1);
+   Shaper.ar(b, in, postamp);
+};
+
+// change the transfer function
+b.sendCollection(
+   Signal.sineFill(512, [1, 0.5, 0.33]).asWavetable
+);
+
+// "sine1" on a Buffer is a shortcut
+b.sine1([0, 0, 0, 0, 0, 0, 0, 1]);
+#+end_src
+
+** Common effects: EQ
+*** EQ
+**** EQ should be an insert effect.
+     - Use proxy slots: \cd{[1]} etc.
+**** The *BEQSuite* provides EQ filters.
+     - \ugen{BPeakEQ} :: Standard boost/cut EQ.
+     - \ugen{BLowShelf} :: Low shelving.
+     - \ugen{BHiShelf} :: High shelving.
+     Also \ugen{BLowPass} and \ugen{BHiPass}.
+
+*** Mass-producing EQs and controls
+**** You'll probably create a lot of EQs.
+     - I've included a function in (example file).
+     - Add it into your personal storage dictionary.
+     - Then you can add EQs easily.\\
+       (Here, assuming \ci{a} is your dictionary.)
+#+name: eqfunc
+#+caption: Adding EQ bands to a proxy, by a convenience function.
+#+begin_src {SuperCollider} -i
+~saw = { Saw.ar(50, 0.1).dup };
+~saw.play;
+~saw.gui;
+
+a.addEQ(~saw, 1);
+
+// Add a low pass filter,
+// and override the default frequency and rq
+a.addEQ(~saw, 2, BLowPass, 800, 0.05);
+#+end_src
+**** TODO Put the function somewhere sensible			   :noexport:
+#+begin_src :exports none
+a = ();
+a.addEQ = { |dict, proxy, slot, eqClass(BPeakEQ), freq = 440, rq = 1, gain|
+	var freqname, rqname, gainname, gainSpec;
+	if(slot.isNil) { slot = proxy.objects.indices.maxItem + 1 };
+	if([BPeakEQ, BLowShelf, BHiShelf].includes(eqClass)) {
+		gainSpec = [-20, 20];
+		if(gain.isNil) { gain = 0 };
+	} {
+		gainSpec = \amp;
+		if(gain.isNil) { gain = 1 };
+	};
+	freqname = ("eqFreq" ++ slot).asSymbol;
+	rqname = ("eqRq" ++ slot).asSymbol;
+	gainname = ("eqGain" ++ slot).asSymbol;
+	proxy.addSpec(freqname, \freq)
+	.addSpec(rqname, [1, 0.01, -2])
+	.addSpec(gainname, gainSpec);
+	proxy.set(freqname, freq, rqname, rq, gainname, gain);
+	proxy[slot] = \filter -> { |in|
+		var freq = NamedControl.kr(freqname, freq),
+		rq = NamedControl.kr(rqname, rq),
+		db = NamedControl.kr(gainname, gain);
+		eqClass.ar(in, freq, rq, db);
+	};
+};
+#+end_src
+
+** Common effects: Reverb
+*** Reverb
+**** For this workshop, keep it simple: Just use \ugen{FreeVerb2}.
+     - This is a stereo-in, stereo-out reverb.\\
+       Nothing fancy, not a special sound.
+     - Use a \clss{ProxySubmix}. Create it first.
+     - Put the reverb in a dedicated effect proxy.\\
+       Read the signal from the submix.
+#+name: reverbAgain
+#+caption: Setting up simple reverb.
+#+begin_src {SuperCollider} -i
+a = ();   // storage, outside ProxySpace
+
+a.m = ProxySubmix(\revin);  // ProxySubmix needs a name
+
+~rev.addSpec(\room, [0, 1]);
+~rev.addSpec(\damp, [0, 1]);
+~rev = { |room = 0.5, damp = 0.5|
+   var in = a.m.ar(2);
+   FreeVerb2.ar(in[0], in[1], 1, room, damp);
+};
+~rev.play;
+#+end_src
+
+*** Other ways to do reverb
+     - \ugen{GVerb}: Mono-in, stereo-out, but with a lot more parameters.
+     - Roll your own reverb: Beyond this workshop's scope.
+       - Read some articles on how to make reverb.
+       - SC has all the parts, waiting to be put together.
+     - Convolution reverb with \ugen{PartConv}.
+       - Load the (mono) impulse response in a buffer, in a special way.
+       - See \ci{PartConv}'s help file for details.

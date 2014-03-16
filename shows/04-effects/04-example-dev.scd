@@ -391,3 +391,167 @@ a = {
 }.play;
 
 a.trace;
+
+
+
+// distortion
+x = Signal.sineFill(512, [1]).as(Array);
+
+[x, (x * 3).tanh].lace(x.size * 2).plot(numChannels: 2);
+
+
+// frequency is too low!
+
+x = Signal.sineFill(512, [1]);
+y = (x * 3).tanh;
+
+a = x.fft(Signal.newClear(x.size), Signal.fftCosTable(x.size));
+a.real.plot;
+a.real.maxItem;
+
+a = y.fft(Signal.newClear(y.size), Signal.fftCosTable(y.size));
+
+
+// phase increment for 441 Hz @ 44100 = 100 samples / cycle
+i = 2pi / 100;
+
+x = Signal.fill(2048, { |x| sin(x * i) });
+x = x * Signal.hanningWindow(x.size);
+x.plot;
+
+a = x.fft(Signal.newClear(x.size), Signal.fftCosTable(x.size));
+a.real.keep(a.real.size >> 1).abs.plot;
+a.real.maxItem;
+
+y = Signal.fill(2048, { |x| (8 * sin(x * i)).tanh });
+y = y * Signal.hanningWindow(y.size);
+y.plot;
+
+b = y.fft(Signal.newClear(y.size), Signal.fftCosTable(y.size));
+b.real.keep(b.real.size >> 1).abs.plot;
+b.real.maxItem;
+
+[a.real.as(Array).abs, b.real.as(Array).abs].lace(a.real.size).plot(numChannels: 2);
+[a.real.as(Array).abs, b.real.as(Array).abs].lace(a.real.size div: 2).plot(numChannels: 2);
+
+x = Pseries.fromEndpoints(-1, 1, 513).asStream.all;
+
+p = [x, (x * 2).tanh, (x * 8).tanh].lace(x.size * 3).plot(numChannels: 3);
+p.domainSpecs = [[-1, 1]];
+p.refresh;
+
+Shaper.ar(bufnum, in)
+
+p = [x, (x * 2).tanh, (x * 2).tanh - x].lace(x.size * 3).plot(numChannels: 3);
+p.domainSpecs = [[-1, 1]];
+p.refresh;
+
+p = [x, (x * 2).tanh, (x * 8).tanh - x].lace(x.size * 3).plot(numChannels: 3);
+p.domainSpecs = [[-1, 1]];
+p.refresh;
+
+[x, x.softclip].lace(x.size * 2).plot(numChannels: 2);
+
+
+p.clear;  // p = ProxySpace.new.push;
+
+~kick.ar(2);  // initialize stereo
+~kick[1] = \filter -> { |in, preamp = 5, postamp = 0.1|
+	(in * preamp).tanh * postamp
+};
+~kick.addSpec(\preamp, [0.25, 20, \exp]);
+~kick.addSpec(\postamp, \amp);
+~kick.play;
+
+~kick[0] = {
+	var trig = Impulse.ar(2),
+	freq = EnvGen.ar(Env([400, 400, 50], [0, 0.07], \exp), trig),
+	ampeg = EnvGen.ar(Env.perc(0.01, 0.4), trig),
+	sig = SinOsc.ar(freq);
+	(sig * ampeg).dup
+};
+
+~kick.source
+
+~kick.play;
+
+~kick.gui
+
+p.clear;
+
+
+x = Signal.sineFill(512, [1]);  // x.plot to see
+b = Buffer.sendCollection(s, x.asWavetable, 1, action: { "done".postln });
+
+b.sendCollection(x.asWavetable);
+
+~kick[1] = \filter -> { |in, postamp = 0.1|
+	in = Limiter.ar(in, 1);
+	Shaper.ar(b, in, postamp);
+};
+
+b.sendCollection(
+	Signal.sineFill(512, [1, 0.5, 0.33]).asWavetable
+);
+
+// "sine1" on a Buffer is a shortcut
+b.sine1([0, 0, 0, 0, 0, 0, 0, 1]);
+
+BPeakEQ.filenameSymbol
+BEQSuite
+p.clear;
+
+s.sendMsg(\n_trace, ~kick.objects[1].nodeID);
+
+x = Signal.sineFill(512, [1]);
+y = x.collect { |x| sin(x.linlin(-1, 1, -0.5pi, 1.5pi)) };
+
+y = x.collect { |x| sin(x.linlin(-1, 1, 0, 2pi)) };
+
+[x.as(Array), y].lace(x.size * 2).plot(numChannels: 2);
+
+[0, 1, 2].asSignal;
+
+Limiter.ar(in, level, dur)
+
+
+a = ();
+a.addEQ = { |dict, proxy, slot, eqClass(BPeakEQ), freq = 440, rq = 1, gain|
+	var freqname, rqname, gainname, gainSpec;
+	if(slot.isNil) { slot = proxy.objects.indices.maxItem + 1 };
+	if([BPeakEQ, BLowShelf, BHiShelf].includes(eqClass)) {
+		gainSpec = [-20, 20];
+		if(gain.isNil) { gain = 0 };
+	} {
+		gainSpec = \amp;
+		if(gain.isNil) { gain = 1 };
+	};
+	freqname = ("eqFreq" ++ slot).asSymbol;
+	rqname = ("eqRq" ++ slot).asSymbol;
+	gainname = ("eqGain" ++ slot).asSymbol;
+	proxy.addSpec(freqname, \freq)
+	.addSpec(rqname, [1, 0.01, -2])
+	.addSpec(gainname, gainSpec);
+	proxy.set(freqname, freq, rqname, rq, gainname, gain);
+	proxy[slot] = \filter -> { |in|
+		var freq = NamedControl.kr(freqname, freq),
+		rq = NamedControl.kr(rqname, rq),
+		db = NamedControl.kr(gainname, gain);
+		eqClass.ar(in, freq, rq, db);
+	};
+};
+
+~saw = { Saw.ar(50, 0.1).dup };
+~saw.play;
+~saw.gui;
+
+a.addEQ(~saw, 1);
+
+a.addEQ(~saw, 1, BLowPass);
+
+
+p.clear;
+
+s.sendMsg(\n_trace, ~saw.objects[1].nodeID);
+
+BHiShelf.ar
