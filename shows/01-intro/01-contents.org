@@ -248,10 +248,21 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
 ** Preparing the environment
+*** Initial installation
+**** Before beginning, you should install:
+     - SuperCollider 3.6.6 or later.\\
+       http://supercollider.sourceforge.net/downloads/
+     - The /sc3-plugins/ pack: Additional synthesis units.
+       - Precompiled for OSX and Windows:\\
+	 http://sourceforge.net/projects/sc3-plugins/files
+       - Linux: Look for packages for your distribution.\\<all>
+	 Ubuntu: https://launchpad.net/~supercollider/+archive/ppa.\\
+	 Install the /supercollider/ and /supercollider-plugins/ packages.
+
 *** Installing workshop extensions
 **** Extensions are for extra features.
      Not part of the base installation.
-     - *Note:* This assumes you're starting with no extensions.
+     - *Note:* This assumes you're starting with no extensions except sc3-plugins.
 **** To install:
      1. In SC, run \cd{Platform.userExtensionDir;}.\\
 	This tells you where to put the files.
