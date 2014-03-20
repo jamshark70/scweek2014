@@ -37,7 +37,7 @@
        We've seen this: filters in subtractive synthesis.
      - Source and effect within one \clss{NodeProxy}.\\
        This is like /insert/ effects in a DAW.
-     - \clss{MixerChannel} for routing and mixing.\\
+     - \clss{ProxySubmix} for routing and mixing.\\
        Brings mixing controls together in one place.
 
 *** Multiple sources and effects
@@ -69,7 +69,7 @@
      - Calling \mth{ar} on a \clss{NodeProxy}.\\
        We've already done this---just a new use for effects.
      - New: The \ci{\textbackslash filter} adverb.\\
-       Used for inserts and the \clss{MixerChannel} approach.
+       Used for inserts and the \clss{ProxySubmix} approach.
 
 *** Effect routing by NodeProxy access
 **** Remember subtractive synthesis: Oscillator $\to$ filter.
