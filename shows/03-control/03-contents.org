@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis						   :noexport:
+* Granular synthesis
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -293,7 +293,7 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
-* External control						   :noexport:
+* External control
 ** Basic concepts: GUI
 *** Custom interfaces
 **** So far, we have used the built-in \ci{ProxyMixer}.
@@ -999,7 +999,7 @@ OSCdef(\sl1).free;
 ** Central hub
 ** Turning faders into buttons: Thresholds
 
-* Toward complex composition					   :noexport:
+* Toward complex composition
 ** Simple ideas
 *** The trick
 **** The trick to making music by programming:
