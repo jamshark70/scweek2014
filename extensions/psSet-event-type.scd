@@ -8,7 +8,24 @@ Event.addEventType(\psSet, {
 	~amp = ~amp.value;
 	~proxyspace.keysValuesDo { |name, proxy|
 		var ctl = proxy.objects[0];
-		case
+		case  // most specific cases (ScalarSynthControl) should come first
+		{ ctl.isKindOf(ScalarSynthControl) } {
+			if((value = name.envirGet).notNil) {
+				proxy.set(\value0, value);
+				proxy.source = value;
+			};
+			if(name == \gt and: { sustain.notNil }) {
+				if(releaseHolder.notNil) {
+					releaseHolder[proxy] = thisThread.clock.beats + sustain;
+				};
+				thisThread.clock.sched(sustain, {
+					if(releaseHolder.isNil or: { releaseHolder[proxy] ? 0 <= thisThread.clock.beats }) {
+						proxy.set(name, 0);
+						proxy.source = 0;
+					};
+				});
+			};
+		}
 		{ ctl.isKindOf(SynthDefControl) } {
 			ctl.synthDef.allControlNames.do { |cn|
 				if(skipArgs.includes(cn.name.asSymbol).not and: {
@@ -26,23 +43,6 @@ Event.addEventType(\psSet, {
 						};
 					});
 				};
-			};
-		}
-		{ ctl.isKindOf(ScalarSynthControl) } {
-			if((value = name.envirGet).notNil) {
-				proxy.set(\value0, value);
-				proxy.source = value;
-			};
-			if(name == \gt and: { sustain.notNil }) {
-				if(releaseHolder.notNil) {
-					releaseHolder[proxy] = thisThread.clock.beats + sustain;
-				};
-				thisThread.clock.sched(sustain, {
-					if(releaseHolder.isNil or: { releaseHolder[proxy] ? 0 <= thisThread.clock.beats }) {
-						proxy.set(name, 0);
-						proxy.source = 0;
-					};
-				});
 			};
 		}
 	};
