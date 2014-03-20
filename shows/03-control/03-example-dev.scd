@@ -490,3 +490,55 @@ TempoClock.tempo = 2;
 TempoClock.default.gui;
 
 p.clear;
+
+
+
+a = ();  // empty Event syntax (easier)
+a.p = ProxySpace.new;
+
+a.buf = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+a.cleanup = a.cleanup.addFunc {
+	a.buf.free;
+	a[\cleanup].removeFunc(thisFunction);
+};
+
+a.p.push;
+
+~grainDur = 0.1;
+~overlap = 5;
+~speed = 1;
+
+~center = {
+	Phasor.kr(
+		rate: ~speed * ControlDur.ir,
+		start: ~grainDur,
+		end: a.buf.duration - ~grainDur
+	)
+};
+
+~grains.addSpec(\overlap, [0.1, 10, \exp]);
+~grains.addSpec(\grainDur, [0.05, 1, \exp]);
+~grains.addSpec(\speed, [0.5, 2, \exp]);
+~grains = { |overlap = 5, grainDur = 0.1, speed = 0.75|
+	var trig = Impulse.kr(overlap / grainDur),
+	center = Phasor.kr(
+		rate: speed * ControlDur.ir,
+		start: grainDur,
+		end: a.buf.duration - grainDur
+	);
+	TGrains.ar(2, trig, a.buf, 1, center, grainDur);
+};
+
+~grains.play;
+
+a.speedctl = EZSlider(nil, Rect(700, 200, 300, 20),
+	"speed", [0.5, 2, \exp],
+	{ |view| a.p[\grains].set(\speed, view.value) },
+	0.75, initAction: true
+);
+a[\cleanup] = a[\cleanup].addFunc { a.speedctl.close };
+
+a.p.clear;
+a.cleanup;
+
+a[\speedctl].view.close

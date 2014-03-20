@@ -1461,6 +1461,151 @@ isn't free of structure.
     - Control in performance by external devices.
 
 ** TODO Group composition: Technical issues
+*** Workshop project: A group composition
+**** The rest of the workshop: Create a group performance.
+     - You'll each write an element of the musical texture.
+     - Control it by mobile.
+     - Your code will run on my computer.
+**** To discuss:
+     - Practical: How to combine code on one machine.
+     - Creative: What elements do we need?
+
+*** Practical: Combining code
+**** Keep your resources in your own sandbox.
+     We saw a hint of this before.
+     - Each element goes in its own \clss{ProxySpace}.
+     - Buffers and other resources in a \clss{Dictionary}.
+     - Easiest: Interpreter variables (\ci{a} to \ci{z}) for storage.\\
+       Only 25 available (reserve \ci{s} for the default server).
+**** Pick a letter.
+     - Assign an empty Dictionary for storage.
+     - Save the ProxySpace in it.
+#+name: combine1
+#+caption: Create storage for a compositional element in the interpreter variable "a." Substitute your own letter.
+#+begin_src {SuperCollider} -i
+a = ();  // empty Event syntax (easier)
+a.p = ProxySpace.new;
+#+end_src
+
+*** Note: Pseudo-methods				    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+Listing [[combine1]] takes advantage of a special feature of
+\clsspl{IdentityDictionary} (including \clsspl{Event}): you can access
+items in the dictionary /using method call syntax/, as long as the
+method name is not already taken. That is, \ci{p} is not a real method
+of \clss{Event}, but the event /responds/ as if it were:
+@@latex:\cd{a.p = ProxySpace.new}@@ is like
+@@latex:\cd{a[\textbackslash p] = ProxySpace.new}@@, and \cd{a.p} is
+like \cd{a[\textbackslash p]}.
+
+This is not exactly the same as a method call, but you don't need to
+worry about the differences at this stage.
+
+*** Using the ProxySpace
+**** While developing, you can \ci{push} the \clss{ProxySpace}.
+     - Then use \ci{\textasciitilde environment} variables, as before.
+**** GUI and \clss{OSCFunc} actions should go through the storage variable.
+     - \cd{a.p[\textbackslash proxyName]}.
+     - *Don't* use \cd{\textasciitilde proxyName} here!\\
+       This syntax depends on the right \clss{ProxySpace} being current.\\
+       We will have many \clsspl{ProxySpace}.\\
+       No guarantee that the current one is right.
+
+*** Note: Loading the proxies in performance		    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+When loading everyone's code, we'll need to \ci{push} each
+\clss{ProxySpace} temporarily, one by one. \ci{push} and \ci{pop} work
+for this, but it's even easier to \ci{use} the
+\clss{ProxySpace}. \ci{use} takes a function, and runs it "inside" the
+given \clss{Environment}. It also reverts to the original
+\ci{currentEnvironment} when it's finished, /even if/ the code stopped
+with an error. This makes it safer as well.
+
+But again, for experimenting with synthesis, you should still
+\ci{push} the \clss{ProxySpace}, so that you can live in it for a
+longer time.
+
+*** Example: A buffer player
+**** To illustrate, we'll start with a buffer granulator.
+     - The buffer should be stored in \ci{a}.\\
+       We've seen this before.
+     A new idea: *Automatic cleanup.*
+     - Write a function that will remove whatever you just created.
+     - Use \mth{addFunc} to keep a \clss{FunctionList} of cleanups.
+     - At the end, you can just call \ci{a.cleanup}.
+#+name: combine2
+#+caption: Loading a buffer into a storage dictionary, and adding an automatic cleanup function.
+#+begin_src {SuperCollider} -i
+a = ();  // empty Event syntax (easier)
+a.p = ProxySpace.new;
+
+a.buf = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+a[\cleanup] = a[\cleanup].addFunc { a.buf.free };
+#+end_src
+
+*** Synthesis for "a"
+**** Creating the synthesis should be familiar.
+     - \mth{push} the \clss{ProxySpace}. (Note: This is now \cd{a.p}, not \cd{p}.)
+     - Create proxies as before. Refer to the buffer by \cd{a.buf}.
+#+name: combine3
+#+caption: Using a ProxySpace with entities from "a" storage.
+#+begin_src {SuperCollider} -i
+~grains.addSpec(\overlap, [0.1, 10, \exp]);
+~grains.addSpec(\grainDur, [0.05, 1, \exp]);
+~grains.addSpec(\speed, [0.5, 2, \exp]);
+~grains = { |overlap = 5, grainDur = 0.1, speed = 0.75|
+   var trig = Impulse.kr(overlap / grainDur),
+   center = Phasor.kr(
+      rate: speed * ControlDur.ir,
+      start: grainDur,
+      end: a.buf.duration - grainDur
+   );
+   TGrains.ar(2, trig, a.buf, 1, center, grainDur);
+};
+~grains.play;
+
+a.p.gui;
+#+end_src
+
+*** Custom GUI
+**** Custom GUI actions should go through \ci{a}.
+     - *Don't* just use \ci{\textasciitilde} syntax!
+     - The action function can't guarantee where \ci{\textasciitilde} will look.
+     The same is true of \clss{OSCFunc} actions.
+#+name: combine3b
+#+caption: Custom GUI action, using "a.p" to access NodeProxies.
+#+begin_src {SuperCollider} -i
+a.speedctl = EZSlider(nil, Rect(700, 200, 300, 20),
+   "speed", [0.5, 2, \exp],
+   // Action is here. Note syntax: a.p[\grains].
+   { |view| a.p[\grains].set(\speed, view.value) },
+   0.75, initAction: true
+);
+#+end_src
+
+*** Add another compositional element
+**** Do the same thing, with a different letter variable.
+     Now we have two environments at once.
+     - \ci{a} has its own \clss{ProxySpace} and resources.
+     - \ci{b} has a separate \clss{ProxySpace} and resources.
+**** The separation is important for bigger projects.
+     - Things that you do in \ci{b} should not break \ci{a}!
+     - This is much easier if \ci{a} and \ci{b} /can't talk to each other/.
+#+name: combine4
+#+caption: Storage for another compositional element.
+#+begin_src {SuperCollider} -i
+b = ();
+b.p = ProxySpace.new;
+#+end_src
+
+*** Buzzword: "Scalable"
+    "Scalable" means: Handling 20 is as easy as handling two.
+**** We can just keep going like this...
+     \pause ... and build a pretty intricate piece.
 
 ** Group composition: Creative issues
 *** Unity and contrast

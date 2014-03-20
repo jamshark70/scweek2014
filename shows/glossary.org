@@ -170,6 +170,7 @@
 | FlowView           |                      | A \emph{container view} that automatically lays out its children, left to right, top to bottom. You don't have to think about views' positions, only their sizes   |
 | FormantTable       |                      | An extension class (from sc3-plugins) listing filter parameters for different voice types and vowels                                                               |
 | Function           |                      | A code block, with local variables and arguments, that can be executed at any time by calling ``value'' on it. A function always returns exactly one result object |
+| FunctionList       |                      | A collection of functions that can be evaluated just like a single function                                                                                        |
 | IdentityDictionary | IdentityDictionaries | Like Dictionary, but restricts the types of keys for faster lookup. Usually the keys are Symbols                                                                   |
 | IdentitySet        |                      | Like Set, but restricts the types of items for faster membership testing                                                                                           |
 | Knob               |                      | A GUI widget that draws a rotating knob in a window. The natural range is normalized: 0.0--1.0                                                                     |
@@ -246,6 +247,7 @@
 | ++                  |        | Concatenate (join) two arrays: \cd{[0, 1, 2] ++ [10, 11, 12]} $\to$ \cd{[0, 1, 2, 10, 11, 12]}                                                                             |
 | add                 |        | For SynthDefs, add the definition into the server so that it can be played. For Collections, add a new item                                                                |
 | addDependant        |        | \cd{model.addDependant(listener)} registers \ci{listener} as a dependent of \ci{model}. The listener will receive notifications from the model                             |
+| addFunc             |        | An easy way to create lists of functions. You don't have to worry about whether you already have a \ci{FunctionList}. See also \ci{removeFunc}                             |
 | addMix              |        | A method of \ci{ProxySubmix}, equivalent to creating a send for a channel in an audio workstation                                                                          |
 | addSpec             |        | Attach a ControlSpec to a NodeProxy's input, for safe GUI control                                                                                                          |
 | adsr                |        | \cd{Env.adsr} makes an attack-decay-sustain-release envelope. Should be used with a gate rather than trigger                                                               |
@@ -335,6 +337,7 @@
 | removeAll           |        | Removes all the given items from the collection                                                                                                                            |
 | removeAt            |        | Remove the item at the given index from the collection. Returns the item, not the collection                                                                               |
 | removeDependant     |        | \cd{model.removeDependant(listener)} disconnects that particular listener from the model                                                                                   |
+| removeFunc          |        | Given a \ci{FunctionList}, remove one function from it                                                                                                                     |
 | reset               |        | Revert an object to some initial state. On a Routine or Task, e.g., goes back to the beginning of the processing function                                                  |
 | resourceDir         |        | \cd{Platform.resourceDir} points to a directory of extra resources, which are part of a normal SC installation                                                             |
 | round               |        | Round a number to the nearest division---by default, 1 (integers) but it may also be fractional                                                                            |
