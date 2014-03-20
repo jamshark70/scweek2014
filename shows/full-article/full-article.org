@@ -52,7 +52,7 @@
 
 * Part 5 						      :ignoreheading:
 #+latex: \clearpage\part{Canonical Style}
-# #+include: "../05-canonical/05-contents.org" :minlevel 1
+#+include: "../05-canonical/05-contents.org" :minlevel 1
 
 * Appendix						      :ignoreheading:
 #+latex: \clearpage\part{Appendix: Additional Topics}
