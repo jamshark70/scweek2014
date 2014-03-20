@@ -499,6 +499,9 @@ b.sine1([0, 0, 0, 0, 0, 0, 0, 1]);
 
 BPeakEQ.filenameSymbol
 BEQSuite
+BPeakEQ.ar(in, freq, rq, db)
+BLowShelf.ar(in, freq, rs, db)
+BLowPass.ar(in, freq, rq)
 p.clear;
 
 s.sendMsg(\n_trace, ~kick.objects[1].nodeID);
@@ -555,3 +558,7 @@ p.clear;
 s.sendMsg(\n_trace, ~saw.objects[1].nodeID);
 
 BHiShelf.ar
+
+FreeVerb2.ar(in, in2, mix, room, damp)
+GVerb.ar(in, roomsize, revtime, damping, inputbw, spread, drylevel, earlyreflevel, taillevel, maxroomsize)
+PartConv.ar(in, fftsize, irbufnum)
