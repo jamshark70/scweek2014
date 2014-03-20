@@ -19,7 +19,7 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis
+* Granular synthesis						   :noexport:
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
@@ -293,7 +293,7 @@ p.clear;
      - Build more complex, compositional patterns.
      - Bring external control data into SC, and plug into synthesis and composition parameters.
 
-* External control
+* External control						   :noexport:
 ** Basic concepts: GUI
 *** Custom interfaces
 **** So far, we have used the built-in \ci{ProxyMixer}.
@@ -999,7 +999,7 @@ OSCdef(\sl1).free;
 ** Central hub
 ** Turning faders into buttons: Thresholds
 
-* Toward complex composition
+* Toward complex composition					   :noexport:
 ** Simple ideas
 *** The trick
 **** The trick to making music by programming:
@@ -1450,7 +1450,6 @@ isn't free of structure.
 
 *** Summary: Combining patterns
 
-
 * Considerations for group composition
 ** Unity and contrast						   :noexport:
 *** You take the lead
@@ -1460,7 +1459,7 @@ isn't free of structure.
     - Pattern sequences with more musicality;
     - Control in performance by external devices.
 
-** TODO Group composition: Technical issues
+** Group composition: Technical issues
 *** Workshop project: A group composition
 **** The rest of the workshop: Create a group performance.
      - You'll each write an element of the musical texture.
@@ -1554,6 +1553,7 @@ a[\cleanup] = a[\cleanup].addFunc { a.buf.free };
 #+name: combine3
 #+caption: Using a ProxySpace with entities from "a" storage.
 #+begin_src {SuperCollider} -i
+a.p.push;
 ~grains.addSpec(\overlap, [0.1, 10, \exp]);
 ~grains.addSpec(\grainDur, [0.05, 1, \exp]);
 ~grains.addSpec(\speed, [0.5, 2, \exp]);
