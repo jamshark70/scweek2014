@@ -232,12 +232,95 @@ SynthDef(\fm1, { |out, gate = 1, freq = 440, modRatio = 2,
 (instrument: \fm1, freq: exprand(220, 880), sustain: 2).play;
 #+end_src
 
+*** Notes and effects: Together or separate?
+**** Should you include effects in a note-playing \clss{SynthDef}?
+     It depends:
+     - If the effect must be different for every note, include it in the note.
+     - If lots of notes will play through the same effect, keep the effect separate.\\
+       Inefficient to compute an identical effect many times at once.
+**** Usually, keep them separate.
+     - "Different for every note" is a very rare case.
+     - Separate effects are easy in \clss{ProxySpace}.\\
+       - As noted, play a canonical \clss{Pbind} in a \clss{NodeProxy}.
+       - This proxy can feed into a \clss{ProxySubmix}.
+       - Or, effect proxies can read directly from it.
 
-** Groups and busses
-** Order of execution
-*** Things							   :noexport:
+** Canonical style: Additional topics
+*** Moving out of JITLib
+**** \gls{JITLib} is great, but not right for every job.
+     - It's designed for free experimentation.
+     - Bigger projects need structure and reliability.
+**** The details are beyond the scope of this workshop.
+     But, I can introduce materials for further reading.
 
-* MAYBE Review
+*** Groups and buses
+**** You've already been using groups and buses.
+     /Nothing/ happens in the server without them!
+     - JITLib takes care of them for you.
+     - If JITLib isn't appropriate for a certain task, you have to handle them yourself.
+**** Reading:
+     - SC help system: /Getting Started/ tutorial series
+       - Ch. 11: Buses ([[http://doc.sccode.org/Tutorials/Getting-Started/11-Busses.html][Web link]])
+       - Ch. 12: Groups ([[http://doc.sccode.org/Tutorials/Getting-Started/12-Groups.html][Web link]])
 
-* Performance
+*** Order of execution
+**** Server node order matters when one synth reads from another.
+     The source must come before the target.
+**** Reading:
+     - SC help system: /Order of execution/ help file\\
+       ([[http://doc.sccode.org/Guides/Order-of-execution.html][Web link]])
+
+*** MixerChannel: Help with groups and buses
+**** My extension class \clss{MixerChannel} imitates DAW signal routing.
+     - Sound sources by \mth{play}.
+     - Insert effects by \mth{playfx}.
+     - True /sends/ by \mth{newPostSend} and \ci{newPreSend}.
+     - Handles order of execution automatically.
+     - Graphical mixer interface.
+**** \clss{MixerChannel} fits easily into object-oriented project designs.
+
+*** Connecting JITLib to MixerChannels
+**** JITLib $\longleftrightarrow$ MixerChannel bridge.
+     - The workshop extensions include an experimental bridge.
+     - Play proxies onto mixers (instead of just playing them freely).
+#     - Then, all of \clss{MixerChannel}'s signal routing features are available.
+#+name: mixer1
+#+caption: Playing a NodeProxy onto a MixerChannel.
+#+begin_src {SuperCollider} -i
+a = ();
+a.p = ProxySpace.new.push;
+
+a.mixer = MixerChannel(\demo, s, 1, 2, level: 0);
+
+~sound = {
+   var trig = Impulse.kr(8),
+   eg = EnvGen.kr(Env.perc(0.01, 0.1), trig);
+   SinOsc.ar(TExpRand.kr(200, 800, trig)) * eg
+};
+a.mixer.play(~sound);
+
+a.mixer.levelTo(-15.dbamp, 25);  // fade in
+
+~sound.clear; a.mixer.free;
+#+end_src
+
+*** Structuring large projects
+**** How to handle big projects?
+     - /Massive/ topic.
+     - Everybody has a different opinion.
+     - My opinions are in my chapter of /The SuperCollider Book/.\\
+       Ch. 20: "Composition for Live Performance with dewdrop_lib and chucklib."
+
+** But really, what to do next?
+*** Next steps
+**** How to approach all of this?
+     1. Don't worry too much.
+     2. For the next project, set reasonable goals.
+     3. For the project after that, do at least one thing that you don't already know how to do.
+     4. Join the /sc-users/ mailing list and ask questions.\\
+	([[http://www.birmingham.ac.uk/facilities/BEAST/research/supercollider/mailinglist.aspx][Link to mailing list info page]])
+
+* MAYBE Review							   :noexport:
+
+* Performance							   :noexport:
 

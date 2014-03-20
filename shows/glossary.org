@@ -63,6 +63,7 @@
 | global                 |               | Referring to a variable that is available everywhere in the system. Interpreter variables a--z are global                                                                             |
 | grain                  |               | One component in a granular cloud: a short (10--100 ms) fragment of sound, shaped by an envelope                                                                                      |
 | granular               |               | A type of synthesis that makes complex sounds by overlapping clouds of ``grains'' (very short fragments of recorded audio)                                                            |
+| group                  |               | In the server, you can keep related Synths together by putting them in the same group. Groups help you manage node order                                                              |
 | harmonic               |               | (n) An integer multiple of a fundamental frequency. (adj) Describes a spectrum where the frequencies are in harmonic (integer) relationships                                          |
 | identical              |               | Two expressions have identical results if they return the same object. Compare to ``equivalent''                                                                                      |
 | imperative             |               | A style of programming focusing on precise instructions---commands---that the computer should execute. Compare ``declarative'' programming                                            |
@@ -316,10 +317,12 @@
 | minItem             |        | Returns the smallest item in a collection                                                                                                                                  |
 | neg                 |        | Same result as \cd{-1 * n}, but slightly faster                                                                                                                            |
 | new                 |        | A class method that creates an instance of a class, and usually initializes it with data supplied in the arguments                                                         |
+| newPostSend         |        | Creates a true post-fader send from one \ci{MixerChannel} to another                                                                                                       |
 | next                |        | When called on a Routine (or any Stream), returns the stream's next yield value                                                                                            |
 | pairsDo             |        | ``Do'' a function over pairs of items in an array. No item will be touched more than once. Compare \ci{doAdjacentPairs}                                                    |
 | perc                |        | \cd{Env.perc} makes a percussive envelope (quick attack, curved decay)                                                                                                     |
 | play                |        | Initiate a process that will run for some time into the future. Many kinds of objects know how to ``play'': Functions, Patterns, Events, Tasks etc                         |
+| playfx              |        | Plays an object as an insert effect on a \ci{MixerChannel}                                                                                                                 |
 | postln              |        | Print an object as a string into the post window                                                                                                                           |
 | push                |        | Set the given environment (including ProxySpace) to be current and active. Environment variables will then refer to that environment                                       |
 | put                 |        | Put an object into a slot in an indexed collection (e.g. Array or Dictionary). Shortcut syntax: \cd{collection[index] = item}                                              |
