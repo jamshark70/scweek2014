@@ -37,6 +37,7 @@ ServerBoot.add({
 *** DONE Changing number doesn't update proxy's source
 *** DONE Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
+*** TODO Final: Move "Test" sections into first slides
 *** DONE Page breaks before parts
 *** DONE Left/right margins and header
 *** DONE Center section headings in text
@@ -203,15 +204,30 @@ The old and new phases don't quite line up. It occurred to me that it might be c
 hjh
 
 * Content
+** TODO Preface
+*** Format:
+#+begin_src org
+  * Preface
+  ** Preface
+  *** Preface                                                :B_ignoreheading:
+      :PROPERTIES:
+      :BEAMER_env: ignoreheading
+      :END:
+  Some silly text.
+  
+  ** Copyleft and licensing
+  CC-BY-SA.
+#+end_src
+** TODO Conclusion: Future steps
 ** TODO Exercises
-** TODO Notes on play/stop? (Finish later, move to day one)
+** DONE Notes on play/stop? (Finish later, move to day one)
 *** What's actually going on with \mth{play}/\mth{stop} in \clss{ProxySpace}?
 In \clss{ProxySpace}, assigning a function or pattern to a \ci{\textasciitilde name} creates a \clss{NodeProxy}. The proxy is always running. If it's a function, the server is running the UGens; if a pattern, the language is generating events and playing them.
 
 For both, the signal
 ** TODO Discuss Out and buses
-* Fixes [15/16]
-** TODO Prerequisite to install sc3-plugins.
+* Fixes [16/16]
+** DONE Prerequisite to install sc3-plugins.
 ** DONE Footnote numbers
 ** DONE First EnvGen example: need dup?
 ** DONE 6.3.8 dashes
