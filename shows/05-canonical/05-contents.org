@@ -20,7 +20,219 @@
 #+results: ugengloss
 
 * Canonical-style synthesis
+** Converting to canonical style
+*** Why convert?
+**** Modular and canonical styles are good for different things.
+#+begin_center
+#+attr_latex: :align |p{0.45\textwidth}|p{0.45\textwidth}|
+|----------------------------------+---------------------------------------|
+| *Modular style*                  | *Canonical style*                     |
+|----------------------------------+---------------------------------------|
+| Flexible, good for experimenting | Efficient, good for performance       |
+|----------------------------------+---------------------------------------|
+| Modules are simpler              | \clsspl{SynthDef} can be more complex |
+|----------------------------------+---------------------------------------|
+| Automatic signal routing         | Handle more resources by hand         |
+|----------------------------------+---------------------------------------|
+| *Monophonic*                     | *Easy polyphony*                      |
+|----------------------------------+---------------------------------------|
+#+end_center
+**** The last point is canonical style's big win.
+     - Chords are /easy/.
+     - More efficient synthesis matters for big objects, too.
+
+*** Using both styles together
+**** The two styles can work together.
+     They aren't enemies!
+     - Modular style controls existing \clsspl{NodeProxy} using a \egls{psSet} \clss{Pbind}.
+     - Canonical style plays \clsspl{SynthDef} using a normal \clss{Pbind}.\\
+       (\Gls{event type} = \ci{\textbackslash note}.)
+     - You can play a normal \clss{Pbind} within a \clss{NodeProxy}.\\
+       The pattern's output becomes the \clss{NodeProxy}'s output.\\
+       Other proxies can read it as if it were a synth.
+**** Easier way into canonical style:
+     - Use \clsspl{SynthDef} for note or event players.
+     - Use \clsspl{NodeProxy} for signal routing, effects and mixing.
+
 ** SynthDefs
+*** Combining modules into a SynthDef
+**** A \clss{SynthDef} is a bigger unit of synthesis.
+     - Modular: Separate modules for:
+       - Oscillators
+       - Envelopes
+       - Filters
+       - LFOs, etc.
+     - Canonical: \clss{SynthDef} has all components for one note.
+**** General process
+     1. Write the \clss{SynthDef} outline.
+     2. Copy/paste modules into it.\\
+	Edit for correct connections between them.
+     3. Add controls to the argument list.
+
+*** SynthDef outline
+**** A \clss{SynthDef} should follow this outline.
+     - Name (\ci{\textbackslash symbol} or @@latex:\ci{"string"}@@).
+     - \ugen{Out} UGen, with \ci{out} control.\\
+       \clsspl{NodeProxy} add \ugen{Out} for you.\\
+       In \clss{SynthDef}, you have to write it explicitly.
+     - \mth{add} to make the \clss{SynthDef} available to the server.
+#+name: can1
+#+caption: Standard SynthDef outline, ready to fill in.
+#+begin_src {SuperCollider} -i
+SynthDef(\name, { |out|
+   ...
+   Out.ar(out, ...);
+}).add;
+#+end_src
+
+*** FM example
+**** Only slideshow						  :B_onlyenv:
+     :PROPERTIES:
+     :BEAMER_env: onlyenv
+     :BEAMER_act: presentation
+     :END:
+      This won't fit into the slideshow. See Listing [[can2]] in Part V's =scd= file.
+**** cancel "only"					    :B_ignoreheading:
+     :PROPERTIES:
+     :BEAMER_env: ignoreheading
+     :END:
+#+name: can2
+#+caption: FM example, with vibrato and two envelopes.
+#+begin_src {SuperCollider} -i
+p.clear;  // or p = ProxySpace.new.push;
+
+~freq = 440;
+~modRatio = 2;
+~modIndex = 1.5;
+
+~vibratoFreq = {
+   ~freq * LFNoise1.kr(3).exprange(0.995, 1.006)
+};
+
+~modEg = { |gt|
+   EnvGen.kr(Env.adsr(0.01, 0.1, 0.5, 0.3), gt)
+};
+
+~mod = {
+   SinOsc.ar(~vibratoFreq * ~modRatio, 0) * ~modEg
+};
+
+~carEg = { |gt|
+   EnvGen.kr(Env.adsr(0.01, 0.2, 0.6, 0.15), gt);
+};
+
+~car = {
+   (SinOsc.ar(~freq * (1 + (~modIndex * ~mod.ar))) * ~carEg).dup;
+};
+~car.play;
+
+p.setEvent((freq: exprand(200, 800), sustain: 2)).play;  // test
+#+end_src
+
+*** Copy one proxy
+**** Start copying proxies into the template.
+     - Numeric proxies should become \clss{SynthDef} arguments.
+     - Change \cd{\textasciitilde environmentVars} to \egls{declare}\emph{d} variables.
+     - Don't use function braces.\\
+       We are already inside a synthesis function.\\
+       You don't need another function layer.
+
+*** Vibrato $\to$ SynthDef
+    To get you started, here's the vibrato, moved into the template.
+#+name: can3
+#+caption: Move the vibrato proxy, with associated parameters, into the SynthDef template.
+#+begin_src {SuperCollider} -i
+// ProxySpace syntax
+~freq = 440;
+
+~vibratoFreq = {
+   ~freq * LFNoise1.kr(3).exprange(0.995, 1.006)
+};
+
+// SynthDef syntax
+SynthDef(\fm1, { |out, freq = 440|
+   var vibratoFreq = freq * LFNoise1.kr(3).exprange(0.995, 1.006);
+   ...
+   Out.ar(out, ...);
+}).add;
+#+end_src
+
+*** Envelope generators in SynthDef
+**** \clsspl{SynthDef} use envelopes for node control.
+     - When a note finishes, the synth should disappear from the server.
+     - It does this based on the \mth{doneAction} parameter of \ugen{EnvGen}.
+     - *Only one* \ugen{EnvGen} should have a \ci{doneAction}!\\
+       \cd{EnvGen.kr(Env(...), gate, doneAction: 2)}.\\
+       Normally this is the /volume envelope/.
+**** \ci{gt} (modular style) vs. \ci{gate} (canonical).
+     - Any \ci{gt} arguments should become \ci{gate} in \clss{SynthDef}.\\
+       Also *do not forget* to set a default! \cd{gate = 1}.
+
+*** Notes: envelopes					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** \ci{doneAction} and multiple envelopes
+It is usually a bad idea to have \cd{doneAction: 2} in more than one
+envelope in a \clss{SynthDef}.
+
+The \mth{doneAction} will take effect in the first envelope generator
+to reach its end. In general, you *do not* want this to happen unless
+the synth has gone silent; otherwise, you will get a click when the
+synth cuts off abruptly. Now, which envelope generator fades the synth
+down to silence when the note releases? The /volume/ envelope
+generator.
+
+So, whichever is the envelope generator that is multiplied with the
+SynthDef's main output signal---\emph{this} is the one that should
+have \cd{doneAction: 2}. In Listing [[can2]], the volume envelope is the
+one applied to the FM carrier: \ci{\textasciitilde carEg}. So, when
+you copy \ci{\textasciitilde carEg} into the SynthDef, put
+\cd{doneAction: 2} here /and nowhere else/.
+
+**** Default value for \ci{gate}
+If you forget a default \ci{gate} value > 0, the \clss{SynthDef} will
+not work with patterns. The normal \ci{\textbackslash note} event type
+assumes that the gate has a > 0 default, and it relies on this to open
+the envelope. If you don't specify a default, the gate will be 0. As a
+result, the envelope will not open---and if it didn't open, then it
+can't close, *and* the synth is removed when the envelope closes. This
+is dangerous: If the envelope doesn't close, then the synths don't get
+removed, and they pile up on the server, eating more and more CPU
+power until the audio glitches.
+
+*** Exercise: Finish the SynthDef
+**** Exercise for you:
+     Copy the remaining modules into the \clss{SynthDef}.
+     - Also, good idea to add an argument for amplitude:\\
+       \cd{amp = 0.1}.\\
+       Multiply the final output signal by this.
+**** Don't look ahead until you have finished this!
+
+*** The final SynthDef
+**** And... here's the answer.
+     - Every numeric proxy has become an argument.
+     - Every synth proxy has become a declared variable.
+     - \cd{\textasciitilde car.play} $\to$ \cd{Out.ar(out, (car * amp).dup)}.
+#+name: can4
+#+caption: The final \textbackslash fm1 SynthDef.
+#+begin_src {SuperCollider} -i
+SynthDef(\fm1, { |out, gate = 1, freq = 440, modRatio = 2,
+      modIndex = 1.5, amp = 0.1|
+   var vibratoFreq = freq * LFNoise1.kr(3).exprange(0.995, 1.006);
+   var modEg = EnvGen.kr(Env.adsr(0.01, 0.1, 0.5, 0.3), gate);
+   var mod = SinOsc.ar(vibratoFreq * modRatio, 0) * modEg;
+   var carEg = EnvGen.kr(Env.adsr(0.01, 0.2, 0.6, 0.15), gate,
+       doneAction: 2);
+   var car = SinOsc.ar(freq * (1 + (modIndex * mod))) * carEg;
+   Out.ar(out, (car * amp).dup);
+}).add;
+
+// test it
+(instrument: \fm1, freq: exprand(220, 880), sustain: 2).play;
+#+end_src
+
+
 ** Groups and busses
 ** Order of execution
 *** Things							   :noexport:
