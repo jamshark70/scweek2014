@@ -50,6 +50,10 @@
 #+latex: \clearpage\part{Effects and Mixing}
 #+include: "../04-effects/04-contents.org" :minlevel 1
 
+* Part 5 						      :ignoreheading:
+#+latex: \clearpage\part{Canonical Style}
+# #+include: "../05-canonical/05-contents.org" :minlevel 1
+
 * Appendix						      :ignoreheading:
 #+latex: \clearpage\part{Appendix: Additional Topics}
 #+include: "../06-appendix/06-contents.org" :minlevel 1
