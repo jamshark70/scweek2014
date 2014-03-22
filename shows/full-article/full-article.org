@@ -17,9 +17,7 @@
 # note, it does not work to use B_ignoreheading--need Suvayu's hack
 # note, you must always have a top-level heading for each #+latex: \part{}
 
-* Part 1 						      :ignoreheading:
-#+latex: \clearpage\part{Introductory SC, Synthesis and Sequencing}
-
+* Preface
 #+name: makegloss_art
 #+call: makegloss :exports (if hjh-exporting-slides "none" "results") :results value latex
 #+results: makegloss_art
@@ -36,6 +34,107 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "none" "results") :results value latex
 #+results: ugengloss_art
 
+** Preface
+*** Preface                                                :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Project history
+In autumn 2013, 张睿博 (Zhang Ruibo, Shenyang Conservatory and head of
+CHEARS, the China ElectroAcoustic Resource Survey) approached me to
+present a week-long introductory SuperCollider workshop in
+April 2014. I wrote this material in the first couple of months
+of 2014.
+
+**** Overview (BTW change standard to canonical)
+This document includes all the presentation slides from the workshop,
+plus further explanation in text, an Appendix with additional topics
+(interesting, but too much for one week!), and an index and glossary
+of terms. The material serves two purposes: first, to guide the
+workshop sessions (which don't need to follow the slides exactly), and
+second, to provide documentation which CHEARS may translate into
+Chinese.
+
+The workshop aims to simplify individual units of code by imitating
+/modular/ synthesis in code. This approach avoids several of the
+trickier challenges of learning SuperCollider, related to code
+structure and server architecture. It is, however, a new approach;
+"standard" SuperCollider style is different in some important ways.
+
+Why not simply teach the standard style? When approaching any
+programming language, small code blocks are easier to understand,
+while larger ones, even ten lines, may be scary at first. Standard
+style binds many synthesizer components into one self-contained unit
+called a \clss{SynthDef}; dividing it into more digestible pieces
+requires the new user to understand details of the server that are
+likely to be confusing at first. The modular style presented here
+allows each module to handle one small piece of synthesis /and/
+relieves the new user from the burden of understanding advanced
+concepts too early.
+
+This modular style depends on some new /extensions/ to the
+language. Installation instructions are in Part I. The specific
+extensions are:
+
+- Improved handling of modules that represent constant numbers.
+- A modifier, \ci{\textbackslash psSet}, to act on many modules at
+  once using a central code interface.
+# - ProxySubmix?
+# - MixerChannel bridge?
+
+Some of these may be incorporated in future SuperCollider versions. At
+that time, the workshop extensions package will have to change.
+
+**** Typographical conventions
+Code examples appear in a monospaced sans-serif font (Inconsolata):
+\cd{Server.local.boot}.
+
+Keyboard shortcuts are boxed: \ks{Ctrl-Return}.
+
+Numbered code examples are collected into =scd= files. Each Part has
+two collections: one with all examples, and the other with only
+selected examples. I strongly recommend using the selected examples
+only. You will learn more by typing the examples yourself, instead of
+passively executing them.
+
+The document is written using /org-mode/ 8.2.3[fn:44f1f911] running in
+Emacs 23, and typeset using \LaTeX (/xelatex/ from TexLive
+2012[fn:7ef32d12]) with \emph{Beamer} extensions[fn:de025f42].
+
+**** Copyleft and licensing
+This document and all associated materials are released under the
+Creative Commons Attribution-ShareAlike 4.0 license.[fn:e3c97117] You
+may use these materials as the basis of a new workshop or course, if
+you:
+
+- Give credit to me as the initial author (Attribution);
+- Release your materials under a similar (more permissive) license
+  (ShareAlike). That is, you should allow others to modify your
+  version and publish their version.
+
+You may not lift large passages of this work and claim them as your
+own, or publish them under a copyright-style license that forbids
+further modification. This work is meant to be part of a conversation
+about art and programming. Copyright stops the conversation, so I
+don't want it.
+
+**** Acknowledgments
+I won't attempt a complete list of thanks, but here's a good start:
+
+- The entire community of SuperCollider users and developers, without
+  whom, none of this. In particular:
+  - James McCartney, for inventing the thing;
+  - Julian Rohrhuber and Alberto de Campo, for considering
+    improvements to JITLib that make this modular-synthesis usage much
+    easier.
+- The /org-mode/ development team, for a spectacularly customizable
+  authoring tool (plus calendar, to-do list and in-general everything
+  tool).
+- Users of http://tex.stackexchange.com for advice on a few sticky
+  \LaTeX problems.
+
+* Part 1 						      :ignoreheading:
+#+latex: \clearpage\part{Introductory SC, Synthesis and Sequencing}
 #+include: "../01-intro/01-contents.org" :minlevel 1
 
 * Part 2						      :ignoreheading:
@@ -71,3 +170,13 @@
 #+LaTeX: \printglossary[type=class]
 * Methods
 #+LaTeX: \printglossary[type=mth]
+* Footnotes
+
+[fn:44f1f911] http://orgmode.org
+
+[fn:7ef32d12] http://tug.org/texlive/
+
+[fn:de025f42] https://bitbucket.org/rivanvx/beamer/wiki/Home
+
+[fn:e3c97117] http://creativecommons.org/licenses/by-sa/4.0/
+
