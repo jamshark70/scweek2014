@@ -1,0 +1,118 @@
+%% supercollider.sty
+% Copyright (C) 2014 by Julien Cretel
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%
+%     http://www.latex-project.org/lppl.txt
+%
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is Julien Cretel.
+%
+% This work currently consists of the files supercollider.sty.
+
+% --- Package identification ---
+\NeedsTeXFormat{LaTeX2e}[2011/06/27]
+\ProvidesPackage{supercollider}%
+ [2014/03/18 v0.1 LaTeX package for prettyprinting SuperCollider source code]
+
+
+% --- Discard any option passed to the package ---
+\DeclareOption*%
+{%
+  \OptionNotUsed
+  \PackageWarning{supercollider}{Unknown `\CurrentOption' option}
+}
+
+% --- Process options ---
+\ProcessOptions\relax
+
+% --- Package dependencies ---
+\RequirePackage{xcolor}[2007/01/21]
+\RequirePackage{listings}[2013/08/26]
+
+% custom keys for controlling the styles of SuperCollider classes,
+% symbols, and global variables
+\lst@Key{classstyle}\relax{\def\classstyle@supcol{#1}}
+\lst@Key{symbolstyle}\relax{\def\symbolstyle@supcol{#1}}
+\lst@Key{globalvarstyle}\relax{\def\globalvarstyle@supcol{#1}}
+
+% save definition of tilde for test
+\lst@SaveOutputDef{"7E}\tilde@supcol
+
+% local variables
+\newcount\currentchar@supcol
+
+\newcommand\@testChar@supcol%
+{%
+  \ifnum\lst@mode=\lst@Pmode%
+    % copy the first token in \the\lst@token to \@testChar
+    \expandafter\splitfirstchar@supcol\expandafter{\the\lst@token}%
+    % test for a backslash
+    \expandafter\ifx\@testChar@supcol\lstum@backslash%
+      \def\lst@thestyle{\symbolstyle@supcol}%
+    \else
+      % test for a tilde
+      \expandafter\ifx\@testChar@supcol\tilde@supcol%
+        \def\lst@thestyle{\globalvarstyle@supcol}%
+      \else
+        % test for characters A through Z
+        \currentchar@supcol=65
+        \loop
+          \expandafter\ifnum\expandafter`\@testChar@supcol=\currentchar@supcol%
+            \let\lst@thestyle\classstyle@supcol%
+            \let\iterate\relax
+          \fi
+          \advance \currentchar@supcol by 1
+          \unless\ifnum\currentchar@supcol>90
+        \repeat
+      \fi
+    \fi    
+  \fi
+  % ...but override by keyword style if a keyword is detected!
+  \lsthk@DetectKeywords% 
+}
+
+% helper macros
+\newcommand\splitfirstchar@supcol{}
+\newcommand\@splitfirstchar@supcol{}
+\def\splitfirstchar@supcol#1{\@splitfirstchar@supcol#1\@nil}
+\def\@splitfirstchar@supcol#1#2\@nil{\gdef\@testChar@supcol{#1}}
+
+% --- language definition ---
+\newcommand\lang@supcol{SuperCollider}
+% ``normalised'' language name
+\expandafter\lst@NormedDef\expandafter\normlang@supcol%
+  \expandafter{\lang@supcol}
+  
+\lstdefinelanguage{SuperCollider}
+{%
+  alsoletter    = \\~,
+  alsoother     = @\$,
+  morecomment   = **[l]{//},
+  morecomment   = **[s]{/*}{*/},
+  morestring    = **[s]{"}{"},
+}[keywords,strings,comments]
+
+
+% --- Hooking into listings ---
+\newcommand\@ddedToOutput@supcol{}
+\lst@AddToHook{Output}{\@ddedToOutput@supcol}
+
+
+\lst@AddToHook{PreInit}
+{%
+  \ifx\lst@language\normlang@supcol%
+    \let\@ddedToOutput@supcol\@testChar@supcol%
+  \fi
+}
+
+\lst@AddToHook{DeInit}{\renewcommand\@ddedToOutput@supcol{}}
+
+\endinput
