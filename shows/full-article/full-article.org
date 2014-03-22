@@ -46,7 +46,7 @@ present a week-long introductory SuperCollider workshop in
 April 2014. I wrote this material in the first couple of months
 of 2014.
 
-**** Overview (BTW change standard to canonical)
+**** Overview
 This document includes all the presentation slides from the workshop,
 plus further explanation in text, an Appendix with additional topics
 (interesting, but too much for one week!), and an index and glossary
@@ -59,11 +59,11 @@ The workshop aims to simplify individual units of code by imitating
 /modular/ synthesis in code. This approach avoids several of the
 trickier challenges of learning SuperCollider, related to code
 structure and server architecture. It is, however, a new approach;
-"standard" SuperCollider style is different in some important ways.
+"canonical" SuperCollider style is different in some important ways.
 
-Why not simply teach the standard style? When approaching any
+Why not simply teach the canonical style? When approaching any
 programming language, small code blocks are easier to understand,
-while larger ones, even ten lines, may be scary at first. Standard
+while larger ones, even ten lines, may be scary at first. Canonical
 style binds many synthesizer components into one self-contained unit
 called a \clss{SynthDef}; dividing it into more digestible pieces
 requires the new user to understand details of the server that are
@@ -86,8 +86,8 @@ Some of these may be incorporated in future SuperCollider versions. At
 that time, the workshop extensions package will have to change.
 
 **** Typographical conventions
-Code examples appear in a monospaced sans-serif font (Inconsolata):
-\cd{Server.local.boot}.
+Code examples appear in a monospaced sans-serif font,
+Inconsolata:[fn:702be408] \cd{Server.local.boot}.
 
 Keyboard shortcuts are boxed: \ks{Ctrl-Return}.
 
@@ -98,8 +98,8 @@ only. You will learn more by typing the examples yourself, instead of
 passively executing them.
 
 The document is written using /org-mode/ 8.2.3[fn:44f1f911] running in
-Emacs 23, and typeset using \LaTeX (/xelatex/ from TexLive
-2012[fn:7ef32d12]) with \emph{Beamer} extensions[fn:de025f42].
+Emacs 23, and typeset using LaTeX (/xelatex/ from TexLive
+2012[fn:7ef32d12]) with \emph{Beamer} extensions.[fn:de025f42]
 
 **** Copyleft and licensing
 This document and all associated materials are released under the
@@ -131,7 +131,7 @@ I won't attempt a complete list of thanks, but here's a good start:
   authoring tool (plus calendar, to-do list and in-general everything
   tool).
 - Users of http://tex.stackexchange.com for advice on a few sticky
-  \LaTeX problems.
+  LaTeX problems.
 
 * Part 1 						      :ignoreheading:
 #+latex: \clearpage\part{Introductory SC, Synthesis and Sequencing}
@@ -179,4 +179,6 @@ I won't attempt a complete list of thanks, but here's a good start:
 [fn:de025f42] https://bitbucket.org/rivanvx/beamer/wiki/Home
 
 [fn:e3c97117] http://creativecommons.org/licenses/by-sa/4.0/
+
+[fn:702be408] http://www.levien.com/type/myfonts/inconsolata.html
 
