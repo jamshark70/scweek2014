@@ -1,8 +1,11 @@
 #+startup: beamer
 
-* Test
+* Test								   :noexport:
 ** Test
 *** Test
+* Granular synthesis
+** Granular synthesis parameters
+*** Granular synthesis: Extremely powerful
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss
@@ -19,9 +22,6 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Granular synthesis
-** Granular synthesis parameters
-*** Granular synthesis: Extremely powerful
 **** Many common effects are based on \egls{granular} synthesis.
      - Notably, time stretching and pitch shifting.
      - Also good for long, complex drones.

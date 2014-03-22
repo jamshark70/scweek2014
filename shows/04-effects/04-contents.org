@@ -1,8 +1,17 @@
 #+startup: beamer
 
-* Test
+* Test								   :noexport:
 ** Test
 *** Test
+
+* Effects and mixing
+** Mechanics: Applying effects
+*** Things							   :noexport:
+    - Within a NodeProxy
+    - Between NodeProxies
+    - Sends, MixerChannels
+
+*** Effects bring the sound to life
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss
@@ -19,14 +28,6 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Effects and mixing
-** Mechanics: Applying effects
-*** Things							   :noexport:
-    - Within a NodeProxy
-    - Between NodeProxies
-    - Sends, MixerChannels
-
-*** Effects bring the sound to life
 **** Effects are everywhere.
      - In pop or electronic music, you almost never hear any unprocessed sound.
      - Dry recordings are boring.

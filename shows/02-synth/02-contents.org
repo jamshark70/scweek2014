@@ -1,8 +1,12 @@
 #+startup: beamer
 
-* Test
+* Test								   :noexport:
 ** Test
 *** Test
+
+* Events and Sequencing
+** Events and synthesis control
+*** What are Events?
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss
@@ -19,9 +23,6 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Events and Sequencing
-** Events and synthesis control
-*** What are Events?
 **** \clsspl{Event} represent a pre-defined action.
      Two main features:
      - Storage :: Events hold information under names that you choose.

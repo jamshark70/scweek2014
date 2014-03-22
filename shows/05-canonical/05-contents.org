@@ -1,8 +1,12 @@
 #+startup: beamer
 
-* Test
+* Test								   :noexport:
 ** Test
 *** Test
+
+* Canonical-style synthesis
+** Converting to canonical style
+*** Why convert?
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss
@@ -19,9 +23,6 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Canonical-style synthesis
-** Converting to canonical style
-*** Why convert?
 **** Modular and canonical styles are good for different things.
 #+begin_center
 #+attr_latex: :align |p{0.45\textwidth}|p{0.45\textwidth}|

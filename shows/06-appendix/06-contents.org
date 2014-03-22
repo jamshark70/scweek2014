@@ -3,6 +3,10 @@
 * Test
 ** Test
 *** Test
+
+* Modal synthesis
+** Ringing filters
+*** What's a \egls{ringing filter}?
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss
@@ -19,9 +23,6 @@
 #+call: ugengloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: ugengloss
 
-* Modal synthesis
-** Ringing filters
-*** What's a \egls{ringing filter}?
     Let's compare a bandpass filter (\ugen{BPF}) against a ringing filter (\ugen{Ringz}).
     - \cd{10.dbamp} in the filter: \ugen{BPF} is a quiet UGen, needs to be boosted.
 #+name: ringz1a
