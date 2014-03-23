@@ -1,6 +1,6 @@
 #+startup: beamer
 
-* Test
+* Test								   :noexport:
 ** Test
 *** Test
 
