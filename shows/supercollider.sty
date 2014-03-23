@@ -81,9 +81,9 @@
 
 % helper macros
 \newcommand\splitfirstchar@supcol{}
+\def\splitfirstchar@supcol#1{\@splitfirstchar@supcol#1\relax}
 \newcommand\@splitfirstchar@supcol{}
-\def\splitfirstchar@supcol#1{\@splitfirstchar@supcol#1\@nil}
-\def\@splitfirstchar@supcol#1#2\@nil{\gdef\@testChar@supcol{#1}}
+\def\@splitfirstchar@supcol#1#2\relax{\def\@testChar@supcol{#1}}
 
 % --- language definition ---
 \newcommand\lang@supcol{SuperCollider}
@@ -104,7 +104,6 @@
 % --- Hooking into listings ---
 \newcommand\@ddedToOutput@supcol{}
 \lst@AddToHook{Output}{\@ddedToOutput@supcol}
-
 
 \lst@AddToHook{PreInit}
 {%
