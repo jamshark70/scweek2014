@@ -42,6 +42,7 @@
 # #+LATEX_HEADER: \usepackage{supercollider}
 #+LATEX_HEADER: \usepackage{listings}
 
+#+BEGIN_COMMENT
 # from Jubobs
 # http://tex.stackexchange.com/questions/159245/how-can-i-automatically-highlight-supercollider-symbols-and-global-variables/166159#166159
 #+LATEX_HEADER: % color definition
@@ -67,8 +68,8 @@
 # #+LATEX_HEADER:   frame            = single,
 # #+LATEX_HEADER:   rulecolor        = \color{framerulecolor},
 #+LATEX_HEADER: }
+#+END_COMMENT
 
-#+BEGIN_COMMENT
 # Modified from Miguel Negrao
 # http://article.gmane.org/gmane.comp.audio.supercollider.user/105371
 #+LATEX_HEADER: \definecolor{myblue}{RGB}{51, 0, 211}
@@ -102,7 +103,6 @@
 #+LATEX_HEADER: 	morecomment=[s]{/*}{*/},
 #+LATEX_HEADER: 	morestring=[b]"
 #+LATEX_HEADER: 	}
-#+END_COMMENT
 
 #+LATEX_HEADER: \hyphenation{Synth-Def Synth-Defs}
 
