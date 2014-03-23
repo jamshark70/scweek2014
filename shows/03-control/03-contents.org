@@ -6,6 +6,9 @@
 * Granular synthesis
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
+# one less than the first listing number
+#+latex: \setcounter{lstlisting}{87}
+
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss

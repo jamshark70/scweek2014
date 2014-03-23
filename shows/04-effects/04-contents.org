@@ -12,6 +12,9 @@
     - Sends, MixerChannels
 
 *** Effects bring the sound to life
+# one less than the first listing number
+#+latex: \setcounter{lstlisting}{111}
+
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss

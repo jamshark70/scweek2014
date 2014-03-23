@@ -7,6 +7,9 @@
 * Events and Sequencing
 ** Events and synthesis control
 *** What are Events?
+# one less than the first listing number
+#+latex: \setcounter{lstlisting}{38}
+
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss

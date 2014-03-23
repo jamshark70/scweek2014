@@ -7,6 +7,9 @@
 * Canonical-style synthesis
 ** Converting to canonical style
 *** Why convert?
+# one less than the first listing number
+#+latex: \setcounter{lstlisting}{122}
+
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss
