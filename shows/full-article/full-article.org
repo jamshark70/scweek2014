@@ -6,7 +6,7 @@
 
 #+startup: beamer
 
-#+TITLE: SuperCollider Week
+#+TITLE: Workshop: Synthesis and Performance in SuperCollider
 #+DATE: \today
 #+AUTHOR: H. James Harkins
 #+EMAIL:
