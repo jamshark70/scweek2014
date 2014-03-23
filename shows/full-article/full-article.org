@@ -158,18 +158,24 @@ I won't attempt a complete list of thanks, but here's a good start:
 #+include: "../06-appendix/06-contents.org" :minlevel 1
 
 * Glossary						      :ignoreheading:
-#+latex: \clearpage\part{Glossary}
+#+latex: \clearpage\part{Indices}
 # #+LaTeX: \glsaddall
 # http://www.latex-community.org/forum/viewtopic.php?f=5&t=16833
 #+LaTeX: \renewcommand{\glossarysection}[2][]{}
-* Concepts
+* Glossaries
+** Concepts
 #+LaTeX: \printglossary[type=main]
-* UGens
+** UGens
 #+LaTeX: \printglossary[type=ugen]
-* Other classes
+** Other classes
 #+LaTeX: \printglossary[type=class]
-* Methods
+** Methods
 #+LaTeX: \printglossary[type=mth]
+
+* List of Code Examples
+#+LaTeX: \renewcommand{\lstlistlistingname}{}
+#+LaTeX: \lstlistoflistings
+
 * Footnotes
 
 [fn:44f1f911] http://orgmode.org
