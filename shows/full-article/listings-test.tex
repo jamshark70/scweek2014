@@ -1,0 +1,70 @@
+% Created 2014-03-22 Sat 18:13
+\documentclass[a4paper,twoside,11pt]{article}
+\usepackage[hidelinks]{hyperref}
+\usepackage{beamerarticle}
+\usepackage{color}
+\definecolor{codecolor}{RGB}{0,0,0}
+\usepackage{supercollider}
+\usepackage{listings}
+% color definition
+\definecolor{SCclasscolor}{RGB}{000,127,000}
+\definecolor{SCsymbolcolor}{RGB}{000,000,255}
+\definecolor{SCcommentcolor}{RGB}{063,127,127}
+\definecolor{SCstringcolor}{RGB}{186,034,034}
+\colorlet{framerulecolor}{black}
+% style definition
+\lstdefinestyle{SupColSty}
+{%
+language         = SuperCollider,
+basicstyle       = \ttfamily\footnotesize,
+stringstyle      = \color{SCstringcolor},
+commentstyle     = \color{SCcommentcolor}\itshape,
+classstyle       = \color{SCclasscolor}\bfseries,
+symbolstyle      = \lst@stringstyle,
+globalvarstyle   = \color{SCsymbolcolor},
+breaklines       = true,
+showstringspaces = false,
+frame            = single,
+rulecolor        = \color{framerulecolor},
+}
+\usetheme{default}
+\author{H. James Harkins}
+\date{\today}
+\title{SuperCollider Week}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 23.3.1 (Org mode 8.2.5f)}}
+\begin{document}
+
+\maketitle
+
+\label{sec-5}
+\section{Canonical-style synthesis}
+\label{sec-6}
+\subsection{Converting to canonical style}
+\label{sec-6-1}
+\begin{frame}[fragile,label=sec-6-2-2]{FM example}
+
+\lstset{basicstyle=\ttfamily\scriptsize,captionpos=b,tabsize=3,style=SupColSty,language={SuperCollider},label=can2,caption={FM example, with vibrato and two envelopes.},numbers=none}
+\begin{lstlisting}
+p.clear;  // or p = ProxySpace.new.push;
+
+~freq = 440;
+~modRatio = 2;
+~modIndex = 1.5;
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile,label=sec-6-2-4]{Vibrato $\to$ SynthDef}
+ To get you started, here's the vibrato, moved into the template.
+\lstset{basicstyle=\ttfamily\scriptsize,captionpos=b,tabsize=3,style=SupColSty,language={SuperCollider},label=can3,caption={Move the vibrato proxy, with associated parameters, into the SynthDef template.},numbers=none}
+\begin{lstlisting}
+// SynthDef syntax
+SynthDef(\fm1, { |out, freq = 440|
+   var vibratoFreq = freq * LFNoise1.kr(3).exprange(0.995, 1.006);
+   ...
+   Out.ar(out, ...);
+}).add;
+\end{lstlisting}
+\end{frame}
+\end{document}
