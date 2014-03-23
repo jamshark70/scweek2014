@@ -1,0 +1,48 @@
+% Created 2014-03-23 Sun 17:04
+\documentclass[ignorenonframetext,presentation]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{color}
+\usepackage{supercollider}
+\usepackage{listings}
+% color definition
+\definecolor{SCclasscolor}{RGB}{51, 0, 211}
+\definecolor{SCsymbolcolor}{RGB}{0, 115, 0}
+\definecolor{SCenvVarColor}{RGB}{255, 102, 0}
+\definecolor{SCcommentcolor}{RGB}{191, 0, 0}
+\definecolor{SCstringcolor}{RGB}{95, 95, 95}
+% style definition
+\lstdefinestyle{SupColSty}
+{%
+language         = SuperCollider,
+basicstyle       = \ttfamily\footnotesize,
+stringstyle      = \color{SCstringcolor},
+commentstyle     = \color{SCcommentcolor}\itshape,
+classstyle       = \color{SCclasscolor}\bfseries,
+symbolstyle      = \color{SCsymbolcolor},
+globalvarstyle   = \color{SCenvVarColor},
+breaklines       = true,
+showstringspaces = false,
+}
+\usetheme{default}
+\author{H. James Harkins}
+\date{\today}
+\title{SuperCollider Week, Day 5 \\ Canonical Style}
+\begin{document}
+
+\section{Canonical-style synthesis}
+\label{sec-1}
+\subsection{Converting to canonical style}
+\label{sec-1-1}
+\begin{frame}[fragile,label=sec-1-2-2]{SynthDef outline}
+ \begin{block}{A SynthDef should follow this outline.}
+\lstset{basicstyle=\ttfamily\scriptsize,captionpos=b,tabsize=3,language={SuperCollider},label=can1,caption={Standard SynthDef outline, ready to fill in.},numbers=none}
+\begin{lstlisting}
+SynthDef(\name, { |out|
+   ...
+   Out.ar(out, ...);
+}).add;
+\end{lstlisting}
+\end{block}
+\end{frame}
+\end{document}
