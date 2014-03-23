@@ -1408,7 +1408,7 @@ isn't free of structure.
 **** Example: 80% short notes, 20% long notes.
      - \mth{coin} is a weighted coin toss.
 #+name: pif1
-#+caption: A simple example of Pif, to choose short notes 80% of the time.
+# #+caption: A simple example of Pif, to choose short notes 80% of the time.
 #+begin_src {SuperCollider} -i
 ~player = Pbind(
    \freq, Pexprand(200, 800, inf),
