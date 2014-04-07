@@ -18,7 +18,7 @@ PatchNoDep : Patch {
 }
 
 	// I may revert this to Patch later?
-FxPatch : HJHPatch {
+FxPatch : Patch {
 
 	*initClass {
 		StartUp.add({
