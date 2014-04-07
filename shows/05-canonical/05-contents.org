@@ -313,7 +313,7 @@ a.mixer.levelTo(-15.dbamp, 25);  // fade in
      - /Massive/ topic.
      - Everybody has a different opinion.
      - My opinions are in my chapter of /The SuperCollider Book/.\\
-       Ch. 20: "Composition for Live Performance with dewdrop_lib and chucklib."
+       Ch. 20: "Composition for Live Performance with dewdrop\textunderscore lib and chucklib."
 
 ** But really, what to do next?
 *** Next steps
