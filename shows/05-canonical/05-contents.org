@@ -43,7 +43,7 @@
 #+end_center
 **** The last point is canonical style's big win.
      - Chords are /easy/.
-     - More efficient synthesis matters for big objects, too.
+     - More efficient synthesis matters for big projects, too.
 
 *** Using both styles together
 **** The two styles can work together.
