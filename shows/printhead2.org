@@ -1,6 +1,6 @@
 #+bind: org-latex-title-command "\\maketitle"
 #+bind: org-beamer-outline-frame-title ""
-#+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3") ("style" "SupColSty"))
+#+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3") ("style" "SuperCollider-IDE"))
 
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
@@ -58,6 +58,9 @@
 #+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
 #+LATEX_HEADER: \newcommand{\ks}[1]{\framebox[1.05\width]{\texttt{#1}}}
 
+# #+LATEX_HEADER: \usepackage{sclang-prettifier}
+
+# #+BEGIN_COMMENT
 #+LATEX_HEADER: \usepackage{supercollider}
 #+LATEX_HEADER: \usepackage{listings}
 
@@ -72,7 +75,7 @@
 # #+LATEX_HEADER: \colorlet{framerulecolor}{black}
 #+LATEX_HEADER: 
 #+LATEX_HEADER: % style definition
-#+LATEX_HEADER: \lstdefinestyle{SupColSty}
+#+LATEX_HEADER: \lstdefinestyle{SuperCollider-IDE}
 #+LATEX_HEADER: {%
 #+LATEX_HEADER:   language         = SuperCollider,
 #+LATEX_HEADER:   basicstyle       = \ttfamily\footnotesize,
@@ -87,6 +90,7 @@
 # #+LATEX_HEADER:   frame            = single,
 # #+LATEX_HEADER:   rulecolor        = \color{framerulecolor},
 #+LATEX_HEADER: }
+# #+END_COMMENT
 
 #+BEGIN_COMMENT
 # Modified from Miguel Negrao
