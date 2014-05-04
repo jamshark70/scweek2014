@@ -1,4 +1,4 @@
-#+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
+#+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3") ("style" "SupColSty"))
 # #+BIND: org-latex-listings-options (("language" "[LaTeX]Tex") ("keywordstyle" "\color{myblue}") ("basicstyle" "\ttfamily") ("commentstyle" "\color{commentred}") ("stringstyle" "\color{symbolgreen}"))
 #+bind: org-beamer-outline-frame-title "Outline"
 
@@ -39,16 +39,16 @@
 #+LATEX_HEADER: \newcommand{\ks}[1]{\textcolor{keycolor}{\framebox[1.05\width]{\texttt{#1}}}}
 #+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
 
-# #+LATEX_HEADER: \usepackage{supercollider}
+#+LATEX_HEADER: \usepackage{supercollider}
 #+LATEX_HEADER: \usepackage{listings}
 
-#+BEGIN_COMMENT
+# #+BEGIN_COMMENT
 # from Jubobs
 # http://tex.stackexchange.com/questions/159245/how-can-i-automatically-highlight-supercollider-symbols-and-global-variables/166159#166159
 #+LATEX_HEADER: % color definition
 #+LATEX_HEADER: \definecolor{SCclasscolor}{RGB}{51, 0, 211}
 #+LATEX_HEADER: \definecolor{SCsymbolcolor}{RGB}{0, 115, 0}
-#+LATEX_HEADER: \definecolor{SCenvVarColor}{RGB}{255, 102, 0}
+#+LATEX_HEADER: \definecolor{SCenvVarColor}{RGB}{140, 70, 20}
 #+LATEX_HEADER: \definecolor{SCcommentcolor}{RGB}{191, 0, 0}
 #+LATEX_HEADER: \definecolor{SCstringcolor}{RGB}{95, 95, 95}
 # #+LATEX_HEADER: \colorlet{framerulecolor}{black}
@@ -68,8 +68,9 @@
 # #+LATEX_HEADER:   frame            = single,
 # #+LATEX_HEADER:   rulecolor        = \color{framerulecolor},
 #+LATEX_HEADER: }
-#+END_COMMENT
+# #+END_COMMENT
 
+#+BEGIN_COMMENT
 # Modified from Miguel Negrao
 # http://article.gmane.org/gmane.comp.audio.supercollider.user/105371
 #+LATEX_HEADER: \definecolor{myblue}{RGB}{51, 0, 211}
@@ -103,6 +104,7 @@
 #+LATEX_HEADER: 	morecomment=[s]{/*}{*/},
 #+LATEX_HEADER: 	morestring=[b]"
 #+LATEX_HEADER: 	}
+#+END_COMMENT
 
 #+LATEX_HEADER: \hyphenation{Synth-Def Synth-Defs}
 
