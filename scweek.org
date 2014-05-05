@@ -37,6 +37,13 @@ ServerBoot.add({
 *** DONE Changing number doesn't update proxy's source
 *** DONE Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
+*** TODO Multiply-defined labels [0/6]
+    - [ ] routine2_do
+    - [ ] event2
+    - [ ] bandlim2
+    - [ ] break1Prep
+    - [ ] timept2
+    - [ ] coll2
 *** DONE Final: Move "Test" sections into first slides
 *** DONE Page breaks before parts
 *** DONE Left/right margins and header
