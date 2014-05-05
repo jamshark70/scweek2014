@@ -1,6 +1,6 @@
 #+bind: org-latex-title-command "\\maketitle"
 #+bind: org-beamer-outline-frame-title ""
-#+BIND: org-latex-listings-options (("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3") ("style" "SuperCollider-IDE"))
+#+BIND: org-latex-listings-options (("style" "SuperCollider-IDE") ("basicstyle" "\\ttfamily\\scriptsize") ("captionpos" "b") ("tabsize" "3"))
 
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:t toc:t \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
@@ -58,64 +58,7 @@
 #+LATEX_HEADER: \newcommand{\te}[1]{\emph{#1}}
 #+LATEX_HEADER: \newcommand{\ks}[1]{\framebox[1.05\width]{\texttt{#1}}}
 
-# #+LATEX_HEADER: \usepackage{sclang-prettifier}
-
-# #+BEGIN_COMMENT
-#+LATEX_HEADER: \usepackage{supercollider}
-#+LATEX_HEADER: \usepackage{listings}
-
-# from Jubobs
-# http://tex.stackexchange.com/questions/159245/how-can-i-automatically-highlight-supercollider-symbols-and-global-variables/166159#166159
-#+LATEX_HEADER: % color definition
-#+LATEX_HEADER: \definecolor{SCclasscolor}{RGB}{51, 0, 211}
-#+LATEX_HEADER: \definecolor{SCsymbolcolor}{RGB}{0, 115, 0}
-#+LATEX_HEADER: \definecolor{SCenvVarColor}{RGB}{255, 102, 0}
-#+LATEX_HEADER: \definecolor{SCcommentcolor}{RGB}{191, 0, 0}
-#+LATEX_HEADER: \definecolor{SCstringcolor}{RGB}{95, 95, 95}
-# #+LATEX_HEADER: \colorlet{framerulecolor}{black}
-#+LATEX_HEADER: 
-#+LATEX_HEADER: % style definition
-#+LATEX_HEADER: \lstdefinestyle{SuperCollider-IDE}
-#+LATEX_HEADER: {%
-#+LATEX_HEADER:   language         = SuperCollider,
-#+LATEX_HEADER:   basicstyle       = \ttfamily\footnotesize,
-#+LATEX_HEADER:   stringstyle      = \color{SCstringcolor},
-#+LATEX_HEADER:   commentstyle     = \color{SCcommentcolor}\itshape,
-#+LATEX_HEADER:   classstyle       = \color{SCclasscolor}\bfseries,
-# #+LATEX_HEADER:   symbolstyle      = \lst@stringstyle,
-#+LATEX_HEADER:   symbolstyle      = \color{SCsymbolcolor},
-#+LATEX_HEADER:   globalvarstyle   = \color{SCenvVarColor},
-#+LATEX_HEADER:   breaklines       = true,
-#+LATEX_HEADER:   showstringspaces = false,
-# #+LATEX_HEADER:   frame            = single,
-# #+LATEX_HEADER:   rulecolor        = \color{framerulecolor},
-#+LATEX_HEADER: }
-# #+END_COMMENT
-
-#+BEGIN_COMMENT
-# Modified from Miguel Negrao
-# http://article.gmane.org/gmane.comp.audio.supercollider.user/105371
-#+LATEX_HEADER: \definecolor{myblue}{RGB}{51, 0, 211}
-#+LATEX_HEADER: \definecolor{commentred}{RGB}{191, 0, 0}
-#+LATEX_HEADER: \definecolor{symbolgreen}{RGB}{0, 115, 0}
-#+LATEX_HEADER: \definecolor{stringgrey}{RGB}{95, 95, 95}
-#+LATEX_HEADER: \lstset{language=[LaTeX]Tex,%C++,
-#+LATEX_HEADER:     keywordstyle=\color{myblue},
-#+LATEX_HEADER:     basicstyle=\ttfamily,
-#+LATEX_HEADER:     %identifierstyle=\color{NavyBlue},
-#+LATEX_HEADER:     commentstyle=\color{commentred},
-#+LATEX_HEADER:     stringstyle=\color{stringgrey},
-#+LATEX_HEADER:     showstringspaces=false,
-#+LATEX_HEADER: }
-#+LATEX_HEADER: 
-#+LATEX_HEADER: \lstdefinelanguage{SuperCollider}
-#+LATEX_HEADER: 	{morekeywords={nil,true,false,var,classvar,this,thisProcess,thisThread,arg,thisFunction,super,currentEnvironment,Pdelta,Plot,Object,DynKlank,Formant,Phasor,NodeProxy,Saw,Note,PTimePoints,LFGauss,LFNoise2,Dust,Point,Feedback,Rect,ControlSpec,Window,Pn,NamedControl,BLowPass,Mix,QuadL,VarSaw,HPF,Pxrand,BufRateScale,Pseq,Signal,ControlDur,RLPF,LFPulse,EnvGen,Switch,AllpassL,Impulse,Pulse,SinOsc,Tdef,LinCongL,Env,Out,LFSaw,BPF,Balance2,FlowView,DelayL,Integer,IdentitySet,Task,OSCdef,TExpRand,Routine,TdefAllGui,CombL,Shaper,Event,GUI,LFTri,EZSlider,FormantTable,FreeVerb2,Set,Pdefn,LFNoise1,Slider,Buffer,Scale,WhiteNoise,Array,Osc,Pwhite,PlayBuf,LPF,OSCFunc,Synth,Line,Play,Platform,Pseries,SimpleController,LocalIn,Pshuf,SynthDef,Pbind,NetAddr,Pkey,PinkNoise,ProxySubmix,Klank,Prand,Updater,TempoClock,Color,Limiter,TGrains,Pfunc,Lag,LFNoise0,Pif,Rest,Ringz,LocalOut,UGen,Pdict,Pexprand,ProxySpace,Button,MixerChannel,Formlet,Pluck,Dictionary,Pan2},
-#+LATEX_HEADER: 	sensitive=true,
-#+LATEX_HEADER: 	morecomment=[l]{//},
-#+LATEX_HEADER: 	morecomment=[s]{/*}{*/},
-#+LATEX_HEADER: 	morestring=[b]"
-#+LATEX_HEADER: 	}
-#+END_COMMENT
+#+LATEX_HEADER: \usepackage{sclang-prettifier}
 
 #+LATEX_HEADER: \hyphenation{Synth-Def Synth-Defs}
 
