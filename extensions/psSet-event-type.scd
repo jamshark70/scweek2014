@@ -9,9 +9,8 @@ Event.addEventType(\psSet, {
 	~proxyspace.keysValuesDo { |name, proxy|
 		var ctl = proxy.objects[0];
 		case  // most specific cases (ScalarSynthControl) should come first
-		{ ctl.isKindOf(ScalarSynthControl) } {
-			if((value = name.envirGet).notNil) {
-				proxy.set(\value0, value);
+		{ ctl.isKindOf(StreamControl) and: { ctl.source.isNumber } } {
+			if(skipArgs.includes(name.asSymbol).not and: { (value = name.envirGet).notNil }) {
 				proxy.source = value;
 			};
 			if(name == \gt and: { sustain.notNil }) {
@@ -20,14 +19,13 @@ Event.addEventType(\psSet, {
 				};
 				thisThread.clock.sched(sustain, {
 					if(releaseHolder.isNil or: { releaseHolder[proxy] ? 0 <= thisThread.clock.beats }) {
-						proxy.set(name, 0);
 						proxy.source = 0;
 					};
 				});
 			};
 		}
-		{ ctl.isKindOf(SynthDefControl) } {
-			ctl.synthDef.allControlNames.do { |cn|
+		{ ctl.isKindOf(SynthControl) } {
+			proxy.controlNames.do { |cn|
 				if(skipArgs.includes(cn.name.asSymbol).not and: {
 					(value = cn.name.asSymbol.envirGet).notNil
 				}) {
