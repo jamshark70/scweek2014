@@ -5,7 +5,8 @@
    - [-] SimpleNumber -> proxy refactor (for 3.6)
      - [X] SystemSynthDefs
      - [X] fadeBus event
-     - [ ] wrapForNodeProxy number and array bits
+     - [X] wrapForNodeProxy number and array bits
+     - [ ] Write up 3.6 specific craziness
    - [X] JIT extensions
    - [X] ddwlib
    - [X] crucial

@@ -26,3 +26,13 @@
 		)
 	}
 }
+
++ NdefParamGui {
+	setFunc { |key|
+		if(object.objects.notEmpty and: { object.objects.array.first.isKindOf(SynthControl) }) {
+			^{ |sl| object.set(key, sl.value) }
+		} {
+			^{ |sl| object.source = sl.value }
+		};
+	}
+}
