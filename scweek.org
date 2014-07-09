@@ -1,7 +1,11 @@
 # Planning for SC week-long workshop
 
 * Technical
-** DONE Distributing extensions [6/6]
+** DONE Distributing extensions [6/7]
+   - [-] SimpleNumber -> proxy refactor (for 3.6)
+     - [X] SystemSynthDefs
+     - [X] fadeBus event
+     - [ ] wrapForNodeProxy number and array bits
    - [X] JIT extensions
    - [X] ddwlib
    - [X] crucial

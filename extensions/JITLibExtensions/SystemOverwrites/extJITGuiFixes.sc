@@ -62,8 +62,10 @@
 		// still get the proper info if server is off,
 		// but Ndef has an audio synthfunc
 		isAudio = (object.rate == \audio) or: {
-			if (object.objects.notEmpty) {
-				object.objects.array.first.synthDef.rate == \audio;
+			object.objects.notEmpty and: {
+				object.objects.array.first.respondsTo(\synthDef) and: {
+					object.objects.array.first.synthDef.rate == \audio;
+				};
 			};
 		};
 
