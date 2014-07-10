@@ -1,12 +1,12 @@
 # Planning for SC week-long workshop
 
 * Technical
-** DONE Distributing extensions [6/7]
-   - [-] SimpleNumber -> proxy refactor (for 3.6)
+** DONE Distributing extensions [7/7]
+   - [X] SimpleNumber -> proxy refactor (for 3.6)
      - [X] SystemSynthDefs
      - [X] fadeBus event
      - [X] wrapForNodeProxy number and array bits
-     - [ ] Write up 3.6 specific craziness
+     - [X] Write up 3.6 specific craziness
    - [X] JIT extensions
    - [X] ddwlib
    - [X] crucial
@@ -42,6 +42,7 @@ ServerBoot.add({
 *** DONE Changing number doesn't update proxy's source
 *** DONE Switching back to numberproxy uses old value in set of args
 ** Org/LaTeX
+*** TODO Log =_.= bug for prettifier
 *** TODO Multiply-defined labels [0/6]
     - [ ] routine2_do
     - [ ] event2

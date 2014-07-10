@@ -269,6 +269,39 @@ We can run some code on a laptop and to hear the result right now. This is becau
      2. Extract the =extensions.zip= file.
      3. Copy or move the extracted files into the extension directory.
 
+*** For SuperCollider 3.6
+**** Most of you are running SuperCollider 3.6.
+     - The workshop depends on some new features.
+     - Most of these are included in the extensions.
+     - For one, you have to replace a file in the class library.
+     - Don't do this if you're using the development version (3.7 alpha)!
+**** *SC 3.6:* Copy =ProxyInterfaces.sc.copyToClassLib= into the main class library.
+      1. Run this line in SC (except in Windows XP):
+	 #+name: ProxyInterfaceCopy
+	 #+caption: Run this to find the location of ProxyInterfaces.sc.
+	 #+begin_src {SuperCollider}
+         AbstractPlayControl.filenameSymbol.asString.dirname.openOS;
+	 #+end_src
+      2. Copy the file into this location.
+      3. Rename it so that its extension is only =sc=.
+
+*** XP fail						    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Windows XP only
+There's an unfortunate problem with SuperCollider in Windows XP. The
+interpreter is not able to launch external processes. This is not an
+issue in Windows Vista and later. (Although this is inconvenient for
+XP users, since Microsoft no longer supports XP, SuperCollider
+developers can't justify the time to fix it.)
+
+In Listing [[ProxyInterfaceCopy]], \ci{openOS} starts an external process
+(in Windows, the file explorer). This will not work in XP. Instead,
+delete \cd{.openOS} from the line, and run it to get the file
+location. Then copy the location out of SC's post window, and paste it
+into Windows Explorer. Then proceed with step 2 above.
+
 *** Startup file
 **** SC needs to run an extra code file during startup.
      1. In the IDE, /File/ menu $\to$ /Open startup file/.
@@ -282,6 +315,44 @@ We can run some code on a laptop and to hear the result right now. This is becau
 **** Now, recompile the class library.
      - "Recompiling" resets everything in the language.
      - \ks{Ctrl-Shift-L}
+
+*** XP fail 2						    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** Windows XP only
+Because of the XP problem, starting the audio server will fail in the
+same way. As a workaround:
+
+1. Copy the following code into the startup file.
+   #+name: StartupForXP
+   #+caption: Add these lines to the startup file if you're using Windows XP.
+   #+begin_src {SuperCollider} -i
+s.startAliveThread;
+ServerBoot.add({
+	s.initTree;
+	s.slotPut(\serverInterface, ServerShmInterface(s.addr.port));
+}, s);
+
+ShutDown.add {
+	Server.all.do(_.quit)
+};
+   #+end_src
+
+2. Create a file =runsynth.bat=, in a location that's easy to find.
+
+3. Copy the following text into it. Be sure to substitute the actual installation path.
+   #+name: RunSynthBat
+   #+caption: A script to launch the server in Windows XP.
+   #+begin_src {}
+   cd "C:\Program Files\SuperCollider-3.6.6"
+   scsynth.exe -u 57110 -a 128 -b 1026 -R 0
+   #+end_src
+
+Now, when you need to boot the server, double-click on this batch
+file. The code in Listing [[StartupForXP]] will make the interpreter
+recognize when the server has been started externally, and quit the
+server at the end of the session.
 
 *** Audio setup
 **** OSX
