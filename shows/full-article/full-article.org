@@ -131,7 +131,11 @@ I won't attempt a complete list of thanks, but here's a good start:
   authoring tool (plus calendar, to-do list and in-general everything
   tool).
 - Users of http://tex.stackexchange.com for advice on a few sticky
-  LaTeX problems.
+  LaTeX problems@@latex:---\emph{especially}@@ Julien Cretel (aka
+  Jubobs) for creating /sclang-prettifier/,[fn:f5932a27] a LaTeX
+  syntax-colorizer for the /listings/ package, which handles some
+  elements of SuperCollider syntax that are not easy using the normal
+  /listings/ options.
 
 * Part 1 						      :ignoreheading:
 #+latex: \clearpage\part{Introductory SC, Synthesis and Sequencing}
@@ -187,4 +191,6 @@ I won't attempt a complete list of thanks, but here's a good start:
 [fn:e3c97117] http://creativecommons.org/licenses/by-sa/4.0/
 
 [fn:702be408] http://www.levien.com/type/myfonts/inconsolata.html
+
+[fn:f5932a27] https://bitbucket.org/Jubobs/sclang-prettifier
 

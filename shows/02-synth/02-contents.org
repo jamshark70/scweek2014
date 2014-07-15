@@ -8,7 +8,7 @@
 ** Events and synthesis control
 *** What are Events?
 # one less than the first listing number
-#+latex: \setcounter{lstlisting}{38}
+#+latex: \setcounter{lstlisting}{41}
 
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
@@ -96,7 +96,7 @@ A little trick: Add an empty string after printing a collection, for cleaner out
        - \ci{dur} :: Wait time. \ci{dur = delta * stretch}.
        - \ci{legato} :: Proportion of dur to hold the gate open. < 1 leaves space between notes (staccato); > 1 makes notes overlap.
        - \ci{stretch} :: Multiplies all time values. Can make a sequence play faster or slower.
-#+name: event2
+#+name: event2a
 #+caption: Sustain is calculated automatically from "dur" and "legato."
 #+begin_src {SuperCollider} -i
 (freq: 330, amp: 0.5, dur: 3, legato: 0.5).play;
@@ -486,7 +486,7 @@ sc3-plugins package.
       This is a \egls{square wave}.
     - If unequal, the sound is brighter and thinner.
 #+latex: \glsadd{Pulse}\glsadd{VarSaw}
-#+Name: bandlim2
+#+Name: pulsewidth
 #+Caption: Hear the effect of changing the pulse width.
 #+begin_src {SuperCollider} -i
 p = ProxySpace.new.push;
@@ -2020,7 +2020,7 @@ q[\hits] = (
 **** Accessing the frame numbers from \cd{q[\textbackslash hits]}:
      - Use a pattern to produce the hit type's name.
      - \mth{collect} over the names to choose the actual frame.
-#+name: break1Prep
+#+name: break1Pat
 #+caption: The breakbeat pattern.
 #+begin_src {SuperCollider} -i
 ~break = Pbind(

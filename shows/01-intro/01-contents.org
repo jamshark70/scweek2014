@@ -248,6 +248,10 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
 ** Preparing the environment
+   :PROPERTIES:
+   :EXPORT_OPTIONS: H:1
+   :EXPORT_AUTHOR: H. James Harkins
+   :END:
 *** Initial installation
 **** Before beginning, you should install:
      - SuperCollider 3.6.6 or later.\\
@@ -1583,7 +1587,7 @@ r.next;
 **** Shortcut for an infinite loop: \ci{loop}.
      - *Never* use this without \mth{yield}!
 #+latex: \glsadd{rrand}
-#+name: routine2_do
+#+name: routine3_inf
 #+caption: A simple routine with a infinite loop. Run r.next as many times as you like.
 #+begin_src {SuperCollider} -i
 r = Routine {

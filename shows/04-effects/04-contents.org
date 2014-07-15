@@ -13,7 +13,7 @@
 
 *** Effects bring the sound to life
 # one less than the first listing number
-#+latex: \setcounter{lstlisting}{111}
+#+latex: \setcounter{lstlisting}{114}
 
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
@@ -69,11 +69,44 @@
        (Control inputs like \ci{freq} are not the same.)
      - Effects have to bring an audio signal in.\\
        Then they process it, and send out a modified signal.
-**** \egls{JITLib} gives you two ways to bring audio in.
+**** \egls{JITLib} gives you three ways to bring audio in.
      - Calling \mth{ar} on a \clss{NodeProxy}.\\
        We've already done this---just a new use for effects.
-     - New: The \ci{\textbackslash filter} adverb.\\
+     - *New:* The \ci{\textbackslash filter} adverb.\\
        Used for inserts and the \clss{ProxySubmix} approach.
+     - *New:* Audio-rate controls: @@latex:\cd{\textbackslash
+       in.ar(0!2)}@@.
+
+*** Note: Input methods					    :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+**** What, exactly, are these new input techniques?
+\ci{\textbackslash filter} is a NodeProxy source adverb. We've seen
+adverbs before: \ci{\textbackslash psSet} is an adverb that modifies
+the behavior of an event pattern assigned to the proxy. Likewise,
+\ci{\textbackslash filter} modifies the behavior of the synthesis
+function assigned to the proxy.
+
+Normally, a synthesis function /mixes/ (adds) its audio to any other
+synthesis functions belonging to the same proxy. A filter needs to
+take input (from the first function argument) and /replace/ the output
+with the filtered signal. \cd{\textbackslash filter ->} tells the
+\clss{NodeProxy} to do this.
+
+/Audio-rate controls/ receive audio signals by mapping them onto an
+audio bus. The (slightly obnoxious) syntax \cd{\textbackslash
+in.ar(0!2)} creates an audio-rate control named \ci{in}. This is a
+shortcut for \cd{NamedControl.ar(\textbackslash in, 0!2)}. We will see
+shortly that a special operator, \ci{<>>}, maps audio between
+\clsspl{NodeProxy}, and expresses the relationships in a clear,
+easy-to-understand way.
+
+In \cd{(0!2)}, \ci{0} is the default value for the audio
+signal. Normally, the default should be silent (0). \ci{2} is the
+number of channels of input. For one-channel input, you can write
+simply \ci{0} with no further modifiers. For more channels, just
+replace \ci{2} with the number of channels you need.
 
 *** Effect routing by NodeProxy access
 **** Remember subtractive synthesis: Oscillator $\to$ filter.
@@ -94,21 +127,45 @@
      - At first, \mth{play} the source proxy.
      - Then add an effect. Now the effect should \mth{play}.
      - So you need to switch the proxy that's playing.
-**** Solution: The \ci{<--} operator.
-     - \cd{\textasciitilde target <-- \textasciitilde source;}
-     - "Moves" the source into the target:
-       - The target gets the source's contents.
-       - Then, it plays the target and stops the source.
-     - Sound should not change much.
+**** Solution: The \ci{<>>} operator.
+     - \ci{<>>} makes /chains/ of proxies.
+     - If \ci{A} is playing into \ci{C}, insert \ci{B} in the middle
+       by \cd{A <>> B <>> C}.
+     - Input comes into an audio-rate control: @@latex:\cd{\textbackslash
+       in.ar(0!2)}@@ for stereo.
 
 *** Example: Saw into chorus
+     - One \clss{NodeProxy} is only for the hardware output.\\
+       *Note:* It doesn't mix signals. Only one input at a time.
+     - Patching syntax is easy to read!
+#+name: routing1
+#+caption: Creating and manipulating chains of NodeProxies.
+#+begin_src {SuperCollider} -i
+p = ProxySpace.new.push;
+
+// A NodeProxy to represent the hardware output
+~out = { \in.ar(0!2) }; ~out.play;
+
+~saw = { Saw.ar(440, 0.1).dup };
+~saw <>> ~out;  // connect source to output
+
+~chorus = {
+   var in = \in.ar(0!2);
+   in + DelayL.ar(in, 0.05, 0.02 + SinOsc.kr([-0.1, 0.11], 0, 0.014));
+};
+~saw <>> ~chorus <>> ~out;  // repatch
+
+p.clear;
+#+end_src
+
+*** *DEPRECATED* Example: Saw into chorus 			   :noexport:
 **** \ci{<--} says that we want \ci{\textasciitilde chorus} to play now.
      - \ci{\textasciitilde saw} keeps going /and/ it's copied into \ci{\textasciitilde chorus}.
      - Then we can replace \ci{\textasciitilde chorus} with an effect.
        (Run all the \ci{\textasciitilde chorus} lines together, and
        the glitch disappears.)\glsadd{chorus}
-#+name: routing1
-#+caption: Transferring a source to a second proxy, so that the second proxy can become an effect.
+# #+name: routing1
+# #+caption: Transferring a source to a second proxy, so that the second proxy can become an effect.
 #+begin_src {SuperCollider} -i
 p = ProxySpace.new.push;
 
@@ -715,10 +772,10 @@ b.sine1([0, 0, 0, 0, 0, 0, 0, 1]);
 
 *** Mass-producing EQs and controls
 **** You'll probably create a lot of EQs.
-     - I've included a function in (example file).
+     - I've included a function in =examples/04-addEQ-function.scd=.
      - Add it into your personal storage dictionary.
      - Then you can add EQs easily.\\
-       (Here, assuming \ci{a} is your dictionary.)
+       (Here, assuming \ci{a} is your dictionary. Change to the letter you're using.)
 #+name: eqfunc
 #+caption: Adding EQ bands to a proxy, by a convenience function.
 #+begin_src {SuperCollider} -i
@@ -732,7 +789,7 @@ a.addEQ(~saw, 1);
 // and override the default frequency and rq
 a.addEQ(~saw, 2, BLowPass, 800, 0.05);
 #+end_src
-**** TODO Put the function somewhere sensible			   :noexport:
+**** DONE Put the function somewhere sensible			   :noexport:
 #+begin_src :exports none
 a = ();
 a.addEQ = { |dict, proxy, slot, eqClass(BPeakEQ), freq = 440, rq = 1, gain|

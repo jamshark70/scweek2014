@@ -7,6 +7,9 @@
 * Modal synthesis
 ** Ringing filters
 *** What's a \egls{ringing filter}?
+# one less than the first listing number
+#+latex: \setcounter{lstlisting}{130}
+
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
 #+results: makegloss
@@ -871,7 +874,7 @@ x.includesEqual([0, 1, 2]);  // TRUE
 *** Collection looping examples
 **** Can you imagine musical uses for these?
      Try them one by one, and try to explain the results.
-#+name: coll2
+#+name: coll2a
 #+caption: Examples of looping operations on collections.
 #+begin_src {SuperCollider} -i
 x = (0..9).scramble;

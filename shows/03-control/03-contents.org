@@ -7,7 +7,7 @@
 ** Granular synthesis parameters
 *** Granular synthesis: Extremely powerful
 # one less than the first listing number
-#+latex: \setcounter{lstlisting}{87}
+#+latex: \setcounter{lstlisting}{90}
 
 #+name: makegloss
 #+call: makegloss :exports (if hjh-exporting-slides "results" "none") :results value latex
@@ -1153,7 +1153,7 @@ Pdefn(\dur, Pseq([1, 0.5, 0.5, 1, 1], inf));
 
 *** Deltas vs. time points 3
 **** Can you predict the change in rhythm?
-#+name: timept2
+#+name: timept3
 #+caption: Play a rhythm, using time points.
 #+begin_src {SuperCollider} -i
 Pdefn(\dur, Pdelta(Pseq([0, 1, 1.5, 2.5, 3], inf), 4));
@@ -1175,7 +1175,7 @@ Pdefn(\dur, Pdelta(Pseq([0, 1, 1.5, 2.5, 3], inf), 4));
      - Set it using \mth{beatsPerBar}.
      - You should do this only on a barline! See Listing [[timept4]].
      - Future barlines will be relative to the moment when the meter changed.
-#+name: timept3
+#+name: timept2a
 #+caption: Rewriting the previous example to use PTimePoints.
 #+begin_src {SuperCollider} -i
 ~player.clear;
