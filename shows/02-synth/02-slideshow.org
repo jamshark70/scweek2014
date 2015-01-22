@@ -6,7 +6,7 @@
 
 #+startup: beamer
 
-#+TITLE: SuperCollider Week, Day 2 \\ Sequencing with Patterns, Synthesis Techniques
+#+TITLE: SuperCollider Week, Day 2 @@latex:\\@@ Sequencing with Patterns, Synthesis Techniques
 #+DATE: \today
 #+AUTHOR: H. James Harkins
 #+EMAIL:

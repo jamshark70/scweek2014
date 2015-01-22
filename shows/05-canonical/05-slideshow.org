@@ -6,7 +6,7 @@
 
 #+startup: beamer
 
-#+TITLE: SuperCollider Week, Day 1 @@latex:\\@@ Introductory SC, Synthesis and Sequencing
+#+TITLE: SuperCollider Week, Day 5 @@latex:\\@@ Canonical Style
 #+DATE: \today
 #+AUTHOR: H. James Harkins
 #+EMAIL:
@@ -14,5 +14,4 @@
 #+INCLUDE: "../slidehead.org"
 #+include: "../glossary.org"
 
-#+include: "./01-contents.org" :minlevel 1
-
+#+include: "./05-contents.org" :minlevel 1

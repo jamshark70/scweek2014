@@ -6,7 +6,7 @@
 
 #+startup: beamer
 
-#+TITLE: SuperCollider Week, Day 4 \\ Effects and Mixing
+#+TITLE: SuperCollider Week, Day 4 @@latex:\\@@ Effects and Mixing
 #+DATE: \today
 #+AUTHOR: H. James Harkins
 #+EMAIL:

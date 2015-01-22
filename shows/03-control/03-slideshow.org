@@ -6,7 +6,7 @@
 
 #+startup: beamer
 
-#+TITLE: SuperCollider Week, Day 3 \\ Musical and External Control
+#+TITLE: SuperCollider Week, Day 3 @@latex:\\@@ Musical and External Control
 #+DATE: \today
 #+AUTHOR: H. James Harkins
 #+EMAIL:
