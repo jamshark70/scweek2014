@@ -99,6 +99,7 @@
 | multichannel expansion |               | Math operators and UGens ``expand'' an array of inputs into an array of results: [1, 2] * 2 = [2, 4]. Convenient for stereo processing                                                |
 | normalize              |               | A standard numeric range, either 0--1 or --1--1: easy to convert to any other range. Or, normalized audio has been amplified so its peak sample is at a desired level                 |
 | Nyquist                |               | In digital sampling, the highest possible frequency is $\frac{sr}{2}$, where $sr$ is the sampling rate                                                                                |
+| object                 |               | The focal point of object-oriented programming. Objects combine \emph{data} and \emph{actions} ("methods") into single entities.                                                      |
 | ordered                |               | Of a collection, indicates that the collection remembers the order of items, e.g., Array, List                                                                                        |
 | OSC                    |               | Open Sound Control. A communication protocol to send light, but structured, messages over a network                                                                                   |
 | oscillator             |               | A waveform generator, based on the fact that sound waves ``oscillate'' above and below normal air pressure                                                                            |
@@ -476,8 +477,8 @@
 #+begin_src emacs-lisp :var tbl=gloss glosstype='nil :exports none :results value latex
   (let ((str "")
         (gltype (if glosstype (format "type=%s," glosstype) "")))
-    (pop tbl)
-    (pop tbl)
+    ;(pop tbl)
+    ;(pop tbl)
     (while tbl
       (let ((item (pop tbl)))
         (setq str
@@ -497,8 +498,8 @@
 #+name: ugengloss
 #+begin_src emacs-lisp :var tbl=ugens :exports none :results value latex
 (let ((str ""))
-  (pop tbl)
-  (pop tbl)
+  ;(pop tbl)
+  ;(pop tbl)
   (while tbl
     (let ((item (car tbl)))
       (pop item)

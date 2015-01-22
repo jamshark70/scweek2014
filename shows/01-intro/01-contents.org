@@ -247,6 +247,57 @@ We can run some code on a laptop and to hear the result right now. This is becau
      - Ctrl-space :: Complete a name.
      - Ctrl-shift-space :: Complete a parameter list inside \cd{()}.
 
+** Error messages
+*** TODO Glossary markup for /class/ and /method/		   :noexport:
+*** Troubleshooting mistakes
+**** You'll make mistakes---maybe a lot, early on.
+     SC gives you detailed error text to help you understand what went wrong.
+**** Two main categories of errors:
+     - Parse errors :: The code doesn't follow SC's rules.\\
+       Typo in a \gls{class} name, or another unexpected element.
+     - Runtime errors :: The code doesn't do the right thing.\\
+       Includes typos in method names.
+
+*** Parse errors
+**** Parse errors are usually typos, such as:
+     - Misspelled \glspl{class}.
+     - Wrong punctuation, e.g. \cd{1. 2.0} instead of \cd{1, 2.0}.
+     - Mismatched brackets: \cd{( )}, \cd{[ ]} and @@latex:\cd{\{\}}@@ must be balanced.
+**** The error listing shows the problem text and what it expected.
+#+BEGIN_EXAMPLE
+ERROR: syntax error, unexpected BADTOKEN, expecting ')'
+  in file 'selected text'
+  line 1 char 13:
+
+  rrand(1, 2.0} 
+              ^
+#+END_EXAMPLE
+**** Often, the real mistake comes before the error is actually detected.
+
+*** Runtime errors
+**** Most errors occur at runtime.
+     That is, the code is syntactically correct, but it does something
+     other than what you expected.
+**** Most important for now: DoesNotUnderstand error.
+     - It means: the \gls{object} "does not understand" what you asked it to do.
+     - Most common cause: Misspelled \gls{method} name.
+#+BEGIN_EXAMPLE
+"abc".find("b");  // OK
+
+"abc".findIt("b");
+--> ERROR: Message 'findIt' not understood.
+#+END_EXAMPLE
+
+*** SC runtime error output
+**** SC dumps a lot of information for runtime errors.
+     - The error message.
+     - The object(s) involved.
+     - A \emph{stack trace}, showing what the interpreter was doing
+       when the error happened, and how it got there.
+**** For now, just look at the error message.
+     As you get more experience, you can look at the stack trace and
+     get more information.
+
 ** Preparing the environment
    :PROPERTIES:
    :EXPORT_OPTIONS: H:1
