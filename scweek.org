@@ -245,7 +245,9 @@ In \clss{ProxySpace}, assigning a function or pattern to a \ci{\textasciitilde n
 
 For both, the signal
 ** POSTPONED Discuss Out and buses
-* Fixes [16/16]
+* Fixes [16/17]
+** MTG Update JITLibExtensions, remove ProxySubmix
+   - [ ] Commit numChannels fix for ProxySubmix
 ** DONE Prerequisite to install sc3-plugins.
 ** DONE Footnote numbers
 ** DONE First EnvGen example: need dup?

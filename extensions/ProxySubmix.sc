@@ -2,14 +2,15 @@ ProxySubmix : Ndef {
 
 	var <skipjack, <proxies, <sendNames, <volBusses;
 
-	ar { |numChans(this.numChannels ? 1), addMasterSend = true|
-		var res = super.ar(numChans);
-		if (addMasterSend) {
+	initMix { |numChans(this.numChannels ? 1), masterSend = true|
+		if(numChans != this.numChannels) { this.ar(numChans) };
+		if(masterSend) {
 			this.put(1001, { |lev_ALL = 1|
-				ReplaceOut.ar(bus, bus.ar * lev_ALL.lag(0.05));
+				ReplaceOut.ar(bus, bus.ar * lev_ALL.lag(0.05))
 			});
+		} {
+			if(this.objects[1001].notNil) { this.put(1001, nil) };
 		}
-		^res
 	}
 
 	addMix { |proxy, sendLevel = 0.25, postVol = true, mono = false|
